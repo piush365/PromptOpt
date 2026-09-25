@@ -32,8 +32,11 @@ FORMAT_PATTERNS = [re.compile(p, _I) for p in (
     r"\b(?:bullet(?:ed)?|numbered|comma[- ]separated|ordered)\s+(?:list|points?)\b",
     r"\bbullet points?\b",
     r"\bcomma[- ]separated\b",
+    r"\bseparated (?:by|with) (?:a )?(?:commas?|semicolons?|new ?lines?|line breaks?|spaces?|tabs?)\b",
     r"\bas a list\b",
     r"\b(?:one|each) (?:item|entry|name|answer) per line\b",
+    r"\b(?:on (?:its|their) own lines?|on separate lines|one per line)\b",
+    r"\bstart with the (?:direct )?answer\b",
     rf"\b(?:in|within|using|with|as|to) (?:exactly |at most |no more than |under |up to )?{_NUM} {_UNIT}\b",
     rf"\b{_NUM}[- ](?:word|sentence|line|paragraph) (?:answer|summary|response|description|explanation)\b",
     r"\b(?:respond|reply|answer|output|return|give|provide)\s+(?:with\s+)?only\b",
@@ -88,7 +91,7 @@ CONSTRAINT_PATTERNS: dict[str, list[re.Pattern]] = {
         r"\b(?:python|java|javascript|typescript|c\+\+|c#|golang|rust|ruby|php|swift|kotlin|scala|perl|sql|"
         r"mysql|postgres(?:ql)?|sqlite|html|css|bash|shell script|powershell|matlab|haskell|lua|dart|node\.?js|"
         r"react|jquery|django|flask|pandas|numpy|objective-c|assembly|fortran|cobol|julia|elixir|clojure|"
-        r"visual basic|vba|groovy)(?![\w+#])",
+        r"visual basic|vba|groovy|js|ts)(?![\w+#])",
         r"\bin (?:go|r|c)\b(?![+#\w])",
         r"\b(?:go|r|c) (?:code|program|script|function|language)\b",
     )],

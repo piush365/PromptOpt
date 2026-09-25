@@ -127,6 +127,40 @@ python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a_test.md 
 Without the index, Stage A falls back to the keyword classifier (57% accuracy on val instead of 77%).
 Hyper-parameters were tuned on val only; `../evaluation/stage_a_test.md` has the test-split results.
 
+## Stage B: rule-based optimization (`app/stage_b/`)
+
+```python
+from app.stage_a import detect_features
+from app.stage_b import optimize
+f = detect_features(text, context)
+out = optimize(text, f)                       # out.optimized_text, out.ir, out.steps, out.confidence, out.needs_stage_c
+repository.save_optimization(db, prompt.id, out.optimized_text, out.ir.model_dump(mode="json"), out.confidence, out.steps)
+```
+
+The prompt is parsed into an IR (task, context, constraints, requirements, output format, unresolved) and each rule
+is a pure function `(ir, features) -> ir` in `rules.py`. Every rule that changes the text is logged as a step with the
+text before and after. `optimize(..., disabled={"B04_ADD_LENGTH"})` switches rules off for the ablation study.
+
+| code | rule | what it does |
+|---|---|---|
+| B07 | standardize structure | runs first: moves a code block or a `task: item, item` list into the IR context, tidies the task |
+| B01 | remove filler | deletes A04's filler phrases; "can you ...?" becomes an instruction |
+| B02 | remove duplicates | doubled words and repeated sentences |
+| B06 | add labels | classification: states the allowed labels; "which of these ... are X" becomes yes/no |
+| B05 | add language | coding: `Use Python.`, or "keep the language" when code was supplied |
+| B04 | add length | closed_qa and summarization only |
+| B03 | add output format | per-category default, only when A02 found no format |
+
+Category-specific rules (B03-B06) apply only when Stage A's category confidence is at least 0.6
+(`CATEGORY_MIN_CONFIDENCE`): on val, Stage A is right 77-96% of the time above that and about 50% below, and a wrong
+format is worse than none. Otherwise Stage B only cleans up and marks the category unresolved. Confidence = Stage A
+confidence minus 0.2 per unresolved item; below 0.7 (`STAGE_C_THRESHOLD`) the prompt goes to Stage C.
+
+```bash
+python -m app.stage_b.evaluate --split val                                    # while tuning
+python -m app.stage_b.evaluate --split test --out ../evaluation/stage_b_test.md   # final numbers only
+```
+
 ## Dataset validation (`app/validation.py`)
 
 Lab assistants validate 20 records (4 per category, from the benchmark split). All three students rate the same
