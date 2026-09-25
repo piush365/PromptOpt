@@ -9,6 +9,10 @@
 
 Every rule that changes the text is logged as a step (rule code, text before, text after) for the explanation UI
 and the `transformations` table. Rules can be switched off with `disabled` for the ablation study.
+
+A prompt goes to Stage C only when something is still unresolved that Stage C can fix: the task category (after
+the single-category gate and the B08 group fallback) or an ambiguous reference. A missing label set or output
+format is recorded in `ir.unresolved` for the explanation UI but does not send the prompt to Stage C by itself.
 """
 from pydantic import BaseModel, Field
 
@@ -16,9 +20,9 @@ from app.stage_a.schema import PromptFeatures
 from app.stage_b.ir import PromptIR, render_plain
 from app.stage_b.rules import CATEGORY_MIN_CONFIDENCE, RULES
 
-# Stage C (LoRA) runs only when confidence is below this. Starting value; tune it on the val split.
-STAGE_C_THRESHOLD = 0.7
-# Confidence = Stage A's category confidence (the category decides what gets added), minus a penalty for each
+# Unresolved items that send a prompt to Stage C.
+STAGE_C_REASONS = ("task category", "ambiguous reference")
+# Confidence (stored with the result, not used for routing) = Stage A's category confidence, minus a penalty for each
 # problem Stage B could not fix. `other` prompts get nothing category-specific, so they start low.
 UNRESOLVED_PENALTY = 0.2
 OTHER_CONFIDENCE = 0.3
@@ -36,6 +40,10 @@ class OptimizationOutput(BaseModel):
     @property
     def unresolved(self) -> tuple[str, ...]:
         return self.ir.unresolved
+
+    @property
+    def stage_c_reasons(self) -> list[str]:
+        return [u for u in self.ir.unresolved if u.startswith(STAGE_C_REASONS)]
 
     @property
     def rules_applied(self) -> list[str]:
@@ -57,8 +65,7 @@ def confidence(ir: PromptIR, f: PromptFeatures) -> float:
     return round(min(1.0, max(0.0, base - UNRESOLVED_PENALTY * len(ir.unresolved))), 4)
 
 
-def optimize(prompt: str, f: PromptFeatures, disabled: frozenset[str] | set[str] = frozenset(),
-             threshold: float = STAGE_C_THRESHOLD) -> OptimizationOutput:
+def optimize(prompt: str, f: PromptFeatures, disabled: frozenset[str] | set[str] = frozenset()) -> OptimizationOutput:
     unknown = set(disabled) - set(RULE_CODES)
     if unknown:
         raise ValueError(f"unknown rule codes: {sorted(unknown)}")
@@ -72,6 +79,6 @@ def optimize(prompt: str, f: PromptFeatures, disabled: frozenset[str] | set[str]
         if after != before:
             steps.append({"rule_code": code, "before": before, "after": after})
         ir = new
-    conf = confidence(ir, f)
     return OptimizationOutput(original=prompt, optimized_text=render_plain(ir), ir=ir, steps=steps,
-                              confidence=conf, needs_stage_c=conf < threshold)
+                              confidence=confidence(ir, f),
+                              needs_stage_c=any(u.startswith(STAGE_C_REASONS) for u in ir.unresolved))

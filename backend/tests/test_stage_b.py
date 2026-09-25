@@ -7,7 +7,7 @@ from app.stage_a.classifier import KeywordClassifier
 from app.stage_a.detector import FeatureDetector
 from app.stage_b import rules as b
 from app.stage_b.ir import PromptIR, render_plain
-from app.stage_b.optimizer import RULE_CODES, STAGE_C_THRESHOLD, optimize
+from app.stage_b.optimizer import RULE_CODES, optimize
 
 CATS = ["closed_qa", "information_extraction", "classification", "summarization", "coding", "other"]
 _DET = FeatureDetector(classifier=KeywordClassifier(), use_spacy=False)
@@ -189,7 +189,7 @@ def test_every_default_format_is_recognised_by_stage_a():
     """Otherwise running Stage B twice would add a second format line."""
     for fmt in [*b.FORMAT_DEFAULTS.values(), b.SINGLE_LABEL_FORMAT]:
         assert feats(fmt, "other").has_format_spec, fmt
-    for text in b.LENGTH_DEFAULTS.values():
+    for text in [*b.LENGTH_DEFAULTS.values(), b.GROUP_LENGTH]:
         assert "length" in feats(text, "other").constraints_present, text
 
 
@@ -235,12 +235,62 @@ def test_disabled_rules_are_skipped_for_ablation():
         optimize(text, feats(text, "coding"), disabled={"B99_NOPE"})
 
 
-def test_confidence_drops_per_unresolved_item():
-    text = "summarize this"                                       # nothing to summarize: ambiguous reference
+def test_ambiguous_reference_goes_to_stage_c_even_with_a_sure_category():
+    text = "summarize this"                                       # nothing to summarize
     out = optimize(text, feats(text, "summarization", 0.9))
     assert out.unresolved == ("ambiguous reference: 'summarize this'",)
-    assert out.confidence == pytest.approx(0.7) and not out.needs_stage_c
-    assert optimize(text, feats(text, "summarization", 0.85)).confidence < STAGE_C_THRESHOLD
+    assert out.needs_stage_c and out.stage_c_reasons == ["ambiguous reference: 'summarize this'"]
+    assert out.confidence == pytest.approx(0.7)                   # 0.9 - 0.2 per unresolved item
+
+
+def test_sure_category_with_nothing_unresolved_finishes_after_stage_b():
+    text = "who wrote hamlet"
+    out = optimize(text, feats(text, "closed_qa", 0.62))          # just above the gate, confidence below 0.7
+    assert "B03_ADD_OUTPUT_FORMAT" in out.rules_applied and out.unresolved == () and not out.needs_stage_c
+
+
+def test_missing_label_set_is_recorded_but_not_routed():
+    text = "which fruit would be a bad choice for a song lyric"
+    out = optimize(text, feats(text, "classification", 0.9))
+    assert out.unresolved == ("label set",) and not out.needs_stage_c
+
+
+# ---------------------------------------------------------------- B08 group fallback
+PASSAGE = "The Eiffel Tower was completed in 1889 for the World's Fair in Paris."
+
+
+def test_b08_applies_group_rules_when_only_the_group_is_sure():
+    text = "when was it finished"
+    f = feats(text, "closed_qa", 0.45, context=PASSAGE)          # rest 0.11 each: group = 0.45 + 0.22 = 0.67
+    assert b.group_applies(f)
+    out = optimize(text, f)
+    assert out.optimized_text == f"When was it finished?\n\n{b.GROUNDED} {b.GROUP_LENGTH}"
+    assert out.rules_applied == ["B07_STANDARDIZE_STRUCTURE", "B08_GROUP_FALLBACK"]
+    assert out.ir.category_group == b.TEXT_GROUP_NAME and out.ir.output_format is None
+    assert out.unresolved == () and not out.needs_stage_c
+
+
+def test_b08_only_adds_what_is_missing():
+    text = "based on the text, describe the tower in two sentences"
+    out = b.b08_group_fallback(ir_of(text, "summarization"), feats(text, "summarization", 0.45, context=PASSAGE))
+    assert out.constraints == () and out.category_group == b.TEXT_GROUP_NAME
+
+
+@pytest.mark.parametrize("category, confidence, context", [
+    ("closed_qa", 0.45, None),              # no attached text
+    ("coding", 0.45, PASSAGE),              # group only 0.33
+    ("closed_qa", 0.65, PASSAGE),           # single category is sure: category rules instead
+    ("other", 0.62, PASSAGE),               # sure it is out of scope
+])
+def test_b08_does_not_apply(category, confidence, context):
+    text = "when was it finished"
+    assert not b.group_applies(feats(text, category, confidence, context=context))
+
+
+def test_b08_can_be_switched_off_for_ablation():
+    text = "when was it finished"
+    out = optimize(text, feats(text, "closed_qa", 0.45, context=PASSAGE), disabled={"B08_GROUP_FALLBACK"})
+    assert out.needs_stage_c and "task category" in out.unresolved and out.ir.category_group is None
 
 
 def test_running_twice_adds_nothing_new():

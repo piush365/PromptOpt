@@ -2,7 +2,8 @@
 
 A rule returns the IR unchanged when it does not apply, so the optimizer can tell which rules fired. Rules only add
 content for the five known categories, and only when Stage A is confident about the category
-(CATEGORY_MIN_CONFIDENCE); otherwise they only clean up. Anything a rule cannot fix deterministically is recorded in
+(CATEGORY_MIN_CONFIDENCE); when it is only confident about the group of text-based categories, B08 adds group-level
+rules instead; otherwise they only clean up. Anything a rule cannot fix deterministically is recorded in
 `ir.unresolved` for Stage C.
 """
 import re
@@ -132,6 +133,36 @@ def b02_remove_duplicates(ir: PromptIR, f: PromptFeatures) -> PromptIR:
     return ir if task == ir.task else ir.model_copy(update={"task": task})
 
 
+# ---------------------------------------------------------------- B08: category group fallback
+# Stage A often cannot tell these apart (a degraded summarization or extraction prompt reads like a question), but is
+# much surer that the prompt is one of them. All three work on attached text and want a short, grounded answer.
+TEXT_GROUP = ("closed_qa", "information_extraction", "summarization")
+TEXT_GROUP_NAME = "text_based"
+GROUNDED = "Use only the provided text."
+GROUP_LENGTH = "Keep the answer concise: at most three sentences."
+_ALREADY_GROUNDED = re.compile(r"\b(?:only|solely) (?:use |using |on |from )?(?:the|this) (?:provided |given |attached )?"
+                               r"(?:text|passage|context|article)\b|\b(?:based on|according to) (?:the|this)\b", _I)
+
+
+def group_applies(f: PromptFeatures) -> bool:
+    """No single category reaches the confidence gate, but the text-based group does, and text is attached."""
+    scores = f.category_scores
+    return (bool(scores) and max(scores.values()) < CATEGORY_MIN_CONFIDENCE and f.has_context
+            and sum(scores.get(c, 0.0) for c in TEXT_GROUP) >= CATEGORY_MIN_CONFIDENCE)
+
+
+def b08_group_fallback(ir: PromptIR, f: PromptFeatures) -> PromptIR:
+    """closed_qa / information_extraction / summarization, but unclear which: ask for an answer grounded in the
+    provided text and a concise length (unless already stated). No category-specific format. Resolves the category
+    at group level, so the prompt does not need Stage C for it."""
+    if not group_applies(f):
+        return ir
+    added = [x for x, needed in ((GROUNDED, not _ALREADY_GROUNDED.search(ir.task)),
+                                 (GROUP_LENGTH, "length" not in f.constraints_present)) if needed]
+    return ir.model_copy(update={"constraints": (*ir.constraints, *added), "category_group": TEXT_GROUP_NAME,
+                                 "unresolved": tuple(u for u in ir.unresolved if u != "task category")})
+
+
 # ---------------------------------------------------------------- B06: labels
 _LABEL = r"[\w'-]+(?: [\w'-]+){0,3}"
 _END = r"(?=\s*(?:[.?!:,;]|$))"
@@ -230,7 +261,7 @@ _MANY_ITEMS = re.compile(r"\b(?:these|following|each|every|all|list|items|them)\
 
 def b03_add_output_format(ir: PromptIR, f: PromptFeatures) -> PromptIR:
     """Add the category's default output format when the prompt states none."""
-    if f.has_format_spec or ir.output_format:
+    if f.has_format_spec or ir.output_format or ir.category_group:
         return ir
     if not category_is_reliable(ir, f):
         return ir.model_copy(update={"unresolved": (*ir.unresolved, "output format")})
@@ -247,6 +278,7 @@ RULES = [
     ("B07_STANDARDIZE_STRUCTURE", b07_standardize_structure),
     ("B01_REMOVE_FILLER", b01_remove_filler),
     ("B02_REMOVE_DUPLICATES", b02_remove_duplicates),
+    ("B08_GROUP_FALLBACK", b08_group_fallback),
     ("B06_ADD_LABELS", b06_add_labels),
     ("B05_ADD_LANGUAGE", b05_add_language),
     ("B04_ADD_LENGTH", b04_add_length),

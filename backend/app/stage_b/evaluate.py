@@ -14,8 +14,8 @@ from pathlib import Path
 from app.dataset_io import DEFAULT_CSV, load_rows
 from app.stage_a import rules as detect
 from app.stage_a.detector import FeatureDetector
-from app.stage_b.optimizer import RULE_CODES, STAGE_C_THRESHOLD, optimize
-from app.stage_b.rules import CATEGORY_MIN_CONFIDENCE
+from app.stage_b.optimizer import RULE_CODES, optimize
+from app.stage_b.rules import CATEGORY_MIN_CONFIDENCE, TEXT_GROUP
 
 CATS = ["closed_qa", "information_extraction", "classification", "summarization", "coding"]
 
@@ -38,24 +38,31 @@ def report(rows: list[dict[str, str]], feats: list, outs: list, split: str) -> s
     n = len(rows)
     lines = [f"# Stage B evaluation: `{split}` split\n",
              f"{n} degraded prompts through Stage A + Stage B. Category-specific rules need Stage A confidence "
-             f">= {CATEGORY_MIN_CONFIDENCE}; Stage C threshold {STAGE_C_THRESHOLD}.\n"]
+             f">= {CATEGORY_MIN_CONFIDENCE}; B08 applies the text-group rules below that.\n"]
 
     fired = Counter(code for o in outs for code in o.rules_applied)
     lines += ["## Rules applied\n", _table(["rule", "prompts", "share"],
                                            [[c, fired[c], _pct(fired[c] / n)] for c in RULE_CODES]), ""]
 
     to_c = [o for o in outs if o.needs_stage_c]
-    reasons = Counter(u.split(":")[0] for o in to_c for u in o.unresolved)
-    lines += ["## Routed to Stage C\n", f"**{len(to_c)}** of {n} ({_pct(len(to_c) / n)}). Unresolved items:\n",
-              _table(["reason", "prompts"], [[r, c] for r, c in reasons.most_common()]), ""]
+    reasons = Counter(u.split(":")[0] for o in to_c for u in o.stage_c_reasons)
+    other = Counter(u.split(":")[0] for o in outs for u in o.unresolved if u not in o.stage_c_reasons)
+    lines += ["## Routed to Stage C\n", f"**{len(to_c)}** of {n} ({_pct(len(to_c) / n)}). Reasons:\n",
+              _table(["reason", "prompts"], [[r, c] for r, c in reasons.most_common()]), "",
+              "Recorded but not routed: " + (", ".join(f"{r} {c}" for r, c in other.most_common()) or "none"), ""]
 
-    touched = [(r, f) for r, f, o in zip(rows, feats, outs)
-               if set(o.rules_applied) & {"B03_ADD_OUTPUT_FORMAT", "B04_ADD_LENGTH", "B05_ADD_LANGUAGE", "B06_ADD_LABELS"}]
-    wrong = sum(r["category"] != f.task_type for r, f in touched)
-    lines += ["## Category-specific additions\n",
-              f"Prompts that got a category-specific addition: {len(touched)} ({_pct(len(touched) / n)}). "
-              f"Stage A category disagreed with the dataset label in {wrong} of them "
-              f"({_pct(wrong / max(len(touched), 1))}); some of those are Dolly label noise, not Stage A errors.\n"]
+    specific = {"B03_ADD_OUTPUT_FORMAT", "B04_ADD_LENGTH", "B05_ADD_LANGUAGE", "B06_ADD_LABELS"}
+    cat_touched = [(r, f) for r, f, o in zip(rows, feats, outs) if set(o.rules_applied) & specific]
+    grp_touched = [r for r, o in zip(rows, outs) if "B08_GROUP_FALLBACK" in o.rules_applied]
+    wrong_cat = sum(r["category"] != f.task_type for r, f in cat_touched)
+    wrong_grp = sum(r["category"] not in TEXT_GROUP for r in grp_touched)
+    wrong = wrong_cat + wrong_grp
+    lines += ["## Additions for the wrong category\n",
+              f"Category-specific additions (B03-B06): {len(cat_touched)} prompts, {wrong_cat} where Stage A's category "
+              f"disagrees with the dataset label. Group additions (B08): {len(grp_touched)} prompts, {wrong_grp} whose "
+              f"label is outside {', '.join(TEXT_GROUP)}.\n",
+              f"**Wrong-category additions: {wrong} of {n} prompts ({_pct(wrong / n)})**; some are Dolly label noise, "
+              f"not Stage A errors.\n"]
 
     rows_out = []
     for c in CATS + ["all"]:
@@ -81,7 +88,7 @@ def report(rows: list[dict[str, str]], feats: list, outs: list, split: str) -> s
     for o, f in zip(outs, feats):
         present = detect.detect_constraints(o.optimized_text)
         for c in detect.RELEVANT_CONSTRAINTS.get(o.ir.category, ()):
-            if c in ("length", "language") and c not in present and not o.needs_stage_c:
+            if c in ("length", "language") and c not in present and not o.needs_stage_c and not o.ir.category_group:
                 still[c] += 1
     lines += ["## Missing constraints left after Stage B (prompts not routed to Stage C)\n",
               ", ".join(f"{c} {k}" for c, k in still.items()) or "none", ""]

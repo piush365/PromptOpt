@@ -135,7 +135,7 @@ Hyper-parameters were tuned on val only; `../evaluation/stage_a_test.md` has the
 from app.stage_a import detect_features
 from app.stage_b import optimize
 f = detect_features(text, context)
-out = optimize(text, f)                       # out.optimized_text, out.ir, out.steps, out.confidence, out.needs_stage_c
+out = optimize(text, f)            # out.optimized_text, out.ir, out.steps, out.needs_stage_c, out.stage_c_reasons
 repository.save_optimization(db, prompt.id, out.optimized_text, out.ir.model_dump(mode="json"), out.confidence, out.steps)
 ```
 
@@ -148,6 +148,7 @@ text before and after. `optimize(..., disabled={"B04_ADD_LENGTH"})` switches rul
 | B07 | standardize structure | runs first: moves a code block or a `task: item, item` list into the IR context, tidies the task |
 | B01 | remove filler | deletes A04's filler phrases; "can you ...?" becomes an instruction |
 | B02 | remove duplicates | doubled words and repeated sentences |
+| B08 | group fallback | category unsure but closed_qa + information_extraction + summarization >= 0.6 and text attached: "Use only the provided text." + at most three sentences, no category format |
 | B06 | add labels | classification: states the allowed labels; "which of these ... are X" becomes yes/no |
 | B05 | add language | coding: `Use Python.`, or "keep the language" when code was supplied |
 | B04 | add length | closed_qa and summarization only |
@@ -155,8 +156,13 @@ text before and after. `optimize(..., disabled={"B04_ADD_LENGTH"})` switches rul
 
 Category-specific rules (B03-B06) apply only when Stage A's category confidence is at least 0.6
 (`CATEGORY_MIN_CONFIDENCE`): on val, Stage A is right 77-96% of the time above that and about 50% below, and a wrong
-format is worse than none. Otherwise Stage B only cleans up and marks the category unresolved. Confidence = Stage A
-confidence minus 0.2 per unresolved item; below 0.7 (`STAGE_C_THRESHOLD`) the prompt goes to Stage C.
+format is worse than none. Below that, B08 applies group-level rules when it can; otherwise Stage B only cleans up
+and marks the category unresolved.
+
+A prompt goes to Stage C only when the category is still unresolved or it has an ambiguous reference
+(`STAGE_C_REASONS`). A missing label set or format is recorded in `ir.unresolved` but finishes after Stage B.
+`out.confidence` (Stage A confidence minus 0.2 per unresolved item) is stored with the result, not used for routing.
+Existing databases need `python -m app.init_db` once to seed the B08 rule.
 
 ```bash
 python -m app.stage_b.evaluate --split val                                    # while tuning

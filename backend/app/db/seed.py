@@ -31,6 +31,9 @@ RULES = [
      "For classification prompts, list the allowed labels and ask for the label only."),
     ("B07_STANDARDIZE_STRUCTURE", "Standardize structure", "B",
      "Reorder into task, context, constraints, output format."),
+    ("B08_GROUP_FALLBACK", "Text-based group fallback", "B",
+     "When no single category is certain but closed_qa/information_extraction/summarization together are and text "
+     "is attached, ask for an answer grounded in the text and concise; no category-specific format."),
 ]
 
 

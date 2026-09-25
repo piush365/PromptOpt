@@ -18,6 +18,7 @@ class PromptIR(BaseModel):
     constraints: tuple[str, ...] = ()           # length, programming language, ...
     requirements: tuple[str, ...] = ()          # task-specific rules, e.g. the allowed labels
     output_format: str | None = None
+    category_group: str | None = None           # set by B08 when only the category group is known, not the category
     unresolved: tuple[str, ...] = ()            # what Stage B could not fix; Stage C (or the user) has to
 
 

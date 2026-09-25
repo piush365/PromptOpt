@@ -1,3 +1,5 @@
+> **STALE, regenerate at the end.** Produced before the A02/A03 pattern changes, the 2,265-row dataset and the logistic-regression category head; the numbers below no longer describe the current Stage A. Regenerate with `python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a_test.md` once, after all tuning.
+
 # Stage A evaluation: `test` split
 
 Classifier: `embedding`. Mean time per prompt: 8.9 ms (CPU, batched).
