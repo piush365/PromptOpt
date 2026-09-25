@@ -2,3 +2,14 @@ sqlalchemy>=2.0
 psycopg[binary]>=3.1    # PostgreSQL driver (not needed for SQLite)
 pytest>=8.0
 python-dotenv>=1.0   # loads backend/.env into the environment
+
+# Stage A (feature detection)
+pydantic>=2.0
+numpy>=2.0
+spacy>=3.8           # then: python -m spacy download en_core_web_sm
+sentence-transformers>=5.0
+# torch is pulled in by sentence-transformers. On machines without a GPU install the much smaller CPU build first:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Dataset validation sheets
+openpyxl>=3.1

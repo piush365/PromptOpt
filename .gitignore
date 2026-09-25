@@ -3,3 +3,5 @@
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+# Dataset lives on Google Drive; never commit it
+data/

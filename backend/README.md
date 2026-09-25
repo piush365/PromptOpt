@@ -1,4 +1,8 @@
-# PromptOpt backend: database layer
+# PromptOpt backend
+
+Database layer, Stage A (feature detection) and the dataset validation tools.
+
+## Database layer
 
 PostgreSQL in deployment, SQLite during development, both through the SQLAlchemy ORM.
 The same code runs on both; only `DATABASE_URL` changes.
@@ -6,15 +10,15 @@ The same code runs on both; only `DATABASE_URL` changes.
 ## Setup
 
 ```bash
+pip install torch --index-url https://download.pytorch.org/whl/cpu   # CPU build; skip if you have a GPU setup
 pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+cp .env.example .env        # then fill in the real passwords; .env is git-ignored
 
-# SQLite (default): creates ./promptopt.db
-python -m app.init_db
-
-# PostgreSQL
-export DATABASE_URL="postgresql+psycopg://promptopt:<password>@localhost:5432/promptopt"
-python -m app.init_db
+python -m app.init_db       # uses DATABASE_URL from .env, or SQLite ./promptopt.db if it is not set
 ```
+
+Settings come from `.env` (loaded by `app/config.py`); variables already set in the shell win.
 
 `init_db` creates the tables and seeds the rule catalogue. It is safe to run again: it never duplicates rules.
 
@@ -88,6 +92,51 @@ python -m pytest -q                                   # SQLite
 TEST_POSTGRES_URL="postgresql+psycopg://user:pass@localhost:5432/promptopt_test" python -m pytest -q   # + PostgreSQL
 ```
 
-11 tests: the full pipeline flow, PII stripping, retention purge with cascade, the LoRA step, input validation, database constraints and the evaluation summary.
+`TEST_POSTGRES_URL` is read from `.env` too, so a plain `python -m pytest -q` runs both databases once `.env` exists.
+
+Database tests (11 per database): the full pipeline flow, PII stripping, retention purge with cascade, the LoRA step, input validation, database constraints and the evaluation summary.
 
 `schema_postgres.sql` is the generated PostgreSQL DDL (`python -m app.init_db --sql`), for the report or for creating the schema by hand.
+
+## Stage A: feature detection (`app/stage_a/`)
+
+```python
+from app.stage_a import detect_features
+f = detect_features("hey can you summarize this for me")
+f.task_type, f.confidence, f.missing_constraints, f.redundant_phrases, f.ambiguous_refs
+repository.save_features(db, prompt.id, f.model_dump())
+```
+
+| code | detector | how |
+|---|---|---|
+| A01 | task category (+ `other`) | Sentence-Transformers (all-MiniLM-L6-v2) k-NN over the dataset's train split, blended with keyword cues; `classifier.py` |
+| A02 | output format present? | regex, returns the matched evidence; `rules.detect_format_spec` |
+| A03 | length / tone / audience / language | regex; only constraints relevant to the category count as missing (`RELEVANT_CONSTRAINTS`) |
+| A04 | filler and repetition | regex phrase list, repeated sentences (spaCy sentence split), doubled words |
+| A05 | ambiguous references | "summarize this", "the passage" with no context; spaCy flags pronouns with nothing before them to refer to |
+
+The k-NN index is built from the dataset (git-ignored), so build it once after downloading the dataset into
+`../data/promptopt_dataset_v1/` and Dolly-15k into `../data/dolly/` (for the `other` examples):
+
+```bash
+python -m app.stage_a.build_index        # -> artifacts/category_index.npz (~30 s on CPU)
+python -m app.stage_a.evaluate --split val                                   # while tuning
+python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a_test.md   # final numbers only
+```
+
+Without the index, Stage A falls back to the keyword classifier (57% accuracy on val instead of 77%).
+Hyper-parameters were tuned on val only; `../evaluation/stage_a_test.md` has the test-split results.
+
+## Dataset validation (`app/validation.py`)
+
+Lab assistants validate 20 records (4 per category, from the benchmark split); the three students validate the rest.
+About 6% of the student records are rated by all three students, for Fleiss' Kappa. See `../docs/validation_guide.md`.
+
+```bash
+python -m app.validation assign --students <name1> <name2> <name3>   # -> ../data/validation/*.xlsx
+python -m app.validation report      # progress, Fleiss' Kappa per question, accepted count
+python -m app.validation merge       # dataset + validation columns -> promptopt_dataset_v1_validated.csv
+```
+
+`assign` is safe to re-run: after the dataset grows it only appends rows, keeps every answer, and clears (with a
+note) only pairs whose text was regenerated.
