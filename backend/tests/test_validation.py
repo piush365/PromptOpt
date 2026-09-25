@@ -9,14 +9,15 @@ CATS = ["closed_qa", "information_extraction", "classification", "summarization"
 STUDENTS = ["asha", "piush", "rahul"]
 
 
-def make_rows(n_per_cat: int, start: int = 0) -> list[dict[str, str]]:
+def make_rows(n_per_cat: int, start: int = 0, split=None) -> list[dict[str, str]]:
     rows = []
     for c in CATS:
         for i in range(start, start + n_per_cat):
-            split = "benchmark" if i < 10 else ("test" if i < 50 else "train")
-            rows.append({"id": f"{c}-{i}", "source_id": f"src-{c}-{i}", "category": c, "split": split,
+            sp = split or ("benchmark" if i < 10 else ("test" if i < 50 else "train"))
+            rows.append({"id": f"{c}-{i}", "source_id": f"src-{c}-{i}", "category": c, "split": sp,
                          "original_instruction": f"orig {c} {i}", "context": "", "degraded_prompt": f"deg {c} {i}",
-                         "optimized_prompt": f"opt {c} {i}"})
+                         "optimized_prompt": f"opt {c} {i}", "sim_degraded_vs_original": "0.9",
+                         "sim_optimized_vs_original": "0.9"})
     return rows
 
 
@@ -38,28 +39,93 @@ def test_fleiss_kappa_edge_cases():
         v.fleiss_kappa([[3, 0], [2, 0]])
 
 
-def test_assignment_covers_every_record_exactly_once():
+def test_assignment_sizes_and_no_record_in_two_roles():
     rows = make_rows(100)
     a = v.assign(rows, STUDENTS)
-    groups = [a.lab, a.overlap, *a.single.values()]
-    flat = [sid for g in groups for sid in g]
-    assert sorted(flat) == sorted(r["source_id"] for r in rows)
-    assert len(a.lab) == 20
     cat = {r["source_id"]: r for r in rows}
+    assert len(a.lab) == 20
     assert all(sum(cat[s]["category"] == c for s in a.lab) == 4 for c in CATS)
     assert all(cat[s]["split"] == "benchmark" for s in a.lab)
-    assert 10 <= len(a.overlap) <= 50                               # ~6% of 480
-    sizes = [len(ids) for ids in a.single.values()]
-    assert max(sizes) - min(sizes) < 60
+    assert len(a.overlap) == 90
+    assert all(sum(cat[s]["category"] == c for s in a.overlap) == 18 for c in CATS)
+    assert all(len(ids) == 60 for ids in a.single.values())
+    flat = a.lab + a.overlap + [s for ids in a.single.values() for s in ids]
+    assert len(flat) == len(set(flat)) == 20 + 90 + 180
+    assert a.raters_of(a.overlap[0]) == STUDENTS and a.role_of(a.overlap[0]) == "overlap"
+    unrated = next(s for s in cat if s not in set(flat))
+    assert a.raters_of(unrated) == [] and a.role_of(unrated) == "none"
 
 
-def test_assignment_is_stable_when_dataset_grows():
-    small, big = make_rows(60), make_rows(60) + make_rows(40, start=60)
-    a, b = v.assign(small, STUDENTS), v.assign(big, STUDENTS)
-    assert a.lab == b.lab
-    assert set(a.overlap) <= set(b.overlap)
+def test_extras_follow_priority_order():
+    rows = make_rows(100)
+    a = v.assign(rows, STUDENTS, extra=10)
+    cat = {r["source_id"]: r for r in rows}
+    assert all(cat[s]["split"] in ("benchmark", "test") for ids in a.single.values() for s in ids)
+
+    rows = make_rows(40, split="train")                       # same split: borderline first, then noisy categories
+    for r in rows[::7]:
+        r["sim_optimized_vs_original"] = "0.40"               # passed the 0.35 check by less than the margin
+    borderline = {r["source_id"] for r in rows[::7]}
+    a = v.assign(rows, STUDENTS, extra=4)
+    extras = [s for ids in a.single.values() for s in ids]
+    assert set(extras) <= borderline
+    left = borderline - set(a.lab + a.overlap)
+    a = v.assign(rows, STUDENTS, extra=len(left) // 3 + 3)    # borderline ones used up, noisy categories next
+    cat = {r["source_id"]: r for r in rows}
+    extras = {s for ids in a.single.values() for s in ids}
+    rest = extras - borderline
+    assert left <= extras and rest and all(cat[s]["category"] in v.NOISY_CATEGORIES for s in rest)
+
+
+def test_extras_are_dealt_evenly_by_usefulness():
+    rows = make_rows(100)
+    a = v.assign(rows, STUDENTS)
+    ranked = sorted((r for r in rows if r["source_id"] not in set(a.lab + a.overlap)), key=v.extra_priority)
+    first = [r["source_id"] for r in ranked[:3]]
+    assert [a.single[s][0] for s in STUDENTS] == first        # every student gets one of the top 3
+
+
+def test_small_dataset_gives_what_it_can():
+    a = v.assign(make_rows(10), STUDENTS)                     # 50 rows: 20 lab, 30 overlap, nothing left
+    assert len(a.lab) == 20 and len(a.overlap) == 30 and all(ids == [] for ids in a.single.values())
+
+
+def test_frozen_assignment_survives_growth():
+    small, big = make_rows(30), make_rows(30) + make_rows(70, start=30)
+    a = v.assign(small, STUDENTS, extra=20)
+    b = v.assign(big, STUDENTS, extra=30, frozen=a)
+    assert b.lab == a.lab
+    assert b.overlap[:len(a.overlap)] == a.overlap and len(b.overlap) == 90
     for s in STUDENTS:
-        assert set(a.single[s]) <= set(b.single[s])
+        assert a.single[s] and b.single[s][:len(a.single[s])] == a.single[s] and len(b.single[s]) == 30
+    unfrozen = v.assign(big, STUDENTS, extra=30)
+    assert set(unfrozen.overlap) != set(b.overlap)            # without freezing, the pick would move
+
+
+def test_frozen_rows_that_left_the_dataset_are_dropped():
+    rows = make_rows(100)
+    a = v.assign(rows, STUDENTS)
+    gone = a.overlap[0]
+    b = v.assign([r for r in rows if r["source_id"] != gone], STUDENTS, frozen=a)
+    assert gone not in b.overlap and len(b.overlap) == 90 and b.overlap[:89] == a.overlap[1:]
+
+
+def test_assignment_file_round_trip(tmp_path):
+    rows = make_rows(100)
+    a = v.assign(rows, STUDENTS)
+    path = tmp_path / v.ASSIGNMENT_FILE
+    v.write_assignment(path, rows, a)
+    b = v.read_assignment(path, STUDENTS)
+    assert set(b.lab) == set(a.lab) and set(b.overlap) == set(a.overlap)
+    assert all(set(b.single[s]) == set(a.single[s]) for s in STUDENTS)
+    assert v.read_assignment(path, ["asha", "piush", "new"]).single["new"] == []
+
+
+def test_old_assignment_file_is_refused(tmp_path):
+    path = tmp_path / v.ASSIGNMENT_FILE
+    path.write_text("source_id,id,category,split,role,raters\nsrc-1,PO-1,coding,train,single,student_A\n")
+    with pytest.raises(SystemExit, match="--reset"):
+        v.read_assignment(path, STUDENTS)
 
 
 def test_assignment_rejects_bad_input():
@@ -71,9 +137,14 @@ def test_assignment_rejects_bad_input():
         v.assign(rows, STUDENTS)
 
 
+def test_sheets_are_keyed_by_source_id_not_id():
+    assert "id" not in v.SHEET_COLS and "source_id" in v.SHEET_COLS
+
+
 def test_sheets_keep_answers_and_reset_regenerated_pairs(tmp_path):
     rows = make_rows(30)
-    v.build_sheets(rows, v.assign(rows, STUDENTS), tmp_path)
+    a = v.assign(rows, STUDENTS, extra=10)
+    v.build_sheets(rows, a, tmp_path)
     sheet = tmp_path / "asha.xlsx"
     rated = v.read_sheet(sheet)
     rated[0] = answer(rated[0], "Y")
@@ -83,15 +154,32 @@ def test_sheets_keep_answers_and_reset_regenerated_pairs(tmp_path):
 
     grown = make_rows(30) + make_rows(20, start=30)
     for r in grown:
+        r["id"] = "RENUMBERED-" + r["id"]                     # the notebook renumbers `id` on every rebuild
         if r["source_id"] == regen_id:
             r["optimized_prompt"] = "a regenerated optimized prompt"
-    stats = v.build_sheets(grown, v.assign(grown, STUDENTS), tmp_path)
+    stats = v.build_sheets(grown, v.assign(grown, STUDENTS, extra=20, frozen=a), tmp_path)
 
     after = {r["source_id"]: r for r in v.read_sheet(sheet)}
     assert all(after[kept_id][q] == "Y" for q in v.QCOLS)
     assert all(after[regen_id][q] == "" for q in v.QCOLS)
     assert after[regen_id]["notes"].startswith("REGENERATED") and "drifted" in after[regen_id]["notes"]
     assert stats["asha"]["kept"] >= 1 and stats["asha"]["reset"] == 1 and stats["asha"]["new"] > 0
+
+
+def test_sheets_drop_unanswered_rows_and_keep_answered_ones_no_longer_assigned(tmp_path):
+    rows = make_rows(30)
+    v.build_sheets(rows, v.assign(rows, STUDENTS, extra=10), tmp_path)
+    sheet = tmp_path / "asha.xlsx"
+    rated = v.read_sheet(sheet)
+    rated[0] = answer(rated[0], "Y")
+    v.write_sheet(sheet, "asha", rated)
+
+    empty = v.Assignment(single={s: [] for s in STUDENTS})     # e.g. after --reset with a different pick
+    stats = v.build_sheets(rows, empty, tmp_path)
+    after = v.read_sheet(sheet)
+    assert [r["source_id"] for r in after] == [rated[0]["source_id"]]
+    assert after[0]["notes"].startswith("NO LONGER ASSIGNED") and after[0]["Q1_degraded_same_task"] == "Y"
+    assert stats["asha"]["orphaned"] == 1 and stats["piush"]["rows"] == 0
 
 
 def test_text_starting_with_equals_stays_text(tmp_path):

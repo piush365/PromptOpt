@@ -129,8 +129,10 @@ Hyper-parameters were tuned on val only; `../evaluation/stage_a_test.md` has the
 
 ## Dataset validation (`app/validation.py`)
 
-Lab assistants validate 20 records (4 per category, from the benchmark split); the three students validate the rest.
-About 6% of the student records are rated by all three students, for Fleiss' Kappa. See `../docs/validation_guide.md`.
+Lab assistants validate 20 records (4 per category, from the benchmark split). All three students rate the same
+90-record overlap set (18 per category) for Fleiss' Kappa, and each rates 60 extra records alone, most useful first
+(benchmark/test, then borderline automatic-check scores, then the noisy categories). Records are keyed by
+`source_id`, never `id`. See `../docs/validation_guide.md`.
 
 ```bash
 python -m app.validation assign --students <name1> <name2> <name3>   # -> ../data/validation/*.xlsx
@@ -138,5 +140,7 @@ python -m app.validation report      # progress, Fleiss' Kappa per question, acc
 python -m app.validation merge       # dataset + validation columns -> promptopt_dataset_v1_validated.csv
 ```
 
-`assign` is safe to re-run: after the dataset grows it only appends rows, keeps every answer, and clears (with a
-note) only pairs whose text was regenerated.
+The choice is frozen in `../data/validation/assignment.csv`: re-running `assign` after the dataset grows keeps every
+record already chosen, only tops up, keeps every answer, and clears (with a note) only pairs whose text was
+regenerated. `--overlap-per-category` and `--extra` change the sizes; `--reset` ignores the frozen file and chooses
+again (answers already in the sheets are still kept).

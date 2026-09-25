@@ -9,11 +9,29 @@ from Dolly-15k / CodeAlpaca-20k and are the ground truth for what the task is.
 | rater | records |
 |---|---|
 | Lab assistants (`lab_assistants.xlsx`) | 20: 4 per category, from the benchmark split used in the live A/B test |
-| Each student (`<name>.xlsx`) | about a third of the rest, plus a shared overlap set |
-| Overlap (in all three student sheets) | about 6% of the student records, rated independently by all three for Fleiss' Kappa |
+| Every student (`<name>.xlsx`) | the **overlap set**: 90 records (18 per category), rated by all three for Fleiss' Kappa |
+| Each student, alone | 60 **extra** records, to filter out bad pairs |
 
-Do not discuss overlap records before all three have rated them; the agreement score is only meaningful if the
-ratings are independent. Row order is shuffled so categories are mixed.
+So each student sheet has 150 rows. Records nobody rates stay in the dataset and rely on the automatic checks.
+
+The extra records are picked by usefulness, in this order: the benchmark and test splits first (they are the
+evaluation data), then pairs whose similarity scores only just passed the automatic checks, then summarization and
+information_extraction (Dolly's labels are noisiest there), then the rest. They are dealt out in turn, so every
+student gets an equally useful share.
+
+The overlap set is not marked in your sheet, and rows are shuffled so categories are mixed. Do not discuss any
+record with the other students until all three sheets are done; the agreement score is only meaningful if the
+ratings are independent.
+
+## Which ID to use
+
+Refer to a record by its `source_id` (for example `dolly-10657` or `codealpaca-1234`), never by the dataset's
+`id` column, which is renumbered every time the Colab notebook rebuilds the dataset and is not in the sheets.
+`source_id` is the row number in the original download, assigned in Step 1 of the notebook before any filtering
+(`dolly-{i}` for Dolly-15k, `codealpaca-{i}` for CodeAlpaca-20k), so it never changes.
+
+The choice of records is frozen in `assignment.csv`. When the dataset grows, `assign` keeps every record already
+chosen and only tops up; if a pair is regenerated, its answers are cleared and its note says `REGENERATED`.
 
 ## The five questions (answer Y or N from the drop-down)
 
@@ -47,5 +65,5 @@ Never edit the prompt columns; suggest fixes in `notes`.
 3. Send the file back (or put it in the shared Drive folder `validation/`) under the same file name.
 4. The team runs `python -m app.validation report` to see progress and agreement, and `merge` at the end.
 
-Target: Fleiss' Kappa above 0.6 ("substantial" agreement) on the overlap set. If it is lower, meet, discuss the
+Target: Fleiss' Kappa above 0.6 ("substantial" agreement) on the 90 overlap records. If it is lower, meet, discuss the
 disagreements, clarify this guide, and re-rate the overlap set.
