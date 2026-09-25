@@ -148,7 +148,7 @@ text before and after. `optimize(..., disabled={"B04_ADD_LENGTH"})` switches rul
 | B07 | standardize structure | runs first: moves a code block or a `task: item, item` list into the IR context, tidies the task |
 | B01 | remove filler | deletes A04's filler phrases; "can you ...?" becomes an instruction |
 | B02 | remove duplicates | doubled words and repeated sentences |
-| B08 | group fallback | category unsure but closed_qa + information_extraction + summarization >= 0.6 and text attached: "Use only the provided text." + at most three sentences, no category format |
+| B08 | group fallback | category unsure but closed_qa + information_extraction + summarization >= 0.6 and text attached: "Answer from the provided text in at most three sentences." (only the missing parts), no category format |
 | B06 | add labels | classification: states the allowed labels; "which of these ... are X" becomes yes/no |
 | B05 | add language | coding: `Use Python.`, or "keep the language" when code was supplied |
 | B04 | add length | closed_qa and summarization only |

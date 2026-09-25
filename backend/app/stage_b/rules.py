@@ -138,9 +138,11 @@ def b02_remove_duplicates(ir: PromptIR, f: PromptFeatures) -> PromptIR:
 # much surer that the prompt is one of them. All three work on attached text and want a short, grounded answer.
 TEXT_GROUP = ("closed_qa", "information_extraction", "summarization")
 TEXT_GROUP_NAME = "text_based"
-GROUNDED = "Use only the provided text."
-GROUP_LENGTH = "Keep the answer concise: at most three sentences."
-_ALREADY_GROUNDED = re.compile(r"\b(?:only|solely) (?:use |using |on |from )?(?:the|this) (?:provided |given |attached )?"
+GROUP_BOTH = "Answer from the provided text in at most three sentences."
+GROUP_GROUNDED = "Answer from the provided text."
+GROUP_LENGTH = "Answer in at most three sentences."
+_ALREADY_GROUNDED = re.compile(r"\bfrom (?:the|this) (?:provided|given|attached) (?:text|passage|context)\b|"
+                               r"\b(?:only|solely) (?:use |using |on |from )?(?:the|this) (?:provided |given |attached )?"
                                r"(?:text|passage|context|article)\b|\b(?:based on|according to) (?:the|this)\b", _I)
 
 
@@ -157,8 +159,9 @@ def b08_group_fallback(ir: PromptIR, f: PromptFeatures) -> PromptIR:
     at group level, so the prompt does not need Stage C for it."""
     if not group_applies(f):
         return ir
-    added = [x for x, needed in ((GROUNDED, not _ALREADY_GROUNDED.search(ir.task)),
-                                 (GROUP_LENGTH, "length" not in f.constraints_present)) if needed]
+    ground, length = not _ALREADY_GROUNDED.search(ir.task), "length" not in f.constraints_present
+    added = {(True, True): (GROUP_BOTH,), (True, False): (GROUP_GROUNDED,), (False, True): (GROUP_LENGTH,)}.get(
+        (ground, length), ())
     return ir.model_copy(update={"constraints": (*ir.constraints, *added), "category_group": TEXT_GROUP_NAME,
                                  "unresolved": tuple(u for u in ir.unresolved if u != "task category")})
 

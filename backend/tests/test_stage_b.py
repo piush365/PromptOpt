@@ -189,7 +189,7 @@ def test_every_default_format_is_recognised_by_stage_a():
     """Otherwise running Stage B twice would add a second format line."""
     for fmt in [*b.FORMAT_DEFAULTS.values(), b.SINGLE_LABEL_FORMAT]:
         assert feats(fmt, "other").has_format_spec, fmt
-    for text in [*b.LENGTH_DEFAULTS.values(), b.GROUP_LENGTH]:
+    for text in [*b.LENGTH_DEFAULTS.values(), b.GROUP_LENGTH, b.GROUP_BOTH]:
         assert "length" in feats(text, "other").constraints_present, text
 
 
@@ -264,16 +264,28 @@ def test_b08_applies_group_rules_when_only_the_group_is_sure():
     f = feats(text, "closed_qa", 0.45, context=PASSAGE)          # rest 0.11 each: group = 0.45 + 0.22 = 0.67
     assert b.group_applies(f)
     out = optimize(text, f)
-    assert out.optimized_text == f"When was it finished?\n\n{b.GROUNDED} {b.GROUP_LENGTH}"
+    assert out.optimized_text == "When was it finished?\n\nAnswer from the provided text in at most three sentences."
     assert out.rules_applied == ["B07_STANDARDIZE_STRUCTURE", "B08_GROUP_FALLBACK"]
     assert out.ir.category_group == b.TEXT_GROUP_NAME and out.ir.output_format is None
     assert out.unresolved == () and not out.needs_stage_c
 
 
-def test_b08_only_adds_what_is_missing():
-    text = "based on the text, describe the tower in two sentences"
+@pytest.mark.parametrize("text, added", [
+    ("based on the text, describe the tower in two sentences", ()),
+    ("describe the tower in two sentences", (b.GROUP_GROUNDED,)),
+    ("from the provided text, describe the tower", (b.GROUP_LENGTH,)),
+])
+def test_b08_only_adds_what_is_missing(text, added):
     out = b.b08_group_fallback(ir_of(text, "summarization"), feats(text, "summarization", 0.45, context=PASSAGE))
-    assert out.constraints == () and out.category_group == b.TEXT_GROUP_NAME
+    assert out.constraints == added and out.category_group == b.TEXT_GROUP_NAME
+
+
+def test_b08_output_is_stable_when_run_again():
+    text = "when was it finished"
+    once = optimize(text, feats(text, "closed_qa", 0.45, context=PASSAGE))
+    twice = b.b08_group_fallback(ir_of(once.optimized_text, "closed_qa"),
+                                 feats(once.optimized_text, "closed_qa", 0.45, context=PASSAGE))
+    assert twice.constraints == ()
 
 
 @pytest.mark.parametrize("category, confidence, context", [
