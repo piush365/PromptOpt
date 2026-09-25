@@ -228,7 +228,7 @@ class EvaluationRun(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     run_name: Mapped[str] = mapped_column(String(80), nullable=False, index=True)   # e.g. "baseline-2026-09-30"
     dataset_version: Mapped[str] = mapped_column(String(40), nullable=False)
-    dataset_item_id: Mapped[str] = mapped_column(String(20), nullable=False)          # e.g. "PO-CLS-0003"
+    dataset_item_id: Mapped[str] = mapped_column(String(20), nullable=False)          # source_id, e.g. "dolly-10657"
     category: Mapped[str] = mapped_column(String(32), nullable=False)
     variant: Mapped[str] = mapped_column(String(60), nullable=False)   # "original", "optimized", "ablation:no_stage_c", ...
     target_llm: Mapped[str] = mapped_column(String(40), nullable=False)

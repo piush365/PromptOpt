@@ -75,6 +75,15 @@ def test_b01_removes_filler(raw, clean):
     assert b.b01_remove_filler(ir_of(raw, "other"), feats(raw, "other")).task == clean
 
 
+@pytest.mark.parametrize("raw, clean", [
+    ("js code to print please enter your name", "Js code to print please enter your name."),
+    ('make a button that says "thank you so much"', 'Make a button that says "thank you so much".'),
+    ("hey write an alert with the message just a moment", "Write an alert with the message just a moment."),
+])
+def test_b01_keeps_filler_words_that_are_content(raw, clean):
+    assert b.b01_remove_filler(ir_of(raw, "coding"), feats(raw, "coding")).task == clean
+
+
 def test_b01_keeps_prompt_that_is_only_filler():
     ir = ir_of("please, thank you", "other")
     assert b.b01_remove_filler(ir, feats(ir.task, "other")) is ir

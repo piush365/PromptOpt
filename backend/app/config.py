@@ -41,3 +41,9 @@ SENTENCE_MODEL = os.getenv("SENTENCE_MODEL", "sentence-transformers/all-MiniLM-L
 CATEGORY_INDEX_PATH = Path(os.getenv("CATEGORY_INDEX_PATH", BACKEND_DIR / "artifacts" / "category_index.npz"))
 # PromptOpt Dataset v1, downloaded from Google Drive (git-ignored)
 DATASET_DIR = Path(os.getenv("DATASET_DIR", BACKEND_DIR.parent / "data" / "promptopt_dataset_v1"))
+
+# ---- Evaluation harness
+# Groq API key for the target LLM and the judge. Put it in backend/.env; never hard-code it.
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# Resumable cache of LLM calls per evaluation run (git-ignored, under data/)
+EVAL_DIR = Path(os.getenv("EVAL_DIR", BACKEND_DIR.parent / "data" / "evaluation"))

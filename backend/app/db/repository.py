@@ -14,7 +14,7 @@ so a failure half-way leaves nothing behind.
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import case, delete, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import RETENTION_DAYS, TASK_CATEGORIES
@@ -152,9 +152,13 @@ def record_evaluation(db: Session, run_name: str, dataset_version: str, dataset_
 def evaluation_summary(db: Session, run_name: str) -> list[dict[str, Any]]:
     """Averages per category and variant for one run (feeds the results table/charts)."""
     total_tokens = EvaluationRun.input_tokens + func.coalesce(EvaluationRun.output_tokens, 0)
+    success = case((EvaluationRun.task_success.is_(True), 1.0), (EvaluationRun.task_success.is_(False), 0.0))
     q = (select(EvaluationRun.category, EvaluationRun.variant, func.count().label("n"),
                 func.avg(EvaluationRun.input_tokens).label("avg_input_tokens"),
+                func.avg(EvaluationRun.output_tokens).label("avg_output_tokens"),
                 func.avg(total_tokens).label("avg_total_tokens"),
+                func.avg(success).label("task_success_rate"),                 # over checkable items only
+                func.count(EvaluationRun.task_success).label("n_success_checked"),
                 func.avg(EvaluationRun.quality_score).label("avg_quality"),
                 func.avg(EvaluationRun.latency_ms).label("avg_latency_ms"))
          .where(EvaluationRun.run_name == run_name)

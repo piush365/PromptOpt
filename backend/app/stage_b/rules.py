@@ -97,14 +97,27 @@ def b07_standardize_structure(ir: PromptIR, f: PromptFeatures) -> PromptIR:
 
 # ---------------------------------------------------------------- B01: filler
 _MODAL_START = re.compile(r"^\s*(?:(?:hey|hi|hello)\W*\s*)?(?:could|can|would|will) you\b", _I)
+# 'print please enter your name': words right after these are content (the text to print), not filler
+_CONTENT_VERB = re.compile(r"\b(?:print|prints|printing|say|says|saying|display|displays|output|outputs|echo|alert|"
+                           r"prompt|prompts|show|shows|write out)\b", _I)
+_QUOTE_MARK = re.compile(r"[\"“”]|(?<!\w)'|'(?!\w)")
+
+
+def _is_content(text: str, start: int) -> bool:
+    """True if a filler match at `start` is inside quotes or within 4 words after a content verb."""
+    before = text[:start]
+    if len(_QUOTE_MARK.findall(before)) % 2 == 1:
+        return True
+    return bool(_CONTENT_VERB.search(" ".join(before.split()[-4:])))
 
 
 def b01_remove_filler(ir: PromptIR, f: PromptFeatures) -> PromptIR:
     """Delete politeness and filler ('hey', 'could you please', 'I was wondering if', 'just', 'for me').
-    Uses the same phrase list as detector A04. 'Can you ...?' becomes an instruction ending in '.'."""
+    Uses the same phrase list as detector A04. 'Can you ...?' becomes an instruction ending in '.'. Filler inside
+    quotes or right after a content verb ('print please enter your name') is part of the content and is kept."""
     task = ir.task
     for p in detect.FILLER_PATTERNS:
-        task = p.sub(" ", task)
+        task = p.sub(lambda m: m.group(0) if _is_content(m.string, m.start()) else " ", task)
     if len(task.split()) < 2:                                   # nothing but filler: leave it for Stage C
         return ir
     if _MODAL_START.match(ir.task) and task.rstrip().endswith("?") and not _QUESTION_START.match(task.strip()):
