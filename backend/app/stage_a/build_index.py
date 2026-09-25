@@ -16,7 +16,7 @@ import numpy as np
 
 from app.config import CATEGORY_INDEX_PATH, DATASET_DIR, SENTENCE_MODEL
 from app.dataset_io import DEFAULT_CSV, load_rows
-from app.stage_a.classifier import KNOWN, sentence_encoder
+from app.stage_a.classifier import KNOWN, keyword_features, sentence_encoder
 
 
 def training_texts(rows: list[dict[str, str]]) -> tuple[list[str], list[str]]:
@@ -39,6 +39,7 @@ DEFAULT_DOLLY = DATASET_DIR.parent / "dolly" / "databricks-dolly-15k.jsonl"
 OTHER_DOLLY_CATEGORIES = ("brainstorming", "creative_writing")
 OTHER_PER_CATEGORY = 250      # index examples per Dolly category
 OTHER_EVAL_FRACTION = 0.2     # share of Dolly out-of-scope rows held out for evaluation
+HEAD_C = 4.0                  # inverse regularisation of the linear head, chosen by 5-fold CV on train
 
 
 def _bucket(row_no: int) -> float:
@@ -61,6 +62,14 @@ def dolly_other(path: Path, held_out: bool) -> list[str]:
     return out
 
 
+def train_head(emb: np.ndarray, texts: list[str], labels: list[str]):
+    """Logistic regression over [embedding, keyword features], classes weighted so each category counts equally."""
+    from sklearn.linear_model import LogisticRegression
+
+    x = np.hstack([emb, np.vstack([keyword_features(t) for t in texts])])
+    return LogisticRegression(C=HEAD_C, class_weight="balanced", max_iter=3000).fit(x, labels)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", type=Path, default=DEFAULT_CSV)
@@ -78,9 +87,12 @@ def main() -> None:
         print(f"No Dolly file at {args.dolly}: index has no 'other' examples")
     start = time.perf_counter()
     emb = sentence_encoder(SENTENCE_MODEL)(texts)
+    head = train_head(emb, texts, labels)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(args.out, embeddings=emb, labels=np.array(labels), model_name=np.array(SENTENCE_MODEL))
-    print(f"Indexed {len(texts)} train texts ({emb.shape[1]}-d) in {time.perf_counter() - start:.1f}s -> {args.out}")
+    np.savez_compressed(args.out, embeddings=emb, labels=np.array(labels), model_name=np.array(SENTENCE_MODEL),
+                        head_coef=head.coef_, head_intercept=head.intercept_, head_classes=head.classes_)
+    print(f"Indexed {len(texts)} train texts ({emb.shape[1]}-d) and trained the linear head in "
+          f"{time.perf_counter() - start:.1f}s -> {args.out}")
 
 
 if __name__ == "__main__":

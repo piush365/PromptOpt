@@ -109,7 +109,7 @@ repository.save_features(db, prompt.id, f.model_dump())
 
 | code | detector | how |
 |---|---|---|
-| A01 | task category (+ `other`) | Sentence-Transformers (all-MiniLM-L6-v2) k-NN over the dataset's train split, blended with keyword cues; `classifier.py` |
+| A01 | task category (+ `other`) | Sentence-Transformers (all-MiniLM-L6-v2) k-NN over the dataset's train split, blended with keyword cues, averaged with a logistic-regression head on the same embeddings + keyword features; `classifier.py` |
 | A02 | output format present? | regex, returns the matched evidence; `rules.detect_format_spec` |
 | A03 | length / tone / audience / language | regex; only constraints relevant to the category count as missing (`RELEVANT_CONSTRAINTS`) |
 | A04 | filler and repetition | regex phrase list, repeated sentences (spaCy sentence split), doubled words |
@@ -124,7 +124,9 @@ python -m app.stage_a.evaluate --split val                                   # w
 python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a_test.md   # final numbers only
 ```
 
+The index file also holds the linear head (trained by `build_index`, needs scikit-learn; prediction is plain numpy).
 Without the index, Stage A falls back to the keyword classifier (57% accuracy on val instead of 77%).
+Rebuild the index whenever the dataset's train split changes.
 Hyper-parameters were tuned on val only; `../evaluation/stage_a_test.md` has the test-split results.
 
 ## Stage B: rule-based optimization (`app/stage_b/`)

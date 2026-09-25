@@ -8,6 +8,7 @@ pydantic>=2.0
 numpy>=2.0
 spacy>=3.8           # then: python -m spacy download en_core_web_sm
 sentence-transformers>=5.0
+scikit-learn>=1.5  # trains the linear category head in build_index (already pulled in by sentence-transformers)
 # torch is pulled in by sentence-transformers. On machines without a GPU install the much smaller CPU build first:
 #   pip install torch --index-url https://download.pytorch.org/whl/cpu
 

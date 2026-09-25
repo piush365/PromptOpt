@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 from app.stage_a import rules
-from app.stage_a.classifier import EmbeddingClassifier, KeywordClassifier
+from app.stage_a.classifier import EmbeddingClassifier, KeywordClassifier, LinearHead, keyword_features
 from app.stage_a.detector import FeatureDetector
 from app.stage_a.schema import PromptFeatures
 
@@ -155,6 +155,54 @@ def test_index_roundtrip(tmp_path):
                         model_name=np.array("fake"))
     clf = EmbeddingClassifier.load(path, encoder=lambda t: np.array([[1.0, 0.0]] * len(t), dtype=np.float32))
     assert max(clf.predict("x")[0], key=clf.predict("x")[0].get) == "coding"
+    assert clf.head is None                                          # indexes built before the head still load
+
+
+def _fitted_head():
+    """sklearn logistic regression on [2-d embedding, keyword features] for texts the fake encoder knows."""
+    from sklearn.linear_model import LogisticRegression
+
+    texts = ["code", "sum", "code", "sum", "diag"]
+    x = np.hstack([_fake_classifier().encoder(texts), np.vstack([keyword_features(t) for t in texts])])
+    return texts, x, LogisticRegression(C=4.0).fit(x, ["coding", "summarization", "coding", "summarization",
+                                                         "other"])
+
+
+def test_linear_head_matches_sklearn():
+    texts, x, lr = _fitted_head()
+    head = LinearHead(lr.coef_, lr.intercept_, lr.classes_)
+    probs = head.predict_proba(_fake_classifier().encoder(texts), texts)
+    expected = lr.predict_proba(x)
+    for p, e in zip(probs, expected):
+        assert [p[c] for c in lr.classes_] == pytest.approx(list(e), abs=1e-5)
+        assert p["closed_qa"] == 0.0 and sum(p.values()) == pytest.approx(1.0)
+
+
+def test_head_is_averaged_with_knn():
+    texts, _, lr = _fitted_head()
+    head = LinearHead(lr.coef_, lr.intercept_, lr.classes_)
+    knn = _fake_classifier().predict("diag")[0]
+    blended = _fake_classifier(head=head, head_weight=0.5).predict("diag")[0]
+    h = head.predict_proba(_fake_classifier().encoder(["diag"]), ["diag"])[0]
+    assert blended == pytest.approx({c: 0.5 * knn[c] + 0.5 * h[c] for c in knn})
+
+
+def test_index_roundtrip_with_head(tmp_path):
+    _, _, lr = _fitted_head()
+    path = tmp_path / "idx.npz"
+    clf = _fake_classifier()
+    np.savez_compressed(path, embeddings=clf.embeddings, labels=clf.labels, model_name=np.array("fake"),
+                        head_coef=lr.coef_, head_intercept=lr.intercept_, head_classes=lr.classes_)
+    loaded = EmbeddingClassifier.load(path, encoder=clf.encoder, k=2, keyword_weight=0.0)
+    assert loaded.head is not None and loaded.head.classes == list(lr.classes_)
+    assert max(loaded.predict("code")[0], key=loaded.predict("code")[0].get) == "coding"
+
+
+def test_linear_head_rejects_bad_shapes_and_classes():
+    with pytest.raises(ValueError):
+        LinearHead(np.zeros((2, 3)), np.zeros(3), ["coding", "other"])
+    with pytest.raises(ValueError):
+        LinearHead(np.zeros((1, 3)), np.zeros(1), ["poetry"])
 
 
 # ---------------------------------------------------------------- detector end to end
