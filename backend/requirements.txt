@@ -1,0 +1,4 @@
+sqlalchemy>=2.0
+psycopg[binary]>=3.1    # PostgreSQL driver (not needed for SQLite)
+pytest>=8.0
+python-dotenv>=1.0   # loads backend/.env into the environment
