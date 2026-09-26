@@ -185,13 +185,25 @@ def test_b03_respects_stated_format():
         assert b.b03_add_output_format(ir, feats(text, "summarization")) is ir
 
 
-def test_b03_classification_single_vs_many_items():
-    one = "Is a tomato a fruit or a vegetable?"
-    many = "Classify these as fruit or vegetable."
-    assert b.b03_add_output_format(ir_of(one, "classification"), feats(one, "classification")).output_format == (
-        b.SINGLE_LABEL_FORMAT)
-    assert b.b03_add_output_format(ir_of(many, "classification"), feats(many, "classification")).output_format == (
-        b.FORMAT_DEFAULTS["classification"])
+@pytest.mark.parametrize("text, single", [
+    ("Is a tomato a fruit or a vegetable?", True),
+    ("Does a whale count as a fish or a mammal?", True),
+    ("Classify these as fruit or vegetable.", False),
+    # items glued onto the question (val: dolly-728 got "Output only the label." and answered one item)
+    ("Which instrument is string or percussion lummi stick timple?", False),
+    ("Which characters are dc or marvel? sif, wonder woman.", False),
+    ("Is french fries a healthy choice for kids or not? Same for banana, candy, vegetables.", False),
+    ("Is Sif and Wonder Woman dc or marvel?", False),
+])
+def test_b03_classification_single_vs_many_items(text, single):
+    out = b.b03_add_output_format(ir_of(text, "classification"), feats(text, "classification"))
+    assert out.output_format == (b.SINGLE_LABEL_FORMAT if single else b.FORMAT_DEFAULTS["classification"])
+
+
+def test_b03_items_in_context_are_never_single():
+    text = "Is it a fruit or a vegetable?"
+    ir = ir_of(text, "classification", context="tomato")
+    assert b.b03_add_output_format(ir, feats(text, "classification")).output_format == b.FORMAT_DEFAULTS["classification"]
 
 
 def test_every_default_format_is_recognised_by_stage_a():

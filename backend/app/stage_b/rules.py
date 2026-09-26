@@ -272,7 +272,16 @@ FORMAT_DEFAULTS = {
     "coding": "Return only the code, in a single code block.",
 }
 SINGLE_LABEL_FORMAT = "Output only the label."
-_MANY_ITEMS = re.compile(r"\b(?:these|following|each|every|all|list|items|them)\b", _I)
+# One item only when the prompt asks a yes/no-style question about one thing ("Is a tomato a fruit or a vegetable?")
+# and nothing hints at more. Classification prompts almost always list several items, often glued onto the question
+# without punctuation ("which instrument is string or percussion lummi stick timple"): on val, the old rule (single
+# unless "these/each/list/...") picked the single-label format for 8 prompts, all with 2+ items.
+_ONE_ITEM_START = re.compile(r"^(?:is|was|does|do)\b", _I)
+_SEVERAL = re.compile(r"[,;]|\band\b|\b(?:these|following|each|every|all|list|items|them|which)\b", _I)
+
+
+def _single_item(ir: PromptIR) -> bool:
+    return not ir.context and bool(_ONE_ITEM_START.match(ir.task)) and not _SEVERAL.search(ir.task)
 
 
 def b03_add_output_format(ir: PromptIR, f: PromptFeatures) -> PromptIR:
@@ -283,8 +292,7 @@ def b03_add_output_format(ir: PromptIR, f: PromptFeatures) -> PromptIR:
         return ir.model_copy(update={"unresolved": (*ir.unresolved, "output format")})
     fmt = FORMAT_DEFAULTS[ir.category]
     if ir.category == "classification":
-        many = (ir.context and ("," in ir.context or "\n" in ir.context)) or _MANY_ITEMS.search(ir.task)
-        fmt = fmt if many else SINGLE_LABEL_FORMAT
+        fmt = SINGLE_LABEL_FORMAT if _single_item(ir) else fmt
     return ir.model_copy(update={"output_format": fmt})
 
 
