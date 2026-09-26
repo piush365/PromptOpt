@@ -426,7 +426,7 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
                                  temperature=TEMPERATURE, reasoning_effort=reasoning_for(model), json_mode=True)
             except (DailyLimitReached, ModelUnavailable) as e:
                 exhausted.add(model)
-                log(f"{model}: {type(e).__name__}, switching model")
+                log(f"{model}: {type(e).__name__}, switching model. Groq: {str(e)[:300]}")
                 continue
             except RuntimeError as e:          # repeated API errors: skip the row, it is retried next run
                 stats["errors"] += 1
