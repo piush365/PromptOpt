@@ -40,6 +40,26 @@ def test_ledger_is_a_rolling_24_hour_window(tmp_path):
     assert len(json.loads((tmp_path / "u.json").read_text())["events"]) == 1
 
 
+def test_ledger_survives_concurrent_writers_and_failed_renames(tmp_path, monkeypatch):
+    import threading
+
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
+    threads = [threading.Thread(target=lambda: [led.record("m", "t", 1) for _ in range(25)]) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert led.used("m") == {"requests": 100, "tokens": 100}             # no update lost
+
+    import os as _os
+    monkeypatch.setattr(_os, "replace", lambda a, b: (_ for _ in ()).throw(FileNotFoundError(a)))
+    led.record("m", "t", 5)                                              # rename fails: written in place
+    assert led.used("m") == {"requests": 101, "tokens": 105}
+    assert not list(tmp_path.glob("*.tmp"))
+    (tmp_path / "u.json").write_text('{"events": [[1000000.0, "m", "t", 7')   # caught mid-write
+    assert led.used("m") == {"requests": 0, "tokens": 0}
+
+
 def test_budget_fraction_and_global_cap(tmp_path):
     led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
     limits = {"m": {"requests": 10, "tokens": 1000}}

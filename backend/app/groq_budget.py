@@ -11,7 +11,10 @@ tokens do not count toward the limits; that is not verified yet (2026-09-26: the
 the day before), so COUNT_CACHED is True, the conservative choice, until a measurement settles it. Calls that fail
 inside Groq (JSON validation) also use tokens; they are recorded as an estimate.
 """
+import contextlib
+import fcntl
 import json
+import os
 import time
 from pathlib import Path
 from typing import Callable
@@ -37,19 +40,43 @@ class UsageLedger:
     def __init__(self, path: Path = LEDGER_PATH, clock: Callable[[], float] = time.time):
         self.path, self.clock = Path(path), clock
 
+    # Several processes (evaluation, generation) share the file, and data/ is on an NTFS (fuseblk) mount where a
+    # rename over an existing file is not reliable: updates take an exclusive lock, write a per-process temporary
+    # file, and fall back to writing in place if the rename fails; reads retry a file caught mid-write.
     def _load(self) -> list[list]:
-        if not self.path.exists():
-            return []
-        return json.loads(self.path.read_text(encoding="utf-8") or "{}").get("events", [])
+        for attempt in range(5):
+            if not self.path.exists():
+                return []
+            try:
+                return json.loads(self.path.read_text(encoding="utf-8") or "{}").get("events", [])
+            except (json.JSONDecodeError, OSError):
+                time.sleep(0.05 * (attempt + 1))
+        return []
+
+    @contextlib.contextmanager
+    def _lock(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.path.with_suffix(".lock"), "a+") as f:
+            try:
+                fcntl.flock(f, fcntl.LOCK_EX)
+            except OSError:                    # the filesystem may not support locks: still write, unlocked
+                pass
+            yield
 
     def record(self, model: str, tag: str, tokens: int, cached: int = 0) -> None:
-        now = self.clock()
-        events = [e for e in self._load() if e[0] > now - WINDOW_SECONDS]
-        events.append([now, model, tag, int(tokens), int(cached)])
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps({"events": events}), encoding="utf-8")
-        tmp.replace(self.path)
+        with self._lock():
+            now = self.clock()
+            events = [e for e in self._load() if e[0] > now - WINDOW_SECONDS]
+            events.append([now, model, tag, int(tokens), int(cached)])
+            data = json.dumps({"events": events})
+            tmp = self.path.with_name(f"{self.path.stem}.{os.getpid()}.tmp")
+            try:
+                tmp.write_text(data, encoding="utf-8")
+                os.replace(tmp, self.path)
+            except OSError:
+                self.path.write_text(data, encoding="utf-8")
+                with contextlib.suppress(OSError):
+                    tmp.unlink()
 
     def used(self, model: str, tag: str | None = None) -> dict[str, int]:
         """Requests and tokens for `model` in the last 24 hours: for one tag, or all tags together."""
