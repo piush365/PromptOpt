@@ -387,3 +387,34 @@ def test_changed_prompt_is_called_and_judged_again(db, tmp_path):
     assert rec.quality_score == 8.0 and rec.task_success is True                 # the new judgment, not the old one
     reloaded = ev.Cache(tmp_path / "r.jsonl").get(row["source_id"], "stage_b")
     assert reloaded["response"] != "old answer" and reloaded["judgment"]["score"] == 8.0
+
+
+def test_final_run_can_resume_but_not_repeat_on_another_dataset(db):
+    from app.db import repository as repo
+    from app.evaluation import run as run_mod
+
+    run_mod.check_final_once(db, "final-benchmark", "v1-100-aaaa")                 # nothing yet: fine
+    repo.record_evaluation(db, "final-benchmark", "v1-100-aaaa", "dolly-1", "closed_qa", "degraded",
+                           "openai/gpt-oss-120b", 10)
+    db.flush()
+    run_mod.check_final_once(db, "final-benchmark", "v1-100-aaaa")                 # same dataset: resume
+    with pytest.raises(SystemExit, match="run once"):
+        run_mod.check_final_once(db, "final-benchmark", "v1-200-bbbb")
+
+
+def test_cerebras_target_is_recorded_as_such(db):
+    from app.evaluation import run as run_mod
+    from app.llm_router import Router
+
+    from pathlib import Path
+
+    from app.evaluation.llm import _completion
+
+    rows = [ROWS[0]]
+    groq = FakeClient(default=lambda kw: _response('{"score": 7, "answers_correctly": null, "reason": "ok"}', "q"))
+    target = SimpleNamespace(calls=[], complete=lambda model, msgs, **kw: (target.calls.append(model), _completion(
+        _response("answer", "cerebras/gpt-oss-120b"), "cerebras/gpt-oss-120b", 5))[1])
+    llm = Router(_chat(groq)[0], target)
+    run_mod.run(db, rows, llm, DETECTOR, "dev-x", "v", run_mod.Cache(Path("/dev/null")), ("degraded",),
+                log=lambda s: None, target_model=run_mod.TARGETS["cerebras"])
+    assert target.calls == ["gpt-oss-120b"]

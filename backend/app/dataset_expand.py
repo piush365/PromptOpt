@@ -43,6 +43,7 @@ from app.config import BACKEND_DIR
 from app.db import pii
 from app.cerebras import LIMITS as CEREBRAS_LIMITS
 from app.groq_budget import DAILY_LIMITS, TOKENS_PER_MINUTE, UsageLedger
+from app.llm_router import Router, provider_of  # noqa: F401  (Router re-exported for callers and tests)
 
 DATA_DIR = BACKEND_DIR.parent / "data"
 V1_SAMPLED = DATA_DIR / "promptopt_dataset_v1" / "sampled_for_degradation.csv"
@@ -424,10 +425,6 @@ class Checkpoint:
         return DEFAULT_TOKENS_PER_CALL if batch == 1 else DEFAULT_TOKENS_PER_CALL / 2
 
 
-def provider_of(model: str) -> str:
-    return "cerebras" if model.startswith("cerebras/") else "groq"
-
-
 class Budget:
     """Generation may use `fraction` of each model's limits over the last 24 hours (its own usage, tag
     "generation"), and never push a model's total usage from every tool above `global_cap`. Each provider has its
@@ -458,28 +455,6 @@ class Budget:
         ledger, fraction, cap, lim = self._parts(model)
         own, total = ledger.used(model, self.tag), ledger.used(model)
         return {k: max(0.0, min(fraction * lim[k] - own[k], cap * lim[k] - total[k])) for k in ("requests", "tokens")}
-
-
-class Router:
-    """One `complete` for every provider: "cerebras/<model>" goes to Cerebras, anything else to Groq."""
-
-    def __init__(self, groq: Any = None, cerebras: Any = None):
-        self.groq, self.cerebras = groq, cerebras
-
-    def complete(self, model: str, messages: list[dict[str, str]], **kw: Any) -> Any:
-        if provider_of(model) == "cerebras":
-            if self.cerebras is None:
-                from app.evaluation.llm import ModelUnavailable
-                raise ModelUnavailable("no Cerebras client (CEREBRAS_API_KEY not set)")
-            return self.cerebras.complete(model.split("/", 1)[1], messages, **kw)
-        if self.groq is None:
-            from app.evaluation.llm import ModelUnavailable
-            raise ModelUnavailable("no Groq client")
-        return self.groq.complete(model, messages, **kw)
-
-    def set_groq_pace(self, seconds: float) -> None:
-        if self.groq is not None:
-            self.groq.min_interval = seconds
 
 
 def pace_for(tokens_per_call: float) -> float:

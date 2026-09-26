@@ -98,12 +98,13 @@ def _judge(llm: GroqChat, category: str, request: str, context: str, reference: 
     raise ValueError(f"judge failed {JUDGE_ATTEMPTS} times: {last}")
 
 
-def run(db: Session, rows: list[dict[str, str]], llm: GroqChat, detector: Any, run_name: str, version: str,
+def run(db: Session, rows: list[dict[str, str]], llm: Any, detector: Any, run_name: str, version: str,
         cache: Cache, variants: tuple[str, ...] = VARIANTS, max_tokens: int = TARGET_MAX_TOKENS,
-        reasoning_effort: str | None = TARGET_REASONING, log: Callable[[str], None] = print) -> dict[str, int]:
+        reasoning_effort: str | None = TARGET_REASONING, log: Callable[[str], None] = print,
+        target_model: str = TARGET_MODEL) -> dict[str, int]:
     """Evaluate every (row, variant) not yet in the database. Returns counters."""
     done = set(db.execute(select(EvaluationRun.dataset_item_id, EvaluationRun.variant)
-                          .where(EvaluationRun.run_name == run_name, EvaluationRun.target_llm == TARGET_MODEL)).all())
+                          .where(EvaluationRun.run_name == run_name, EvaluationRun.target_llm == target_model)).all())
     stats = {"recorded": 0, "skipped": 0, "target_calls": 0, "judge_calls": 0, "judge_failures": 0}
     try:
         for i, row in enumerate(rows, start=1):
@@ -122,7 +123,7 @@ def run(db: Session, rows: list[dict[str, str]], llm: GroqChat, detector: Any, r
                     cache.add(sid, v, response=None, judgment=None)
                     rec = cache.get(sid, v)
                 if rec.get("response") is None:
-                    c: Completion = llm.complete(TARGET_MODEL, [{"role": "user", "content": b["prompt"]}],
+                    c: Completion = llm.complete(target_model, [{"role": "user", "content": b["prompt"]}],
                                                  max_tokens=max_tokens, temperature=0.0,
                                                  reasoning_effort=reasoning_effort)
                     stats["target_calls"] += 1
@@ -144,7 +145,7 @@ def run(db: Session, rows: list[dict[str, str]], llm: GroqChat, detector: Any, r
                 j = rec["judgment"]
                 t = rec["target"]
                 ok = task_success(cat, row, rec["response"], j.get("answers_correctly"))
-                repo.record_evaluation(db, run_name, version, sid, cat, v, TARGET_MODEL, t["input_tokens"],
+                repo.record_evaluation(db, run_name, version, sid, cat, v, target_model, t["input_tokens"],
                                        t["output_tokens"], t["latency_ms"], j["score"], ok)
                 db.commit()
                 stats["recorded"] += 1
@@ -160,7 +161,7 @@ def _fmt(x: Any, digits: int = 1) -> str:
     return "-" if x is None else f"{float(x):.{digits}f}"
 
 
-def summary(db: Session, run_name: str, cache: Cache) -> str:
+def summary(db: Session, run_name: str, cache: Cache, target_model: str = TARGET_MODEL) -> str:
     rows = repo.evaluation_summary(db, run_name)
     if not rows:
         return f"No results for run `{run_name}` yet."
@@ -187,7 +188,7 @@ def summary(db: Session, run_name: str, cache: Cache) -> str:
                 f"{_fmt(w('avg_total_tokens'), 0)} | {_fmt(w('avg_latency_ms'), 0)} | {trunc} |")
 
     out = [f"# Evaluation run `{run_name}`\n",
-           f"Target `{TARGET_MODEL}` (temperature 0, max {TARGET_MAX_TOKENS} tokens, reasoning {TARGET_REASONING}); "
+           f"Target `{target_model}` (temperature 0, max {TARGET_MAX_TOKENS} tokens, reasoning {TARGET_REASONING}); "
            f"judge `{JUDGE_MODEL}`, blind to the variant. Quality 0-10. Task success over checkable items "
            f"(count in brackets). Output tokens include the model's hidden reasoning tokens (shown separately).\n",
            "| category | variant | n | quality | task success | input tok | output tok | of which reasoning | "
@@ -203,6 +204,31 @@ def summary(db: Session, run_name: str, cache: Cache) -> str:
 
 
 # ---------------------------------------------------------------- CLI
+TARGETS = {"groq": TARGET_MODEL, "cerebras": "cerebras/gpt-oss-120b"}
+
+
+def check_final_once(db: Session, run_name: str, version: str) -> None:
+    """A final run may be resumed (same dataset version), never repeated on another dataset version."""
+    versions = set(db.scalars(select(EvaluationRun.dataset_version).where(EvaluationRun.run_name == run_name)))
+    if versions and versions != {version}:
+        raise SystemExit(f"{run_name} already has results for dataset {sorted(versions)}; the final numbers are "
+                         f"run once. Current dataset: {version}.")
+
+
+def make_llm(target: str) -> Any:
+    """Groq for the judge (and the target unless target is "cerebras"), all recorded in the usage ledgers."""
+    from app.llm_router import Router
+
+    groq = GroqChat(ledger=UsageLedger(), tag="evaluation")
+    if target != "cerebras":
+        return groq
+    from app.cerebras import CerebrasChat
+    from app.config import BACKEND_DIR
+
+    return Router(groq, CerebrasChat(ledger=UsageLedger(BACKEND_DIR.parent / "data" / "cerebras_usage.json"),
+                                     tag="evaluation"))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--dataset", type=Path, default=DEFAULT_CSV)
@@ -213,26 +239,33 @@ def main() -> None:
     ap.add_argument("--variants", nargs="+", default=list(VARIANTS), choices=list(VARIANTS))
     ap.add_argument("--max-tokens", type=int, default=TARGET_MAX_TOKENS)
     ap.add_argument("--summary-only", action="store_true")
+    ap.add_argument("--target", choices=["groq", "cerebras"], default="groq",
+                    help="provider of the target gpt-oss-120b (same model); the judge is always Groq's qwen")
     args = ap.parse_args()
     if args.split in FINAL_SPLITS and not args.final:
         raise SystemExit(f"{args.split} is held out for the final numbers; develop on val (or pass --final, once).")
+    target_model = TARGETS[args.target]
 
     from app.db.base import SessionLocal
 
-    run_name = args.run_name or f"dev-{args.split}-n{args.per_category}"
+    run_name = args.run_name or (f"final-{args.split}" if args.final else f"dev-{args.split}-n{args.per_category}")
     cache = Cache(EVAL_DIR / f"{run_name}.jsonl")
     with SessionLocal() as db:
         if not args.summary_only:
             from app.stage_a.detector import FeatureDetector
 
             all_rows = load_rows(args.dataset)
+            version = dataset_version(args.dataset, all_rows)
+            if args.final:
+                check_final_once(db, run_name, version)
             rows = select_rows([r for r in all_rows if r["split"] == args.split], args.per_category)
-            print(f"Run {run_name}: {len(rows)} prompts x {len(args.variants)} variants on {args.split}")
-            llm = GroqChat(ledger=UsageLedger(), tag="evaluation")
-            stats = run(db, rows, llm, FeatureDetector(), run_name, dataset_version(args.dataset, all_rows),
-                        cache, tuple(args.variants), args.max_tokens)
+            print(f"Run {run_name}: {len(rows)} prompts x {len(args.variants)} variants on {args.split}, "
+                  f"target {target_model}")
+            llm = make_llm(args.target)
+            stats = run(db, rows, llm, FeatureDetector(), run_name, version, cache, tuple(args.variants),
+                        args.max_tokens, target_model=target_model)
             print("Stats:", stats)
-        text = summary(db, run_name, cache)
+        text = summary(db, run_name, cache, target_model)
     print(text)
     (EVAL_DIR / f"{run_name}_summary.md").write_text(text, encoding="utf-8")
 
