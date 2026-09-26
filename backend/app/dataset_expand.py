@@ -41,6 +41,7 @@ from typing import Any, Callable, Iterable
 from app import dataset_repair as repair
 from app.config import BACKEND_DIR
 from app.db import pii
+from app.cerebras import LIMITS as CEREBRAS_LIMITS
 from app.groq_budget import DAILY_LIMITS, TOKENS_PER_MINUTE, UsageLedger
 
 DATA_DIR = BACKEND_DIR.parent / "data"
@@ -48,6 +49,7 @@ V1_SAMPLED = DATA_DIR / "promptopt_dataset_v1" / "sampled_for_degradation.csv"
 V11_CSV = DATA_DIR / "promptopt_dataset_v1_1" / "promptopt_dataset_v1_1.csv"
 V12_DIR = DATA_DIR / "promptopt_dataset_v1_2"
 V12_CSV_NAME = "promptopt_dataset_v1_2.csv"
+CEREBRAS_LEDGER = DATA_DIR / "cerebras_usage.json"
 DOLLY_JSONL = DATA_DIR / "dolly" / "databricks-dolly-15k.jsonl"
 CODEALPACA_JSON = DATA_DIR / "codealpaca" / "code_alpaca_20k.json"
 CODEALPACA_URL = "https://huggingface.co/datasets/sahil2801/CodeAlpaca-20k/resolve/main/code_alpaca_20k.json"
@@ -66,7 +68,10 @@ MIN_CODING_OUTPUT_WORDS = 3
 
 # Generation (notebook Step 8)
 GROQ_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
-BUDGET_FRACTION = 0.7
+CEREBRAS_MODELS = ["cerebras/gpt-oss-120b"]
+GENERATION_MODELS = CEREBRAS_MODELS + GROQ_MODELS    # Cerebras first; Groq's quota is kept mainly for evaluation
+BUDGET_FRACTION = 0.5         # Groq: share of each model's limit generation may use (the rest is for evaluation)
+CEREBRAS_FRACTION = 0.95      # Cerebras is used for generation only
 GLOBAL_CAP = 0.95             # never push a model's total daily usage (every tool) above this share of its limit
 DEFAULT_TOKENS_PER_CALL = 1050  # measured 2026-09-26: input (cached included) + output per call
 MEASURE_AFTER = 20
@@ -281,73 +286,100 @@ def round_robin(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 # ---------------------------------------------------------------- generation (notebook Step 8)
-SYSTEM_PROMPT = '''You build training data for a prompt-optimization system.
-You get a CLEAN instruction written for an AI assistant, its task category, and (optionally) a separate TEXT/INPUT it refers to.
-Write TWO rewrites of the instruction and return them as JSON.
+# Every rule of the notebook's prompt and the v1.1 data rule, worded tightly, for several items per call: the system
+# prompt is ~60% of a one-item call, so sending it once per BATCH_SIZE items is the main saving (see generate).
+SYSTEM_PROMPT = """You create training pairs for a prompt-optimization system. Each item has a CLEAN instruction for an AI \
+assistant, its category, and sometimes a separate TEXT/INPUT it refers to. For each item write two rewrites.
 
-Data rule (both rewrites): data written INSIDE the clean instruction is part of the request, not the separate text.
-The items to classify, a list, code, numbers, an expression, quoted strings and the named subject (person, place,
-work, product) must appear in both rewrites, copied verbatim. Never drop them and never replace them with "the
-listed items" or "the provided text".
+Data rule (both rewrites): data written inside the clean instruction (items to classify, a list, code, numbers, an \
+expression, quoted strings, the named subject: person, place, work, product) is part of the request, not the separate \
+text. It must appear in both rewrites, copied verbatim. Never drop it or replace it with "the listed items" or "the \
+provided text".
 
-1. "degraded_prompt": how a rushed, non-expert student would actually type the same request.
-   - Same task and same intent. Never change what is being asked and never add new information.
-   - Remove any explicit output format and constraints (length, tone, audience, language, label options) if present.
-   - Casual and short is fine: lowercase, small grammar slips, vague references like "this" or "that text".
-   - Realistic, not absurdly broken. Apart from the data kept by the data rule, it must NOT be longer than the clean instruction.
-   - Do not copy the separate TEXT/INPUT into it.
+"degraded_prompt": how a rushed, non-expert student would actually type the same request.
+- Same task and intent; never change what is asked, never add information.
+- Remove any output format and constraints (length, tone, audience, language, label options).
+- Casual and short is fine (lowercase, small slips, vague "this"/"that text"), but realistic, not absurdly broken.
+- Apart from the kept data, not longer than the clean instruction.
+- Do not copy the separate TEXT/INPUT into it.
 
-2. "optimized_prompt": the best version of the instruction for an LLM.
-   - Same task and same intent as the clean instruction. Do not add facts, answers or content from the text.
-   - State the task clearly, then add an explicit output format and only the constraints that genuinely help.
-   - Refer to the separate TEXT/INPUT as "the provided text" or "the given input". Do NOT copy it in.
-   - Keep the instruction's data verbatim (data rule), e.g. end with "Items: a, b, c" for items to classify.
-   - No filler or politeness. Keep it concise, usually under 60 words plus the data.
+"optimized_prompt": the best version of the instruction for an LLM.
+- Same task and intent; add no facts, answers or content from the text.
+- State the task clearly, then an explicit output format and only the constraints that genuinely help.
+- Call the separate TEXT/INPUT "the provided text" or "the given input"; do not copy it in.
+- Keep the instruction's data verbatim, e.g. end with "Items: a, b, c" for items to classify.
+- No filler or politeness; usually under 60 words plus the data.
 
-Category guidance for "optimized_prompt":
-- closed_qa: answer only from the provided text; state how long the answer should be.
-- information_extraction: say exactly what to extract and the output structure (e.g. a bulleted list, or JSON with named fields).
-- classification: list the allowed labels explicitly when the instruction implies them; ask for the label only (or label plus a one-line reason).
-- summarization: give a length (number of sentences or bullet points) and what to focus on.
-- coding: name the programming language (keep the one stated; if none, use the one implied by the input, otherwise Python), describe the expected behaviour, inputs and outputs, and ask for the code in a single code block.
+Per category (optimized_prompt):
+- closed_qa: answer only from the provided text; state the answer length.
+- information_extraction: exactly what to extract and the output structure (bulleted list, or JSON with named fields).
+- classification: list the allowed labels when the instruction implies them; ask for the label only (or label plus a \
+one-line reason).
+- summarization: a length (sentences or bullet points) and what to focus on.
+- coding: name the language (keep the stated one; else the one implied by the input; else Python), the expected \
+behaviour, inputs and outputs; ask for the code in a single code block.
 
-Return ONLY a JSON object with exactly these keys: {"degraded_prompt": "...", "optimized_prompt": "..."}'''
-
-
-def build_messages(row: dict[str, Any]) -> list[dict[str, str]]:
-    parts = [f"CATEGORY: {row['category']}", f"CLEAN INSTRUCTION: {row['instruction']}"]
-    if row["context"]:
-        parts.append("TEXT/INPUT IT REFERS TO (for understanding only, may be truncated):\n"
-                     + row["context"][:MAX_CONTEXT_CHARS])
-    else:
-        parts.append("There is no accompanying text/input.")
-    return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": "\n\n".join(parts)}]
+Return ONLY JSON: {"items": [{"id": "1", "degraded_prompt": "...", "optimized_prompt": "..."}]}, one entry per item, \
+with the item's id."""
+BATCH_SIZE = 5
+MAX_COMPLETION_TOKENS_PER_ITEM = 400      # visible JSON ~90 tokens per item plus shared reasoning (~130-300)
 
 
-def parse_pair(content: str) -> tuple[str, str]:
+def build_messages(rows: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """One user message with the items numbered 1..n."""
+    blocks = []
+    for i, row in enumerate(rows, start=1):
+        parts = [f"ITEM {i}", f"CATEGORY: {row['category']}", f"CLEAN INSTRUCTION: {row['instruction']}"]
+        if row["context"]:
+            parts.append("TEXT/INPUT (for understanding only, may be truncated):\n" + row["context"][:MAX_CONTEXT_CHARS])
+        else:
+            parts.append("No text/input.")
+        blocks.append("\n".join(parts))
+    return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": "\n\n".join(blocks)}]
+
+
+def max_tokens_for(n: int) -> int:
+    return max(MAX_COMPLETION_TOKENS, MAX_COMPLETION_TOKENS_PER_ITEM * n + 300)
+
+
+def parse_items(content: str, n: int) -> dict[int, tuple[str, str]]:
+    """{item number: (degraded, optimized)} for the items the reply got right; raises ValueError if it is not JSON."""
     content = re.sub(r"<think>.*?</think>", "", content or "", flags=re.DOTALL).strip()
     match = re.search(r"\{.*\}", content, re.DOTALL)
     try:
         data = json.loads(match.group(0) if match else content)
     except json.JSONDecodeError as e:
         raise ValueError(f"not JSON: {e}") from e
-    degraded = str(data.get("degraded_prompt", "")).strip().strip('"')
-    optimized = str(data.get("optimized_prompt", "")).strip().strip('"')
-    if not degraded or not optimized:
-        raise ValueError("missing degraded_prompt or optimized_prompt")
-    return degraded, optimized
+    items = data.get("items") if isinstance(data, dict) else None
+    if items is None and isinstance(data, dict) and "degraded_prompt" in data:
+        items = [dict(data, id="1")]                      # a one-item reply without the list
+    out = {}
+    for it in items or []:
+        if not isinstance(it, dict):
+            continue
+        try:
+            k = int(str(it.get("id", "")).strip())
+        except ValueError:
+            continue
+        d = str(it.get("degraded_prompt", "")).strip().strip('"')
+        o = str(it.get("optimized_prompt", "")).strip().strip('"')
+        if 1 <= k <= n and d and o:
+            out[k] = (d, o)
+    if not out:
+        raise ValueError("no usable items")
+    return out
 
 
 def reasoning_for(model: str) -> str | None:
-    if model.startswith("openai/gpt-oss"):
+    if "gpt-oss" in model:
         return "low"
-    if model.startswith("qwen/"):
+    if "qwen" in model:
         return "none"      # skip the thinking step, saves tokens
     return None
 
 
 class Checkpoint:
-    """Append-only JSONL, one line per generated row, keyed by source_id."""
+    """Append-only JSONL, one line per generated row, keyed by source_id. `tokens` is the row's share of its call."""
 
     def __init__(self, path: Path):
         self.path = Path(path)
@@ -364,118 +396,170 @@ class Checkpoint:
         with open(self.path, "a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
-    def tokens_per_call(self) -> float:
-        """Measured tokens per call (input, cached included, plus output) once MEASURE_AFTER rows are in, else the
-        notebook's figure."""
-        used = [r["tokens"] for r in self.done.values() if r.get("tokens")]
-        return sum(used) / len(used) if len(used) >= MEASURE_AFTER else DEFAULT_TOKENS_PER_CALL
+    def tokens_per_row(self, batch: int = BATCH_SIZE) -> float:
+        """Measured tokens per generated row for calls of this batch size (last 200 rows), else an estimate."""
+        used = [r["tokens"] for r in self.done.values() if r.get("tokens") and r.get("batch", 1) == batch][-200:]
+        if len(used) >= MEASURE_AFTER:
+            return sum(used) / len(used)
+        return DEFAULT_TOKENS_PER_CALL if batch == 1 else DEFAULT_TOKENS_PER_CALL / 2
+
+
+def provider_of(model: str) -> str:
+    return "cerebras" if model.startswith("cerebras/") else "groq"
 
 
 class Budget:
-    """Generation may use `fraction` of each model's daily limits (its own usage, tag "generation"), and never push a
-    model's total usage from every tool above `global_cap`."""
+    """Generation may use `fraction` of each model's limits over the last 24 hours (its own usage, tag
+    "generation"), and never push a model's total usage from every tool above `global_cap`. Each provider has its
+    own ledger, limits and fraction (Groq's quota is kept mainly for the evaluation harness)."""
 
     def __init__(self, ledger: UsageLedger, fraction: float = BUDGET_FRACTION, global_cap: float = GLOBAL_CAP,
-                 tag: str = "generation", limits: dict = DAILY_LIMITS):
+                 tag: str = "generation", limits: dict = DAILY_LIMITS, cerebras_ledger: UsageLedger | None = None,
+                 cerebras_fraction: float = CEREBRAS_FRACTION, cerebras_limits: dict | None = None):
         self.ledger, self.fraction, self.global_cap, self.tag, self.limits = ledger, fraction, global_cap, tag, limits
+        self.cerebras_ledger = cerebras_ledger or ledger
+        self.cerebras_fraction = cerebras_fraction
+        self.cerebras_limits = cerebras_limits or {"cerebras/" + m: v for m, v in CEREBRAS_LIMITS.items()}
+
+    def _parts(self, model: str) -> tuple[UsageLedger, float, float, dict]:
+        if provider_of(model) == "cerebras":
+            return self.cerebras_ledger, self.cerebras_fraction, self.cerebras_fraction, self.cerebras_limits[model]
+        return self.ledger, self.fraction, self.global_cap, self.limits[model]
 
     def allows(self, model: str, est_tokens: float) -> bool:
-        lim = self.limits[model]
-        own, total = self.ledger.used(model, self.tag), self.ledger.used(model)
-        return (own["requests"] + 1 <= self.fraction * lim["requests"]
-                and own["tokens"] + est_tokens <= self.fraction * lim["tokens"]
-                and total["requests"] + 1 <= self.global_cap * lim["requests"]
-                and total["tokens"] + est_tokens <= self.global_cap * lim["tokens"])
+        ledger, fraction, cap, lim = self._parts(model)
+        own, total = ledger.used(model, self.tag), ledger.used(model)
+        return (own["requests"] + 1 <= fraction * lim["requests"]
+                and own["tokens"] + est_tokens <= fraction * lim["tokens"]
+                and total["requests"] + 1 <= cap * lim["requests"]
+                and total["tokens"] + est_tokens <= cap * lim["tokens"])
 
     def left(self, model: str) -> dict[str, float]:
-        lim = self.limits[model]
-        own, total = self.ledger.used(model, self.tag), self.ledger.used(model)
-        return {k: max(0.0, min(self.fraction * lim[k] - own[k], self.global_cap * lim[k] - total[k]))
-                for k in ("requests", "tokens")}
+        ledger, fraction, cap, lim = self._parts(model)
+        own, total = ledger.used(model, self.tag), ledger.used(model)
+        return {k: max(0.0, min(fraction * lim[k] - own[k], cap * lim[k] - total[k])) for k in ("requests", "tokens")}
+
+
+class Router:
+    """One `complete` for every provider: "cerebras/<model>" goes to Cerebras, anything else to Groq."""
+
+    def __init__(self, groq: Any = None, cerebras: Any = None):
+        self.groq, self.cerebras = groq, cerebras
+
+    def complete(self, model: str, messages: list[dict[str, str]], **kw: Any) -> Any:
+        if provider_of(model) == "cerebras":
+            if self.cerebras is None:
+                from app.evaluation.llm import ModelUnavailable
+                raise ModelUnavailable("no Cerebras client (CEREBRAS_API_KEY not set)")
+            return self.cerebras.complete(model.split("/", 1)[1], messages, **kw)
+        if self.groq is None:
+            from app.evaluation.llm import ModelUnavailable
+            raise ModelUnavailable("no Groq client")
+        return self.groq.complete(model, messages, **kw)
+
+    def set_groq_pace(self, seconds: float) -> None:
+        if self.groq is not None:
+            self.groq.min_interval = seconds
 
 
 def pace_for(tokens_per_call: float) -> float:
-    """Seconds between calls that keep one model under 90% of its per-minute token limit."""
+    """Seconds between Groq calls that keep one model under 90% of its per-minute token limit."""
     return max(MIN_INTERVAL, 60 * tokens_per_call / (0.9 * TOKENS_PER_MINUTE))
 
 
-USAGE_FIELDS = ["model", "source_id", "prompt_tokens", "cached_tokens", "completion_tokens", "reasoning_tokens",
+USAGE_FIELDS = ["model", "items", "prompt_tokens", "cached_tokens", "completion_tokens", "reasoning_tokens",
                 "system_prompt_chars", "user_message_chars", "context_chars_sent", "max_completion_tokens",
-                "reasoning_effort", "response_format", "finish_reason"]
+                "reasoning_effort", "response_format", "finish_reason", "rows_returned"]
 
 
-def usage_row(model: str, row: dict[str, Any], c: Any) -> dict[str, Any]:
+def usage_row(model: str, rows: list[dict[str, Any]], c: Any, returned: int) -> dict[str, Any]:
     """One call's token breakdown, next to the settings that drive it (for the cost investigation)."""
-    msgs = build_messages(row)
-    return {"model": model, "source_id": row["source_id"], "prompt_tokens": c.input_tokens,
-            "cached_tokens": c.cached_tokens, "completion_tokens": c.output_tokens,
-            "reasoning_tokens": c.reasoning_tokens, "system_prompt_chars": len(msgs[0]["content"]),
-            "user_message_chars": len(msgs[1]["content"]), "context_chars_sent": len(row["context"][:MAX_CONTEXT_CHARS]),
-            "max_completion_tokens": MAX_COMPLETION_TOKENS, "reasoning_effort": reasoning_for(model),
-            "response_format": "json_object", "finish_reason": c.finish_reason}
+    msgs = build_messages(rows)
+    return {"model": model, "items": len(rows), "prompt_tokens": c.input_tokens, "cached_tokens": c.cached_tokens,
+            "completion_tokens": c.output_tokens, "reasoning_tokens": c.reasoning_tokens,
+            "system_prompt_chars": len(msgs[0]["content"]), "user_message_chars": len(msgs[1]["content"]),
+            "context_chars_sent": sum(len(r["context"][:MAX_CONTEXT_CHARS]) for r in rows),
+            "max_completion_tokens": max_tokens_for(len(rows)), "reasoning_effort": reasoning_for(model),
+            "response_format": "json_object", "finish_reason": c.finish_reason, "rows_returned": returned}
 
 
 def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: Budget,
-             models: list[str] = GROQ_MODELS, max_calls: int | None = None,
-             log: Callable[[str], None] = print, usage_log: int = 0,
-             usage_path: Path | None = None) -> dict[str, Any]:
-    """Generate the rows of `sample` not in the checkpoint, within the budget. Returns counters. The first
-    `usage_log` successful calls are also written to `usage_path` (CSV) with their token breakdown."""
+             models: list[str] | None = None, max_calls: int | None = None,
+             log: Callable[[str], None] = print, usage_log: int = 0, usage_path: Path | None = None,
+             batch_size: int = BATCH_SIZE) -> dict[str, Any]:
+    """Generate the rows of `sample` not in the checkpoint, `batch_size` rows per call, within the budget. Rows a
+    reply leaves out go back in the queue (at most PARSE_ATTEMPTS tries per row this run). The first `usage_log`
+    calls are also written to `usage_path` (CSV) with their token breakdown. Returns counters."""
+    from collections import deque
+
     from app.evaluation.llm import DailyLimitReached, JSONGenerationFailed, ModelUnavailable
 
-    todo = [r for r in round_robin(sample) if r["source_id"] not in ckpt.done]
+    models = models or GENERATION_MODELS
+    queue = deque(r for r in round_robin(sample) if r["source_id"] not in ckpt.done)
+    total = len(queue)
     stats: dict[str, Any] = {"generated": 0, "calls": 0, "parse_failures": 0, "errors": 0, "stopped": "",
                              "by_model": Counter()}
     exhausted: set[str] = set()
-    for i, row in enumerate(todo, start=1):
-        pair = None
-        while pair is None:
-            if max_calls is not None and stats["calls"] >= max_calls:
-                stats["stopped"] = f"--max-calls {max_calls} reached"
-                return stats
-            est = ckpt.tokens_per_call()
-            model = next((m for m in models if m not in exhausted and budget.allows(m, est)), None)
-            if model is None:
-                stats["stopped"] = "daily budget reached for every model"
-                return stats
-            try:
-                stats["calls"] += 1
-                c = llm.complete(model, build_messages(row), max_tokens=MAX_COMPLETION_TOKENS,
-                                 temperature=TEMPERATURE, reasoning_effort=reasoning_for(model), json_mode=True)
-                pair = parse_pair(c.content)
-            except (ValueError, JSONGenerationFailed):   # unusable JSON, from the model or from Groq's JSON mode
-                stats["parse_failures"] += 1
-                row["_parse_failures"] = row.get("_parse_failures", 0) + 1
-                if row["_parse_failures"] >= PARSE_ATTEMPTS:
-                    log(f"  {row['source_id']}: unusable JSON {PARSE_ATTEMPTS} times, skipped until the next run")
-                    break
-                continue
-            except (DailyLimitReached, ModelUnavailable) as e:
-                exhausted.add(model)
-                log(f"{model}: {type(e).__name__}, switching model. Groq: {str(e)[:300]}")
-                continue
-            except RuntimeError as e:          # repeated API errors: skip the row, it is retried next run
-                stats["errors"] += 1
-                log(f"  {row['source_id']}: {str(e)[:200]}")
-                break
-            if stats["generated"] < usage_log and usage_path is not None:
-                u = usage_row(model, row, c)
-                new = not usage_path.exists()
-                with open(usage_path, "a", encoding="utf-8", newline="") as f:
-                    w = csv.DictWriter(f, fieldnames=USAGE_FIELDS)
-                    if new:
-                        w.writeheader()
-                    w.writerow(u)
-                log("  usage: " + ", ".join(f"{k}={u[k]}" for k in USAGE_FIELDS[2:6]))
-            ckpt.add({"source_id": row["source_id"], "degraded_prompt": pair[0], "optimized_prompt": pair[1],
-                      "model": c.model if c.model in models else model,
-                      "tokens": c.total_tokens, "cached_tokens": c.cached_tokens})
-            stats["generated"] += 1
-            stats["by_model"][model] += 1
-            llm.min_interval = pace_for(ckpt.tokens_per_call())
-        if i % 25 == 0:
-            log(f"[{i}/{len(todo)}] generated {stats['generated']}, calls {stats['calls']}, "
-                f"{ckpt.tokens_per_call():.0f} tokens/call")
+    tries: Counter = Counter()
+    next_report = 25
+    while queue:
+        if max_calls is not None and stats["calls"] >= max_calls:
+            stats["stopped"] = f"--max-calls {max_calls} reached"
+            return stats
+        rows = [queue.popleft() for _ in range(min(batch_size, len(queue)))]
+        est = ckpt.tokens_per_row(len(rows)) * len(rows)
+        model = next((m for m in models if m not in exhausted and budget.allows(m, est)), None)
+        if model is None:
+            stats["stopped"] = "budget reached for every model"
+            return stats
+        stats["calls"] += 1
+        try:
+            c = llm.complete(model, build_messages(rows), max_tokens=max_tokens_for(len(rows)),
+                             temperature=TEMPERATURE, reasoning_effort=reasoning_for(model), json_mode=True)
+            got = parse_items(c.content, len(rows))
+        except (ValueError, JSONGenerationFailed):   # unusable JSON, from the model or the provider's JSON mode
+            c, got = None, {}
+            stats["parse_failures"] += 1
+        except (DailyLimitReached, ModelUnavailable) as e:
+            exhausted.add(model)
+            log(f"{model}: {type(e).__name__}, switching model. Provider: {str(e)[:300]}")
+            queue.extendleft(reversed(rows))
+            continue
+        except RuntimeError as e:          # repeated API errors: these rows are retried next run
+            stats["errors"] += 1
+            log(f"  {rows[0]['source_id']}..: {str(e)[:200]}")
+            continue
+        if c is not None and stats["calls"] <= usage_log and usage_path is not None:
+            u = usage_row(model, rows, c, len(got))
+            new = not usage_path.exists()
+            with open(usage_path, "a", encoding="utf-8", newline="") as f:
+                w = csv.DictWriter(f, fieldnames=USAGE_FIELDS)
+                if new:
+                    w.writeheader()
+                w.writerow(u)
+            log("  usage: " + ", ".join(f"{k}={u[k]}" for k in ("items", "prompt_tokens", "cached_tokens",
+                                                                "completion_tokens", "reasoning_tokens")))
+        share = c.total_tokens / len(got) if c is not None and got else 0
+        for k, row in enumerate(rows, start=1):
+            if k in got:
+                ckpt.add({"source_id": row["source_id"], "degraded_prompt": got[k][0], "optimized_prompt": got[k][1],
+                          "model": c.model if "/" in c.model else model, "tokens": round(share),
+                          "cached_tokens": c.cached_tokens, "batch": len(rows)})
+                stats["generated"] += 1
+                stats["by_model"][model] += 1
+            else:
+                tries[row["source_id"]] += 1
+                if tries[row["source_id"]] < PARSE_ATTEMPTS:
+                    queue.append(row)
+                else:
+                    log(f"  {row['source_id']}: no usable reply {PARSE_ATTEMPTS} times, skipped until the next run")
+        llm_pace = getattr(llm, "set_groq_pace", None)
+        if llm_pace:
+            llm_pace(pace_for(ckpt.tokens_per_row(batch_size) * batch_size))
+        if stats["generated"] >= next_report:
+            next_report += 25 * max(1, batch_size // 5 * 4)
+            log(f"[{stats['generated']}/{total}] generated {stats['generated']}, calls {stats['calls']}, "
+                f"{ckpt.tokens_per_row(batch_size):.0f} tokens/row")
     return stats
 
 
@@ -684,9 +768,9 @@ def load_or_make_sample(out_dir: Path) -> tuple[list[dict[str, Any]], dict[str, 
 
 
 def plan_text(plans: dict[str, CategoryPlan], sample: list[dict[str, Any]], ckpt: Checkpoint, budget: Budget,
-              models: list[str]) -> str:
-    per_call = ckpt.tokens_per_call()
-    measured = sum(1 for r in ckpt.done.values() if r.get("tokens")) >= MEASURE_AFTER
+              models: list[str], batch_size: int = BATCH_SIZE) -> str:
+    per_row = ckpt.tokens_per_row(batch_size)
+    measured = sum(1 for r in ckpt.done.values() if r.get("batch", 1) == batch_size) >= MEASURE_AFTER
     lines = ["| category | v1.1 rows | v1 pass rate | still needed | unused source rows | sampled | generated | "
              "expected rows |", "|---|---|---|---|---|---|---|---|"]
     remaining = 0
@@ -697,19 +781,22 @@ def plan_text(plans: dict[str, CategoryPlan], sample: list[dict[str, Any]], ckpt
         remaining += n - done
         lines.append(f"| {c} | {p.v11_rows} | {100 * p.pass_rate:.1f}% | {p.needed} | {p.unused} | {n} | {done} | "
                      f"~{p.v11_rows + round(n * p.pass_rate)} |")
-    regen_calls = math.ceil(len(sample) * 0.03 / repair.ROWS_PER_CALL)      # v1.1: ~3% subject drops
-    calls = remaining + regen_calls
-    tokens = calls * per_call
-    daily = sum(budget.fraction * DAILY_LIMITS[m]["tokens"] for m in models)
-    now = sum(budget.left(m)["tokens"] for m in models)
-    lines += ["", f"Tokens per call: {per_call:.0f} ({'measured' if measured else 'notebook estimate'}).",
-              f"Remaining: {remaining} generation calls + ~{regen_calls} subject-repair calls = ~{calls} calls, "
-              f"~{tokens / 1e6:.2f}M tokens.",
-              f"Budget: {budget.fraction:.0%} of {len(models)} models x 200K tokens = {daily / 1e3:.0f}K tokens/day "
-              f"(~{daily / per_call:.0f} calls); left now (last 24 h): {now / 1e3:.0f}K tokens "
-              f"(~{now / per_call:.0f} calls).",
-              f"Estimated days: {tokens / daily:.1f}. Pace: {pace_for(per_call):.1f} s between calls "
-              f"(8K tokens/min per model)."]
+    calls = math.ceil(remaining / batch_size)
+    tokens = remaining * per_row
+    daily = {m: budget._parts(m)[1] * budget._parts(m)[3]["tokens"] for m in models}
+    now = {m: budget.left(m)["tokens"] for m in models}
+    cerebras = [m for m in models if provider_of(m) == "cerebras"]
+    lines += ["", f"Tokens per row: {per_row:.0f} at {batch_size} rows per call "
+                  f"({'measured' if measured else 'estimate'}).",
+              f"Remaining: {remaining} rows = {calls} calls, ~{tokens / 1e6:.2f}M tokens.",
+              "Daily budget: " + ", ".join(f"{m} {daily[m] / 1e3:.0f}K" for m in models)
+              + f" = ~{sum(daily.values()) / per_row:.0f} rows/day; left now (last 24 h): "
+              + f"{sum(now.values()) / 1e3:.0f}K tokens (~{sum(now.values()) / per_row:.0f} rows).",
+              f"Estimated days: {tokens / max(sum(daily.values()), 1):.1f}."]
+    if cerebras:
+        from app.cerebras import MIN_INTERVAL as CEREBRAS_INTERVAL
+        lines.append(f"Cerebras pace: one call per {CEREBRAS_INTERVAL:.1f} s (150 requests/hour) = "
+                     f"~{3600 / CEREBRAS_INTERVAL * batch_size:.0f} rows/hour.")
     return "\n".join(lines)
 
 
@@ -726,38 +813,51 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, default=V12_DIR)
     ap.add_argument("--budget-fraction", type=float, default=BUDGET_FRACTION,
-                    help="share of each model's daily limit generation may use (default 0.7)")
-    ap.add_argument("--models", nargs="+", default=GROQ_MODELS)
+                    help="share of each Groq model's 24-hour limit generation may use (default 0.5)")
+    ap.add_argument("--cerebras-fraction", type=float, default=CEREBRAS_FRACTION,
+                    help="share of Cerebras' daily limit generation may use (default 0.95)")
+    ap.add_argument("--models", nargs="+", default=GENERATION_MODELS)
+    ap.add_argument("--batch-size", type=int, default=BATCH_SIZE, help="rows per generation call")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("plan", help="sample the new rows and estimate Groq usage (no Groq calls)")
-    g = sub.add_parser("generate", help="generate pairs within the 24-hour budget (resumable)")
+    sub.add_parser("plan", help="sample the new rows and estimate usage (no API calls)")
+    g = sub.add_parser("generate", help="generate pairs within the budget (resumable)")
     g.add_argument("--max-calls", type=int, help="stop after this many generation calls")
-    g.add_argument("--max-repair-calls", type=int, default=20, help="Groq calls for subject repairs after generation")
+    g.add_argument("--max-repair-calls", type=int, default=20, help="calls for subject repairs after generation")
     g.add_argument("--usage-log", type=int, default=10,
                    help="write the token breakdown of the first N calls to usage_breakdown.csv")
     sub.add_parser("build", help="quality checks, repair, splits -> v1.2 files (works on a partial run)")
     args = ap.parse_args(argv)
 
-    ledger = UsageLedger()
-    budget = Budget(ledger, args.budget_fraction)
+    ledger, cerebras_ledger = UsageLedger(), UsageLedger(CEREBRAS_LEDGER)
+    budget = Budget(ledger, args.budget_fraction, cerebras_ledger=cerebras_ledger,
+                    cerebras_fraction=args.cerebras_fraction)
     ckpt = Checkpoint(args.out / "generation_checkpoint.jsonl")
     sample, plans = load_or_make_sample(args.out)
 
     if args.cmd == "plan":
-        print(plan_text(plans, sample, ckpt, budget, args.models))
+        print(plan_text(plans, sample, ckpt, budget, args.models, args.batch_size))
         return
 
     if args.cmd == "generate":
+        import os
+
+        from app.cerebras import CerebrasChat
         from app.evaluation.llm import GroqChat
 
-        llm = GroqChat(min_interval=pace_for(ckpt.tokens_per_call()), ledger=ledger, tag="generation")
+        groq = GroqChat(min_interval=pace_for(ckpt.tokens_per_row(args.batch_size) * args.batch_size),
+                        ledger=ledger, tag="generation")
+        cerebras = CerebrasChat(ledger=cerebras_ledger, tag="generation") if os.getenv("CEREBRAS_API_KEY") else None
+        llm = Router(groq, cerebras)
         stats = generate(sample, ckpt, llm, budget, args.models, args.max_calls, usage_log=args.usage_log,
-                         usage_path=args.out / "usage_breakdown.csv")
+                         usage_path=args.out / "usage_breakdown.csv", batch_size=args.batch_size)
         print(f"Generation: {stats['generated']} rows in {stats['calls']} calls "
               f"({dict(stats['by_model'])}); parse failures {stats['parse_failures']}, errors {stats['errors']}. "
               f"Stopped: {stats['stopped'] or 'all sampled rows generated'}")
+        if cerebras is not None and cerebras.remaining:
+            print("Cerebras remaining (from headers): " + ", ".join(f"{k} {v}" for k, v in sorted(
+                cerebras.remaining.items()) if k.endswith("day")))
         _repair_subjects(sample, ckpt, args, budget, llm)
-        print(plan_text(plans, sample, ckpt, budget, args.models))
+        print(plan_text(plans, sample, ckpt, budget, args.models, args.batch_size))
         return
 
     import spacy
@@ -772,7 +872,8 @@ def main(argv: list[str] | None = None) -> None:
 
 
 def _repair_subjects(sample, ckpt, args, budget, llm) -> None:
-    """Groq edits for new rows whose optimized prompt dropped the subject (cached for `build`), within the budget."""
+    """Edits for new rows whose optimized prompt dropped the subject (cached for `build`), within the budget, on the
+    first generation model that has budget left."""
     import spacy
 
     gen = [g for g in generated_rows(sample, ckpt, _embedder()) if g["auto_pass"]]
@@ -781,16 +882,17 @@ def _repair_subjects(sample, ckpt, args, budget, llm) -> None:
     cache_path = args.out / "regenerated.json"
     cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
     todo = [c for c in cands if c["id"] not in cache]
-    model = repair.REGEN_MODEL
-    calls_left = int(budget.left(model)["requests"])
-    per_call = 5 * ckpt.tokens_per_call()               # a batch of 5 rows costs about 5 generation calls
-    calls = min(args.max_repair_calls, calls_left, int(budget.left(model)["tokens"] // per_call))
+    per_call = repair.ROWS_PER_CALL * ckpt.tokens_per_row(args.batch_size) * 2
+    model = next((m for m in args.models if budget.allows(m, per_call)), None)
+    calls = 0 if model is None else min(args.max_repair_calls, int(budget.left(model)["requests"]),
+                                        int(budget.left(model)["tokens"] // per_call))
     if not todo or calls <= 0:
         print(f"Subject repairs: {len(todo)} pending, {calls} calls available now")
         return
     made = repair.regenerate(todo, llm, cache, calls, model)
     cache_path.write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"Subject repairs: {made} calls for {min(len(todo), made * repair.ROWS_PER_CALL)} of {len(todo)} rows")
+    print(f"Subject repairs on {model}: {made} calls for {min(len(todo), made * repair.ROWS_PER_CALL)} of "
+          f"{len(todo)} rows")
 
 
 if __name__ == "__main__":

@@ -118,7 +118,7 @@ def test_round_robin_interleaves_categories():
 # ---- generation
 
 class FakeLLM:
-    """Replies in order; a reply that is an exception is raised."""
+    """Replies in order; a reply that is an exception is raised. A reply may be a callable taking the messages."""
     def __init__(self, replies, ledger=None):
         self.replies, self.calls, self.min_interval, self.ledger = list(replies), [], 2.2, ledger
 
@@ -127,82 +127,130 @@ class FakeLLM:
         r = self.replies.pop(0)
         if isinstance(r, Exception):
             raise r
+        if callable(r):
+            r = r(messages)
         if self.ledger:
             self.ledger.record(model, "generation", 400)
-        return SimpleNamespace(content=r, model=model, input_tokens=300, output_tokens=100, cached_tokens=200,
+        return SimpleNamespace(content=r, model=model, input_tokens=300, output_tokens=100, cached_tokens=0,
                                total_tokens=400, reasoning_tokens=60, finish_reason="stop")
 
 
-def pair(d="deg", o="opt"):
-    return json.dumps({"degraded_prompt": d, "optimized_prompt": o})
+def reply_all(messages, skip=()):
+    """A well-formed reply for every item in the request (except the numbers in `skip`)."""
+    n = messages[1]["content"].count("ITEM ")
+    return json.dumps({"items": [{"id": str(i), "degraded_prompt": f"deg {i}", "optimized_prompt": f"opt {i}"}
+                                 for i in range(1, n + 1) if i not in skip]})
 
 
-def test_messages_carry_the_data_rule_and_truncate_context():
-    msgs = x.build_messages(src(1, context="c" * 5000))
+def budget_for(led, **kw):
+    limits = {m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS}
+    return x.Budget(led, fraction=1.0, global_cap=1.0, limits=limits, cerebras_fraction=kw.get("cerebras", 1.0),
+                    cerebras_limits={"cerebras/gpt-oss-120b": {"requests": kw.get("c_req", 100), "tokens": 10**6}})
+
+
+def test_messages_number_the_items_carry_the_data_rule_and_truncate_context():
+    msgs = x.build_messages([src(1, context="c" * 5000), src(2)])
     assert "copied verbatim" in msgs[0]["content"] and "Items: a, b, c" in msgs[0]["content"]
-    assert msgs[1]["content"].count("c" * 1000) == 1 and "c" * 1001 not in msgs[1]["content"]
-    assert "no accompanying" in x.build_messages(src(1))[1]["content"]
+    assert '"items"' in msgs[0]["content"]
+    user = msgs[1]["content"]
+    assert user.index("ITEM 1") < user.index("ITEM 2") and "No text/input." in user
+    assert user.count("c" * 1000) == 1 and "c" * 1001 not in user
 
 
-def test_parse_pair():
-    assert x.parse_pair('<think>hmm</think>{"degraded_prompt": "d", "optimized_prompt": "o"}') == ("d", "o")
-    with pytest.raises(ValueError):
-        x.parse_pair('{"degraded_prompt": "d"}')
-    with pytest.raises(ValueError):
-        x.parse_pair("no json")
+def test_system_prompt_keeps_every_rule():
+    p = x.SYSTEM_PROMPT
+    for rule in ("Same task and intent", "never add information", "Remove any output format and constraints",
+                 "realistic, not absurdly broken", "not longer than the clean instruction",
+                 "Do not copy the separate TEXT/INPUT", "add no facts, answers or content from the text",
+                 "explicit output format", '"the provided text" or "the given input"', "copied verbatim",
+                 "No filler", "under 60 words", "answer only from the provided text", "output structure",
+                 "list the allowed labels", "a length (sentences or bullet points)", "name the language",
+                 "single code block"):
+        assert rule in p, rule
 
 
-def test_generate_checkpoints_rotates_models_and_resumes(tmp_path):
+def test_parse_items():
+    got = x.parse_items('<think>hm</think>{"items": [{"id": "2", "degraded_prompt": "d2", "optimized_prompt": "o2"},'
+                        '{"id": "1", "degraded_prompt": "d1", "optimized_prompt": "o1"},'
+                        '{"id": "9", "degraded_prompt": "d9", "optimized_prompt": "o9"},'
+                        '{"id": "3", "degraded_prompt": "", "optimized_prompt": "o3"}]}', 3)
+    assert got == {1: ("d1", "o1"), 2: ("d2", "o2")}                 # out-of-range and empty items dropped
+    assert x.parse_items('{"degraded_prompt": "d", "optimized_prompt": "o"}', 1) == {1: ("d", "o")}
+    for bad in ("no json", '{"items": []}'):
+        with pytest.raises(ValueError):
+            x.parse_items(bad, 2)
+
+
+def test_router_sends_cerebras_models_to_cerebras():
+    groq, cer = FakeLLM(["g"]), FakeLLM(["c"])
+    r = x.Router(groq, cer)
+    r.complete("cerebras/gpt-oss-120b", [], max_tokens=5)
+    r.complete("openai/gpt-oss-20b", [], max_tokens=5)
+    assert cer.calls[0][0] == "gpt-oss-120b" and groq.calls[0][0] == "openai/gpt-oss-20b"
+    from app.evaluation.llm import ModelUnavailable
+    with pytest.raises(ModelUnavailable):
+        x.Router(groq, None).complete("cerebras/gpt-oss-120b", [], max_tokens=5)
+    assert x.reasoning_for("cerebras/gpt-oss-120b") == "low" and x.reasoning_for("qwen/qwen3.8-27b") == "none"
+
+
+def test_generate_batches_checkpoints_rotates_and_resumes(tmp_path):
     led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
-    budget = x.Budget(led, fraction=1.0, global_cap=1.0,
-                      limits={m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS})
-    sample = [src(i, "closed_qa") for i in range(3)] + [src(i, "coding", dataset="codealpaca") for i in range(3)]
+    budget = budget_for(led)
+    sample = [src(i, "closed_qa") for i in range(6)] + [src(i, "coding", dataset="codealpaca") for i in range(6)]
     ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
-    llm = FakeLLM([pair(), "not json", pair(), DailyLimitReached("per day"), pair(), pair()], led)
-    stats = x.generate(sample, ckpt, llm, budget, max_calls=6, log=lambda s: None)
-    assert stats["generated"] == 4 and stats["parse_failures"] == 1 and stats["calls"] == 6
-    assert stats["stopped"].startswith("--max-calls")
-    assert [c[0] for c in llm.calls] == [x.GROQ_MODELS[0]] * 4 + [x.GROQ_MODELS[1]] * 2
-    assert llm.calls[0][2]["reasoning_effort"] == "low" and llm.calls[0][2]["json_mode"]
+    llm = FakeLLM([reply_all, DailyLimitReached("day"), lambda m: reply_all(m, skip={2}), "not json"], led)
+    stats = x.generate(sample, ckpt, llm, budget, max_calls=4, log=lambda s: None, batch_size=5)
+    assert [c[0] for c in llm.calls] == ["cerebras/gpt-oss-120b", "cerebras/gpt-oss-120b",
+                                         "openai/gpt-oss-120b", "openai/gpt-oss-120b"]
+    assert [c[1][1]["content"].count("ITEM ") for c in llm.calls] == [5, 5, 5, 3]      # 2 left + 1 retried
+    assert stats["generated"] == 9 and stats["parse_failures"] == 1 and stats["stopped"].startswith("--max-calls")
+    assert llm.calls[0][2]["max_tokens"] == x.max_tokens_for(5) and llm.calls[0][2]["json_mode"]
+    rec = next(iter(ckpt.done.values()))
+    assert rec["model"] == "cerebras/gpt-oss-120b" and rec["batch"] == 5 and rec["tokens"] == 80   # 400 / 5 rows
 
-    resumed = x.Checkpoint(tmp_path / "ck.jsonl")                  # a new run reads the checkpoint
-    assert len(resumed.done) == 4
-    llm2 = FakeLLM([pair(), pair()], led)
-    stats2 = x.generate(sample, resumed, llm2, budget, log=lambda s: None)
-    assert stats2["generated"] == 2 and stats2["stopped"] == "" and len(resumed.done) == 6
-    assert x.generate(sample, resumed, FakeLLM([]), budget, log=lambda s: None)["calls"] == 0
+    resumed = x.Checkpoint(tmp_path / "ck.jsonl")
+    assert len(resumed.done) == 9
+    llm2 = FakeLLM([reply_all], led)
+    stats2 = x.generate(sample, resumed, llm2, budget, log=lambda s: None, batch_size=5)
+    assert stats2["generated"] == 3 and stats2["stopped"] == "" and len(resumed.done) == 12
+
+
+def test_rows_a_reply_leaves_out_are_retried_then_skipped(tmp_path):
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
+    ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
+    always_skip_first = lambda m: reply_all(m, skip={1})              # noqa: E731
+    llm = FakeLLM([always_skip_first] * 3 + [reply_all] * 3, led)
+    stats = x.generate([src(i) for i in range(3)], ckpt, llm, budget_for(led), log=lambda s: None, batch_size=3)
+    assert "dolly-0" not in ckpt.done and {"dolly-1", "dolly-2"} <= set(ckpt.done)
+    assert stats["calls"] == 3                                       # dolly-0 tried 3 times, then left for next run
 
 
 def test_groq_json_failures_count_as_parse_failures(tmp_path):
     from app.evaluation.llm import JSONGenerationFailed
 
     led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
-    budget = x.Budget(led, fraction=1.0, global_cap=1.0,
-                      limits={m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS})
     ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
     bad = JSONGenerationFailed("json_validate_failed")
-    llm = FakeLLM([bad, pair(), bad, bad, bad, pair()], led)
-    stats = x.generate([src(1), src(2), src(3)], ckpt, llm, budget, log=lambda s: None)
-    assert stats["parse_failures"] == 4 and stats["generated"] == 2        # src(2) skipped after 3 failures
-    assert set(ckpt.done) == {"dolly-1", "dolly-3"}
+    llm = FakeLLM([bad, reply_all], led)
+    stats = x.generate([src(1), src(2)], ckpt, llm, budget_for(led), log=lambda s: None, batch_size=2)
+    assert stats["parse_failures"] == 1 and stats["generated"] == 2
 
 
 def test_usage_breakdown_is_logged_for_the_first_calls(tmp_path):
     import csv
 
     led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
-    budget = x.Budget(led, fraction=1.0, global_cap=1.0,
-                      limits={m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS})
     path = tmp_path / "usage.csv"
     x.generate([src(i, context="c" * 3000) for i in range(4)], x.Checkpoint(tmp_path / "ck.jsonl"),
-               FakeLLM([pair()] * 4, led), budget, log=lambda s: None, usage_log=2, usage_path=path)
+               FakeLLM([reply_all] * 2, led), budget_for(led), log=lambda s: None, usage_log=1, usage_path=path,
+               batch_size=2)
     rows = list(csv.DictReader(open(path)))
-    assert len(rows) == 2
+    assert len(rows) == 1
     r = rows[0]
-    assert (r["prompt_tokens"], r["cached_tokens"], r["completion_tokens"], r["reasoning_tokens"]) == ("300", "200",
-                                                                                                         "100", "60")
-    assert r["context_chars_sent"] == "1000" and r["max_completion_tokens"] == "1024"
-    assert r["reasoning_effort"] == "low" and int(r["system_prompt_chars"]) == len(x.SYSTEM_PROMPT)
+    assert (r["items"], r["prompt_tokens"], r["cached_tokens"], r["completion_tokens"], r["reasoning_tokens"]) == \
+        ("2", "300", "0", "100", "60")
+    assert r["context_chars_sent"] == "2000" and r["rows_returned"] == "2" and r["reasoning_effort"] == "low"
+    assert int(r["system_prompt_chars"]) == len(x.SYSTEM_PROMPT)
 
 
 def test_ledger_keeps_cached_tokens_separately(tmp_path, monkeypatch):
@@ -217,20 +265,23 @@ def test_ledger_keeps_cached_tokens_separately(tmp_path, monkeypatch):
 
 def test_generate_stops_at_the_budget(tmp_path):
     led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
-    budget = x.Budget(led, fraction=0.5, limits={m: {"requests": 4, "tokens": 10**6} for m in x.GROQ_MODELS})
-    sample = [src(i) for i in range(20)]
-    stats = x.generate(sample, x.Checkpoint(tmp_path / "ck.jsonl"), FakeLLM([pair()] * 20, led), budget,
-                       log=lambda s: None)
-    assert stats["generated"] == 6 and stats["stopped"] == "daily budget reached for every model"   # 2 per model
+    budget = x.Budget(led, fraction=0.5, limits={m: {"requests": 4, "tokens": 10**6} for m in x.GROQ_MODELS},
+                      cerebras_fraction=0.5, cerebras_limits={"cerebras/gpt-oss-120b": {"requests": 2,
+                                                                                        "tokens": 10**6}})
+    stats = x.generate([src(i) for i in range(20)], x.Checkpoint(tmp_path / "ck.jsonl"),
+                       FakeLLM([reply_all] * 20, led), budget, log=lambda s: None, batch_size=1)
+    assert stats["by_model"]["cerebras/gpt-oss-120b"] == 1 and stats["generated"] == 7    # 1 + 2 per Groq model
+    assert stats["stopped"] == "budget reached for every model"
 
 
-def test_tokens_per_call_switches_to_measured(tmp_path):
+def test_tokens_per_row_switches_to_measured(tmp_path):
     ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
     for i in range(x.MEASURE_AFTER - 1):
-        ckpt.add({"source_id": f"s{i}", "tokens": 900})
-    assert ckpt.tokens_per_call() == x.DEFAULT_TOKENS_PER_CALL
-    ckpt.add({"source_id": "last", "tokens": 900})
-    assert ckpt.tokens_per_call() == 900
+        ckpt.add({"source_id": f"s{i}", "tokens": 300, "batch": 5})
+    ckpt.add({"source_id": "single", "tokens": 1000})                 # batch 1: not counted for batch 5
+    assert ckpt.tokens_per_row(5) == x.DEFAULT_TOKENS_PER_CALL / 2
+    ckpt.add({"source_id": "last", "tokens": 300, "batch": 5})
+    assert ckpt.tokens_per_row(5) == 300
 
 
 # ---- quality checks, splits, build
