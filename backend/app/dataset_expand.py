@@ -905,9 +905,15 @@ def _repair_subjects(sample, ckpt, args, budget, llm) -> None:
     cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
     todo = [c for c in cands if c["id"] not in cache]
     per_call = repair.ROWS_PER_CALL * ckpt.tokens_per_row(args.batch_size) * 2
-    model = next((m for m in args.models if budget.allows(m, per_call)), None)
-    calls = 0 if model is None else min(args.max_repair_calls, int(budget.left(model)["requests"]),
-                                        int(budget.left(model)["tokens"] // per_call))
+    model = next((m for m in args.models if _allows(budget, llm, m, per_call)), None)
+    if model is None:
+        calls = 0
+    elif provider_of(model) == "cerebras":            # its headers decide, as in generate()
+        rem = getattr(llm.cerebras, "remaining", {}) or {}
+        calls = min(args.max_repair_calls, int(rem.get("tokens-day", per_call * args.max_repair_calls) // per_call))
+    else:
+        calls = min(args.max_repair_calls, int(budget.left(model)["requests"]),
+                    int(budget.left(model)["tokens"] // per_call))
     if not todo or calls <= 0:
         print(f"Subject repairs: {len(todo)} pending, {calls} calls available now")
         return

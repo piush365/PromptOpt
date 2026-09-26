@@ -13,7 +13,7 @@ The dataset lives on Google Drive and in `data/` (git-ignored); it is never stor
 |---|---|---|---|
 | v1 | 2,265 | first build: sampling, generation, automatic checks, splits | Colab notebook `PromptOpt_Dataset_Preparation_v2.ipynb` |
 | v1.1 | 2,256 | data dropped from the instruction put back (349 optimized + 20 degraded prompts repaired, 75 dropped subjects restored, 9 rows without source data removed); see `docs/dataset_v1_1_repair_log.csv` | `backend/app/dataset_repair.py` |
-| v1.2 | ~5,100 (about 1,000 per category) | v1.1 unchanged, plus new rows from never-used source rows | `backend/app/dataset_expand.py` |
+| v1.2 | 5,228 (1,009-1,093 per category) | v1.1 unchanged, plus 2,972 new rows from never-used source rows | `backend/app/dataset_expand.py` |
 
 ## How the rows were generated (`generation_version`)
 
@@ -23,8 +23,8 @@ v1 rows were generated with a different prompt from the v1.2 rows.
 | generation_version | prompt | rows per call | provider / models (`model` column) | when | rows |
 |---|---|---|---|---|---|
 | `v1` | the notebook's prompt (no data rule) | 1 | Groq: gpt-oss-120b (1,054), gpt-oss-20b (858), qwen3.8-27b (344) | Sep 2026, before 26 Sep | 2,256 (all v1.1 rows) |
-| `v1.2-single` | v1.2 prompt: the notebook's rules plus the data rule | 1 | Groq: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b` | 26 Sep 2026, morning | 303 generated |
-| `v1.2-batch5` | the same rules as `v1.2-single`, worded compactly for several items | 5 | `cerebras/gpt-oss-120b` first; Groq models when Cerebras' daily limit is used up | from 26 Sep 2026 | the rest |
+| `v1.2-single` | v1.2 prompt: the notebook's rules plus the data rule | 1 | Groq: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b` | 26 Sep 2026, morning | 303 generated, 254 in v1.2 |
+| `v1.2-batch5` | the same rules as `v1.2-single`, worded compactly for several items | 5 | `cerebras/gpt-oss-120b` first; Groq models when Cerebras' daily limit is used up | 26 Sep 2026 | 2,900 generated, 2,718 in v1.2 |
 
 All phases use temperature 0.7, JSON output, reasoning effort "low" for gpt-oss ("none" for qwen), and context
 truncated to 1,000 characters (1,500 in the first notebook runs).
@@ -49,6 +49,12 @@ full question or request"; classification ends with "Items: " and every item). O
 with no dropped data. Rows from revision 1 stay in the dataset (after the checks and the repair). Outside
 classification, a trailing "Items:" line that only repeats the question or subject is removed at build
 (`dataset_repair.strip_redundant_items`; logged as `items_line_removed`).
+
+**v1.2 build** (`data/promptopt_dataset_v1_2/build_report.md`): 3,203 rows generated, 2,983 passed the automatic
+checks, 11 removed by the repair (no source data), 2,972 added. Generating models of the new rows:
+cerebras/gpt-oss-120b 2,628, openai/gpt-oss-20b 154, openai/gpt-oss-120b 122, qwen/qwen3.8-27b 68. Per split and
+category: train 920-1,013, val 30, test 40 (information_extraction 49: the leakage guard moved 6 new rows that repeat
+a test instruction into test), benchmark 10.
 
 ## Pipeline (v1.2 rows)
 
