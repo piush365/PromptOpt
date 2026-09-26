@@ -39,8 +39,8 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 SENTENCE_MODEL = os.getenv("SENTENCE_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 # k-NN index built from the dataset's train split by `python -m app.stage_a.build_index` (git-ignored)
 CATEGORY_INDEX_PATH = Path(os.getenv("CATEGORY_INDEX_PATH", BACKEND_DIR / "artifacts" / "category_index.npz"))
-# PromptOpt Dataset v1, downloaded from Google Drive (git-ignored)
-DATASET_DIR = Path(os.getenv("DATASET_DIR", BACKEND_DIR.parent / "data" / "promptopt_dataset_v1"))
+# PromptOpt Dataset v1.1 (v1 from Google Drive, repaired by `python -m app.dataset_repair`; git-ignored)
+DATASET_DIR = Path(os.getenv("DATASET_DIR", BACKEND_DIR.parent / "data" / "promptopt_dataset_v1_1"))
 
 # ---- Evaluation harness
 # Groq API key for the target LLM and the judge. Put it in backend/.env; never hard-code it.

@@ -32,6 +32,9 @@ closed_qa, information_extraction, classification, summarization (from Dolly-15k
 PromptOpt Dataset v1 is built in Colab (`PromptOpt_Dataset_Preparation_v2.ipynb`) and saved to Google Drive
 (`MyDrive/PromptOpt/promptopt_dataset_v1`): degraded_prompt -> optimized_prompt pairs, splits train/val/test/benchmark,
 no instruction shared across splits. The dataset is NOT stored in the database.
+v1.1 (`data/promptopt_dataset_v1_1/`, the default `DATASET_DIR`) is v1 with dropped instruction data put back:
+`python -m app.dataset_repair --write` appends lost items/code deterministically, removes rows whose data exists
+nowhere, and fixes dropped subjects with cached Groq edits (`regenerated.json`); every change is in `repair_log.csv`.
 
 ## Backend (`backend/`)
 - Python + FastAPI (to be built), SQLAlchemy 2.0 ORM.
@@ -66,7 +69,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 
 | # | Step | Status |
 |---|------|--------|
-| 1 | Dataset v1.1 repair, then send rater sheets | **CURRENT**: rater-sheet tooling exists (`app/validation.py`); v1.1 repair not done, sheets not sent |
+| 1 | Dataset v1.1 repair, then send rater sheets | **CURRENT**: v1.1 repair done (2,256 rows); sheets generated for the team (3 x 150) and faculty (20), not sent yet |
 | 2 | Expand dataset to ~1,000 per category (frozen splits) | Not started |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Not started |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |

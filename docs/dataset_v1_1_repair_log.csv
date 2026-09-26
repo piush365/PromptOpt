@@ -1,0 +1,1241 @@
+id,split,category,action,field,before,after
+PO-CLS-0001,train,classification,repaired,optimized_prompt,"Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.","Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.
+
+Items: Tombak, Cizhonghlu"
+PO-CLS-0004,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output each species followed by its label, separated by a colon and a space, one per line.","Classify each listed species as ""alive"" or ""extinct"". Output each species followed by its label, separated by a colon and a space, one per line.
+
+Items: Repenomamus, Jaguar"
+PO-CLS-0005,train,classification,repaired,optimized_prompt,"Classify which option is a fish species. Choose between the labels ""fish"" and ""not fish"" and output only the label.","Classify which option is a fish species. Choose between the labels ""fish"" and ""not fish"" and output only the label.
+
+Items: Grass carp or Grass"
+PO-CLS-0006,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.
+
+Items: Madhalam, Erhu"
+PO-CLS-0007,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on separate lines, e.g., ""Octobass: string"".","Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on separate lines, e.g., ""Octobass: string"".
+
+Items: Octobass, Bass clarinet"
+PO-CLS-0008,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output each species followed by a colon and the label on separate lines.","Classify each listed species as ""alive"" or ""extinct"". Output each species followed by a colon and the label on separate lines.
+
+Items: Machaeroides, Red Panda"
+PO-CLS-0012,train,classification,removed,,"Classify each listed animal as either ""reptile"" or ""amphibian"". Output only the chosen label for each animal, one per line.",
+PO-CLS-0015,train,classification,repaired,optimized_prompt,"Classify each instrument as ""string"" or ""percussion"". Output a JSON object mapping each instrument name to its label.","Classify each instrument as ""string"" or ""percussion"". Output a JSON object mapping each instrument name to its label.
+
+Items: Wobble board, Scheitholt"
+PO-CLS-0018,train,classification,repaired,optimized_prompt,"Classify each listed car manufacturer as ""British"" or ""American"". Output a JSON object with the manufacturers as keys and the label (British/American) as values.","Classify each listed car manufacturer as ""British"" or ""American"". Output a JSON object with the manufacturers as keys and the label (British/American) as values.
+
+Items: Mini, RAM"
+PO-CLS-0019,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Allowed labels: string, percussion. Output each instrument followed by its label, e.g., ""Pakhavaj: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Allowed labels: string, percussion. Output each instrument followed by its label, e.g., ""Pakhavaj: percussion"".
+
+Items: Pakhavaj, Mejoranera"
+PO-CLS-0021,train,classification,repaired,optimized_prompt,"Classify each listed character as belonging to DC or Marvel. Output a JSON object with keys as the character names and values either ""DC"" or ""Marvel"".","Classify each listed character as belonging to DC or Marvel. Output a JSON object with keys as the character names and values either ""DC"" or ""Marvel"".
+
+Items: Namor, Aquaman"
+PO-CLS-0022,train,classification,removed,,"Classify each term as either ""country"" or ""continent"". Output only the label for each term, one per line.",
+PO-CLS-0023,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output the instrument name followed by its category on separate lines, e.g., ""Gehu: string"".","Classify each listed instrument as either ""string"" or ""woodwind"". Output the instrument name followed by its category on separate lines, e.g., ""Gehu: string"".
+
+Items: Gehu, Venu"
+PO-CLS-0024,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output the instrument name followed by its category, one per line.","Classify each listed instrument as either ""string"" or ""percussion"". Output the instrument name followed by its category, one per line.
+
+Items: Carillon, Rebab"
+PO-CLS-0025,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each name followed by its category on separate lines, e.g., ""Bubon: string"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each name followed by its category on separate lines, e.g., ""Bubon: string"".
+
+Items: Bubon, Kobyz"
+PO-CLS-0027,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either string or percussion. Output each instrument followed by its class on a separate line, using only the labels ""string"" or ""percussion"".","Classify each listed instrument as either string or percussion. Output each instrument followed by its class on a separate line, using only the labels ""string"" or ""percussion"".
+
+Items: Igil, Bara"
+PO-CLS-0028,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output the instrument name followed by the label, one per line.","Classify each listed instrument as either ""string"" or ""woodwind"". Output the instrument name followed by the label, one per line.
+
+Items: Tenoroon, Tembor"
+PO-CLS-0030,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label, separated by a colon and a space, one per line.","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label, separated by a colon and a space, one per line.
+
+Items: Ngoma drums, Zhuihu"
+PO-CLS-0032,train,classification,repaired,optimized_prompt,Classify each manufacturer as Japanese or American. Output each name followed by its label (Japanese or American) on separate lines.,"Classify each manufacturer as Japanese or American. Output each name followed by its label (Japanese or American) on separate lines.
+
+Items: Honda, Buick"
+PO-CLS-0033,train,classification,repaired,optimized_prompt,"Classify each instrument as either ""string"" or ""woodwind"". Output a JSON object with the instrument names as keys and the label (string or woodwind) as values.","Classify each instrument as either ""string"" or ""woodwind"". Output a JSON object with the instrument names as keys and the label (string or woodwind) as values.
+
+Items: Hornpipe, Gusli"
+PO-CLS-0034,train,classification,repaired,optimized_prompt,"Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as the value.","Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as the value.
+
+Items: Bak, Fiddle"
+PO-CLS-0036,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output each species followed by a colon and the appropriate label on separate lines.","Classify each listed species as ""alive"" or ""extinct"". Output each species followed by a colon and the appropriate label on separate lines.
+
+Items: Smilosuchus, Brown Bear"
+PO-CLS-0037,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line, e.g., ""Tambura: string"".","Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line, e.g., ""Tambura: string"".
+
+Items: Tambura, Tubax"
+PO-CLS-0038,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label in the format ""Instrument: label"" on separate lines.","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label in the format ""Instrument: label"" on separate lines.
+
+Items: Ferrinho, Bandurria"
+PO-CLS-0039,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Boobam: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Boobam: percussion"".
+
+Items: Boobam, Orutu"
+PO-CLS-0040,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Dabakan: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Dabakan: percussion"".
+
+Items: Dabakan, Kwitra"
+PO-CLS-0041,train,classification,removed,,"Identify the items that are movies starring Deepika Padukone. Output only the titles of those movies as a plain list, one per line.",
+PO-CLS-0042,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Monkey stick: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Monkey stick: percussion"".
+
+Items: Monkey stick, Tzouras"
+PO-CLS-0045,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output each name followed by its label, e.g., ""Mosasaurus: extinct"" on separate lines.","Classify each listed species as ""alive"" or ""extinct"". Output each name followed by its label, e.g., ""Mosasaurus: extinct"" on separate lines.
+
+Items: Mosasaurus, Whale Shark"
+PO-CLS-0046,train,classification,repaired,optimized_prompt,"Classify each unit as ""imperial"" or ""metric"". Output each unit followed by its label on a separate line, e.g., ""ton: imperial"".","Classify each unit as ""imperial"" or ""metric"". Output each unit followed by its label on a separate line, e.g., ""ton: imperial"".
+
+Items: ton, tonne"
+PO-CLS-0047,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with species names as keys and the label (alive/extinct) as values.","Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with species names as keys and the label (alive/extinct) as values.
+
+Items: Giant Panda, Oviraptor"
+PO-CLS-0048,train,classification,repaired,optimized_prompt,"Classify each given animal as ""domesticated"" or ""wild"". Output each animal followed by a colon and the appropriate label on separate lines.","Classify each given animal as ""domesticated"" or ""wild"". Output each animal followed by a colon and the appropriate label on separate lines.
+
+Items: Cat, Bubal hartebeest"
+PO-CLS-0050,train,classification,repaired,optimized_prompt,"Classify each listed character as ""DC"" or ""Marvel"". Output a JSON object with keys as the character names and values as the corresponding universe label.","Classify each listed character as ""DC"" or ""Marvel"". Output a JSON object with keys as the character names and values as the corresponding universe label.
+
+Items: Norman Osborne, Joker"
+PO-CLS-0051,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with species names as keys and the label (alive or extinct) as the value.","Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with species names as keys and the label (alive or extinct) as the value.
+
+Items: Microraptor, Whale"
+PO-CLS-0052,train,classification,repaired,optimized_prompt,"Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.","Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.
+
+Items: Sheker, Taishogoto"
+PO-CLS-0054,train,classification,repaired,optimized_prompt,"Classify each item as either ""city"" or ""country"". Output a list where each line contains the item followed by its label, e.g., ""Delhi: city"". Use only the two labels: city, country.","Classify each item as either ""city"" or ""country"". Output a list where each line contains the item followed by its label, e.g., ""Delhi: city"". Use only the two labels: city, country.
+
+Items: Delhi, China, Tokyo, Australia, India, Kuala Lumpur, Egypt, Morocco, Paris, London, Finland, Dubai, Angola, Chennai, Cape Town, Guinea, Ivory Coast, Ecuador, Sao Paulo, Toronto, Iran, Moscow, Berlin, Slovenia, Prague, Italy, Milan, Argentina, Cuba, Cambodia, Brunei, Jakarta, Manila"
+PO-CLS-0055,train,classification,repaired,optimized_prompt,"Classify each given phrase as referring to the book ""Don Quixote"" or not. Output a JSON object with the phrase as the key and the label ""yes"" or ""no"" as the value for each.","Classify each given phrase as referring to the book ""Don Quixote"" or not. Output a JSON object with the phrase as the key and the label ""yes"" or ""no"" as the value for each.
+
+Items: ""Don Quixote"", ""El Ingenioso Hidalgo Don Quixote de la Mancha"", ""El Ingenioso Hidalgo Don Quijote de la Mancha"", ""El Quijote"", ""The Man Who Killed Don Quixote"", ""Don Quixote, Knight Errant"""
+PO-CLS-0056,train,classification,repaired,optimized_prompt,"Classify each word as either 'positive' or 'negative'. Output a JSON object where each word is a key and its sentiment label is the value. Example: {""efficient"":""positive"", ...}","Classify each word as either 'positive' or 'negative'. Output a JSON object where each word is a key and its sentiment label is the value. Example: {""efficient"":""positive"", ...}
+
+Items: efficient, helpful, slow, horrible, fantastic, disappointing, confusing, lovely, excellent"
+PO-CLS-0057,train,classification,repaired,degraded_prompt,"classify these bands as polish death metal, norwegian death metal or k-pop","classify these bands as polish death metal, norwegian death metal or k-pop: BTS, EXO, Red Velvet, Cadaver, Darkthrone, Behemoth, Vader, Empatic, Girls' Generation, TWICE, Blood Red Throne, Emperor, Gorgoroth, Decapitated"
+PO-CLS-0057,train,classification,repaired,optimized_prompt,"Classify each band as ""Polish death metal"", ""Norwegian death metal"", or ""K-Pop"". Provide only the label for each band, one per line, in the order listed.","Classify each band as ""Polish death metal"", ""Norwegian death metal"", or ""K-Pop"". Provide only the label for each band, one per line, in the order listed.
+
+Items: BTS, EXO, Red Velvet, Cadaver, Darkthrone, Behemoth, Vader, Empatic, Girls' Generation, TWICE, Blood Red Throne, Emperor, Gorgoroth, Decapitated"
+PO-CLS-0058,train,classification,repaired,optimized_prompt,"For each name, state whether they belong to House Targaryen or House Baratheon. Output a list in the format: name: House. Do not add any extra text.","For each name, state whether they belong to House Targaryen or House Baratheon. Output a list in the format: name: House. Do not add any extra text.
+
+Items: Visenya, Aenar, Aegon, Aerys, Daenerys, Viserys, Orys, Argella, Robert, Steffon, Renly"
+PO-CLS-0059,train,classification,repaired,optimized_prompt,"Classify each name as ""Professional Golfer"" or ""Professional Football Player"". Output a list of the names with their corresponding label. Do not provide explanations.","Classify each name as ""Professional Golfer"" or ""Professional Football Player"". Output a list of the names with their corresponding label. Do not provide explanations.
+
+Items: Jon Rahm, Patrick Mahomes, Tom Brady, Max Homa, Scottie Scheffler, Tiger Woods, Rory McIlroy, Josh Allen, Jacoby Brissett"
+PO-CLS-0060,train,classification,repaired,optimized_prompt,Classify each animal as 'mammal' or 'amphibian'. Output a JSON object where keys are the animal names and values are the corresponding label.,"Classify each animal as 'mammal' or 'amphibian'. Output a JSON object where keys are the animal names and values are the corresponding label.
+
+Items: rats, cats, dogs,  frogs, toads, salamanders, newts, caecilians, deer, monkeys, apes, bats, whales, dolphins, and humans"
+PO-CLS-0061,train,classification,repaired,optimized_prompt,"Classify each player as ""quarterback"" or ""running back"". Output a JSON object with player names as keys and the assigned label as the value. Do not include any other text.","Classify each player as ""quarterback"" or ""running back"". Output a JSON object with player names as keys and the assigned label as the value. Do not include any other text.
+
+Items: Ezekiel Elliot, Peyton Manning, Lamar Jackson, Leonard Fournette, Sam Darnold, Derrick Henry"
+PO-CLS-0062,train,classification,repaired,optimized_prompt,"For each fruit in the list, output only the label ""pear"" or ""apple"" in the same order, separated by commas.","For each fruit in the list, output only the label ""pear"" or ""apple"" in the same order, separated by commas.
+
+Items: Anjou, Bartlett, Bosc, Cosmic Crisp, Fuji, Granny Smith, Plymouth"
+PO-CLS-0064,train,classification,repaired,optimized_prompt,"Classify each item as ""allowed"" or ""not allowed"" by the TSA. Provide a list of the items with their classification. No additional explanation needed.","Classify each item as ""allowed"" or ""not allowed"" by the TSA. Provide a list of the items with their classification. No additional explanation needed.
+
+Items: Toothbrush, Cologne, Beard Shaver, Alcohol, and Bottle Opener"
+PO-CLS-0065,train,classification,repaired,optimized_prompt,Classify each word as 'near' or 'far'. Output only the label for each word.,"Classify each word as 'near' or 'far'. Output only the label for each word.
+
+Items: Miles, close, neighbouring, distant, remote, adjacent, adjoining, outlying"
+PO-CLS-0066,train,classification,repaired,optimized_prompt,Classify each item as 'grocery store' or 'restaurant'. Output a JSON object with the item names as keys and the category as the value. Do not include any other text.,"Classify each item as 'grocery store' or 'restaurant'. Output a JSON object with the item names as keys and the category as the value. Do not include any other text.
+
+Items: Publix, Texas Roadhouse, Bonefish, Costco, Aldi, McDonalds, KFC, Whole Foods"
+PO-CLS-0067,train,classification,repaired,optimized_prompt,"Classify each name as ""Argentinian soccer player"" or ""Not an Argentinian soccer player"". Output a JSON array of objects with keys ""name"" and ""label"". Provide only these two labels.","Classify each name as ""Argentinian soccer player"" or ""Not an Argentinian soccer player"". Output a JSON array of objects with keys ""name"" and ""label"". Provide only these two labels.
+
+Items: Diego Armando Maradona, Lionel Messi, Alfredo Di Stefano, Mario Alberto Kempes, and Mauro Camoranesi?"
+PO-CLS-0068,train,classification,repaired,degraded_prompt,"classify these lego sets into themes city, creator, technic, star wars, super heroes","classify these lego sets into themes city, creator, technic, star wars, super heroes
+Themes: City, Creator, Technic, Star Wars, Super Heroes
+Sets: Police station, Mobile crane with working arm, The Bat Cave, 3 in 1 deep sea animals, Obi Wan vs Anakin duel on Mustafar, The Naboo palace, UCS Slave 1, Aston Martin with 4 speed transmission, lunar mission, realistic laptop"
+PO-CLS-0068,train,classification,repaired,optimized_prompt,"Classify each set into one of the themes: City, Creator, Technic, Star Wars, Super Heroes. Output a JSON array where each element contains the set name and its assigned theme.","Classify each set into one of the themes: City, Creator, Technic, Star Wars, Super Heroes. Output a JSON array where each element contains the set name and its assigned theme.
+
+Input:
+Themes: City, Creator, Technic, Star Wars, Super Heroes
+Sets: Police station, Mobile crane with working arm, The Bat Cave, 3 in 1 deep sea animals, Obi Wan vs Anakin duel on Mustafar, The Naboo palace, UCS Slave 1, Aston Martin with 4 speed transmission, lunar mission, realistic laptop"
+PO-CLS-0069,train,classification,repaired,optimized_prompt,"Classify each word as ""palindrome"" or ""not palindrome"". Output a JSON array of objects with keys ""word"" and ""label"" (label must be either ""palindrome"" or ""not palindrome"").","Classify each word as ""palindrome"" or ""not palindrome"". Output a JSON array of objects with keys ""word"" and ""label"" (label must be either ""palindrome"" or ""not palindrome"").
+
+Items: kayak, deified, rotator, repaper, deed, peep, wow, noon, taste, bait, not, built"
+PO-CLS-0070,train,classification,repaired,optimized_prompt,"Classify each of the following items as either 'dog' or 'cat'. Output a list of the same length, with each entry being the label only (no extra text).","Classify each of the following items as either 'dog' or 'cat'. Output a list of the same length, with each entry being the label only (no extra text).
+
+Items: Border Collie, Siamese, Maine Coon, German Shepard, Persian, and Corgi?"
+PO-CLS-0071,train,classification,repaired,optimized_prompt,"Classify each of the listed songs as by ""Grateful Dead"" or ""The Beatles"". Output a JSON array where each element has ""song"": song title and ""artist"": ""Grateful Dead"" or ""The Beatles"". Do not include any other text.","Classify each of the listed songs as by ""Grateful Dead"" or ""The Beatles"". Output a JSON array where each element has ""song"": song title and ""artist"": ""Grateful Dead"" or ""The Beatles"". Do not include any other text.
+
+Items: Don't Let Me Down, Sugar Magnolia, Hey Jude, Bertha, Throwing Stones, Let It Be, Truckin', Friend of the Devil, Uncle John's Band, and Here Comes the Sun"
+PO-CLS-0072,train,classification,repaired,optimized_prompt,"Classify each item as either solid, liquid, or gas. Output a list of the labels in the same order, one per line.","Classify each item as either solid, liquid, or gas. Output a list of the labels in the same order, one per line.
+
+Items: blood, xenon, gold, wood, neon, brick, milk, xenon, coffee, gases, helium"
+PO-CLS-0074,train,classification,repaired,optimized_prompt,"Classify each item as either ""state"" or ""city"". Output a JSON array of objects, each with ""name"" and ""label"" fields. Do not include any other text.","Classify each item as either ""state"" or ""city"". Output a JSON array of objects, each with ""name"" and ""label"" fields. Do not include any other text.
+
+Items: Florida, Texas, Alaska, Houston, Charlotte, Charleston, Savannah, Kansas, San Diego"
+PO-CLS-0075,train,classification,repaired,optimized_prompt,Identify which of the listed colors are shades of blue used by BMW for its cars. Output a comma-separated list of the correct shades.,"Identify which of the listed colors are shades of blue used by BMW for its cars. Output a comma-separated list of the correct shades.
+
+Items: Miami Blue, Laguna Seca Blue, Le Mans Blue, Interlagos Blue, Heritage Blue, Mexico Blue, Yas Marina Blue, Gulf Blue, Long Beach Blue"
+PO-CLS-0076,train,classification,repaired,optimized_prompt,"Classify each listed celebrity as Indian or Non-Indian. Output a JSON array of objects, each with ""name"": celebrity name and ""label"": ""Indian"" or ""Non-Indian"".","Classify each listed celebrity as Indian or Non-Indian. Output a JSON array of objects, each with ""name"": celebrity name and ""label"": ""Indian"" or ""Non-Indian"".
+
+Items: tom holland, gigi hadid, sara ali khan, vijay sethupathi, priyanka chopra, tom cruise, brad pitt"
+PO-CLS-0077,train,classification,repaired,optimized_prompt,"Classify each tool as either ""Infrastructure as Code (IAC)"" or ""CI/CD"". Output a JSON object mapping each tool to its label, e.g. {""terraform"": ""IAC""}.","Classify each tool as either ""Infrastructure as Code (IAC)"" or ""CI/CD"". Output a JSON object mapping each tool to its label, e.g. {""terraform"": ""IAC""}.
+
+Items: Terraform, AWS Cloud Formation , Github actions, Azure Devops pipeline"
+PO-CLS-0077,train,classification,regenerated,optimized_prompt,"Classify each tool as either ""Infrastructure as Code (IAC)"" or ""CI/CD"". Output a JSON object mapping each tool to its label, e.g. {""terraform"": ""IAC""}.
+
+Items: Terraform, AWS Cloud Formation , Github actions, Azure Devops pipeline","Classify each tool as either ""Infrastructure as Code (IAC)"" or ""CICD"". Output a JSON object mapping each tool to its label, e.g. {""terraform"": ""IAC""}.
+
+Items: Terraform, AWS Cloud Formation , Github actions, Azure Devops pipeline"
+PO-CLS-0078,train,classification,repaired,optimized_prompt,Classify each emotion as 'positive' or 'negative'. Output a JSON array of objects with keys 'emotion' and 'label'.,"Classify each emotion as 'positive' or 'negative'. Output a JSON array of objects with keys 'emotion' and 'label'.
+
+Items: Love, Joy, Awe, Happiness, Interest, Excitement, Sad, Fear, Distrust, Anxiety, Anger, Disgust, Trust, Apathy, Annoyance, Exuberance, Rage"
+PO-CLS-0079,train,classification,repaired,optimized_prompt,"For each element in the list, output only its label: ""metal"" or ""noble gas"". Provide the labels in the same order, separated by commas.","For each element in the list, output only its label: ""metal"" or ""noble gas"". Provide the labels in the same order, separated by commas.
+
+Items: Argon, Iron, Copper, Krypton, Neon, Silver, Thorium, Radon, Helium, Xenon, Erbium, Tin, Protactinium"
+PO-CLS-0080,train,classification,repaired,optimized_prompt,"Classify each item as ""Allowed"" or ""Not Allowed"" for TSA security. Output a list of the items with their corresponding label only.","Classify each item as ""Allowed"" or ""Not Allowed"" for TSA security. Output a list of the items with their corresponding label only.
+
+Items: baby carrier, empty water bottle, dog, box cutters, baseball bat, bike, axe, cooking spray"
+PO-CLS-0081,train,classification,repaired,optimized_prompt,"Classify each item as 'found' or 'not found' in a vegan kitchen. Output a list with the item name followed by the label, one per line.","Classify each item as 'found' or 'not found' in a vegan kitchen. Output a list with the item name followed by the label, one per line.
+
+Items: Butter, Eggs, Tofu, Chicken, Kale, Spinach, Peppers, Steak, Bread, Chickpeas, Pork"
+PO-CLS-0083,train,classification,repaired,optimized_prompt,"For each number in the list, classify it as 'perfect' if it is a perfect square, otherwise 'not perfect'. Output a JSON array of objects, each with keys 'number' and 'label'.","For each number in the list, classify it as 'perfect' if it is a perfect square, otherwise 'not perfect'. Output a JSON array of objects, each with keys 'number' and 'label'.
+
+Items: Classify them as 'perfect' and 'not perfect' - 1, 23, 4, 6, 9, 10, 42, 112, 81, 100, 55, 16, 32, 25"
+PO-CLS-0084,train,classification,repaired,optimized_prompt,"Classify each listed car as either ""compact"" or ""midsized"". Output a JSON object where each key is the car name and the value is the assigned label. Use only the two labels: ""compact"" or ""midsized"".","Classify each listed car as either ""compact"" or ""midsized"". Output a JSON object where each key is the car name and the value is the assigned label. Use only the two labels: ""compact"" or ""midsized"".
+
+Items: Toyota Camry, Nissan Altima, Honda Civic, Mazda3, Honda Accord, Toyota Corolla, Toyota Prius, Hyundai Sonata"
+PO-CLS-0085,train,classification,repaired,optimized_prompt,Classify each listed animal as 'Mammal' or 'Not a Mammal'. Output a JSON object with each animal as a key and its classification as the value.,"Classify each listed animal as 'Mammal' or 'Not a Mammal'. Output a JSON object with each animal as a key and its classification as the value.
+
+Items: Human, Dog, Elephants, Cat, Bats, Goat, Bears, Sheep, Wolf, Lion, Squirrel, Koala, Cheetah, Deer, Orca, Gorillas, Camel, Hamsters, Hedgehog, Blue whale, Chimpanzee"
+PO-CLS-0086,train,classification,repaired,optimized_prompt,"Classify each animal as 'small' or 'large'. Output a list of objects with 'animal' and 'size' keys, e.g., {""animal"":""horse"",""size"":""large""}.","Classify each animal as 'small' or 'large'. Output a list of objects with 'animal' and 'size' keys, e.g., {""animal"":""horse"",""size"":""large""}.
+
+Items: A horse, a mouse, an elephant, a snake, and a whale"
+PO-CLS-0087,train,classification,repaired,optimized_prompt,"Classify each item as 'refrigerated', 'frozen', or 'neither'. Return a list of labels in the same order as the items.","Classify each item as 'refrigerated', 'frozen', or 'neither'. Return a list of labels in the same order as the items.
+
+Items: ice cream, popsicles, butter, popcorn, yogurt, cereal, chips"
+PO-CLS-0088,train,classification,repaired,optimized_prompt,"Classify each operating system as open-source or proprietary. Output a JSON array where each element has ""os"": <name> and ""type"": ""open-source"" or ""proprietary"".","Classify each operating system as open-source or proprietary. Output a JSON array where each element has ""os"": <name> and ""type"": ""open-source"" or ""proprietary"".
+
+Items: Ubuntu, iOS , Debian, Fedora, CentOS, macOS, Open Suse, Windows"
+PO-CLS-0089,train,classification,repaired,optimized_prompt,"For each movie title, assign one of the labels: Comedy, Horror. Output a list of the titles with their corresponding label, one per line.","For each movie title, assign one of the labels: Comedy, Horror. Output a list of the titles with their corresponding label, one per line.
+
+Items: Weekend at Bernie's, Scream, What Lies Beneath, Happy Gilmore, Cujo, Billy Madison, Kingpin, Carrie, Halloween, Encino Man, Misery"
+PO-CLS-0090,train,classification,repaired,optimized_prompt,Identify all characters from the provided list who are bald or balding. Output the names as a bulleted list.,"Identify all characters from the provided list who are bald or balding. Output the names as a bulleted list.
+
+Items: Walter Skinner, John Fitzgerald Byers, Dana Scully, Melvin Frohike, Darius Michaud, Peter Watts, Conrad Strughold, Queequeg"
+PO-CLS-0090,train,classification,regenerated,optimized_prompt,"Identify all characters from the provided list who are bald or balding. Output the names as a bulleted list.
+
+Items: Walter Skinner, John Fitzgerald Byers, Dana Scully, Melvin Frohike, Darius Michaud, Peter Watts, Conrad Strughold, Queequeg","Identify all characters from The X-Files who are bald or balding from the provided list. Output the names as a bulleted list.
+
+Items: Walter Skinner, John Fitzgerald Byers, Dana Scully, Melvin Frohike, Darius Michaud, Peter Watts, Conrad Strughold, Queequeg"
+PO-CLS-0091,train,classification,repaired,optimized_prompt,"Classify each country as Western or Eastern hemisphere. Output a JSON object with country names as keys and ""Western"" or ""Eastern"" as values.","Classify each country as Western or Eastern hemisphere. Output a JSON object with country names as keys and ""Western"" or ""Eastern"" as values.
+
+Items: Namibia, United States, Canada, Australia, China, Brazil, Egypt, Mexico, Lebanon"
+PO-CLS-0092,train,classification,repaired,optimized_prompt,"Classify each listed country as left-hand traffic or right-hand traffic. Output a JSON array of objects with fields ""country"" and ""traffic_side"" (values: ""left"" or ""right"").","Classify each listed country as left-hand traffic or right-hand traffic. Output a JSON array of objects with fields ""country"" and ""traffic_side"" (values: ""left"" or ""right"").
+
+Items: USA, Spain, UK, India, Singapore, Switzerland, Australia, Egypt, France, Italy"
+PO-CLS-0093,train,classification,repaired,optimized_prompt,"Classify each city as either ""Wallis and Futuna"" or ""Morocco"". Output a JSON object with city names as keys and the corresponding country label as values. Do not include any other text.","Classify each city as either ""Wallis and Futuna"" or ""Morocco"". Output a JSON object with city names as keys and the corresponding country label as values. Do not include any other text.
+
+Items: Casablanca, El Kelaa des Srarhna, Mata-Utu, Fès, Leava"
+PO-CLS-0094,train,classification,repaired,optimized_prompt,"Classify each item as either ""plant"" or ""animal"". Output a JSON object with the item as key and the label as value.","Classify each item as either ""plant"" or ""animal"". Output a JSON object with the item as key and the label as value.
+
+Items: Oak Tree, mouse, grass, daisy, zebra, venus fly trap, hawk, whale"
+PO-CLS-0095,train,classification,repaired,optimized_prompt,"Classify each golfer as American, Canadian, or Neither. Output a JSON object where keys are golfer names and values are one of ""American"", ""Canadian"", or ""Neither"".","Classify each golfer as American, Canadian, or Neither. Output a JSON object where keys are golfer names and values are one of ""American"", ""Canadian"", or ""Neither"".
+
+Items: Mike Weir, Corey Conners, Max Homa, Tiger Woods, Justin Thomas, Viktor Hovland"
+PO-CLS-0096,train,classification,repaired,degraded_prompt,classify these movies as romance or drama,"classify these movies as romance or drama: Pyaar Diwana Hota Hai, Bas Itna Sa Khwaab Hai, Paagalpan, Uljhan, Yeh Zindagi Ka Safar"
+PO-CLS-0096,train,classification,repaired,optimized_prompt,"For each movie, assign a single label: ""Romance"" or ""Drama"". Output only the label per movie, one per line.","For each movie, assign a single label: ""Romance"" or ""Drama"". Output only the label per movie, one per line.
+
+Items: Pyaar Diwana Hota Hai, Bas Itna Sa Khwaab Hai, Paagalpan, Uljhan, Yeh Zindagi Ka Safar"
+PO-CLS-0097,train,classification,repaired,degraded_prompt,Which numbers from 1-10 are actually used for numbered golf irons?,"Which numbers from 1-10 are actually used for numbered golf irons?: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
+PO-CLS-0098,train,classification,repaired,optimized_prompt,"Label each city as either ""India"" or ""US"". Output a list of the same length with the corresponding label for each city, no additional text.","Label each city as either ""India"" or ""US"". Output a list of the same length with the corresponding label for each city, no additional text.
+
+Items: Bangalore, Portland, Chicago, Hyderabad, Chennai, Little Rock, NYC, Pune, Gandhinagar, Champaign, Urbana"
+PO-CLS-0099,train,classification,repaired,optimized_prompt,"Classify each item as TEA or COFFEE. Output a list of the items with the label in parentheses, e.g., ""chamomile (TEA)"". Provide only the classification, no extra text.","Classify each item as TEA or COFFEE. Output a list of the items with the label in parentheses, e.g., ""chamomile (TEA)"". Provide only the classification, no extra text.
+
+Items: chamomile, herbal, French roast, double latte, Earl grey, English breakfast, and a cappuccino"
+PO-CLS-0100,train,classification,repaired,optimized_prompt,"Classify each listed film as either ""contains Tom Cruise"" or ""does not contain Tom Cruise"". Output a JSON array of objects with keys ""film"" and ""label"". Use only the two labels provided.","Classify each listed film as either ""contains Tom Cruise"" or ""does not contain Tom Cruise"". Output a JSON array of objects with keys ""film"" and ""label"". Use only the two labels provided.
+
+Items: ""Trading Places"", ""Risky Business"", ""The Hunt for Red October"", ""Top Gun"", ""The Hangover"", ""Born on the 4th of July"", ""Saving Private Ryan"", and ""Reds"""
+PO-CLS-0101,train,classification,repaired,degraded_prompt,classify these celebs by 1990 or 1991,"classify these celebs by 1990 or 1991: Emma Watson, Jennifer Lawrence, Ed Sheeran, Charlie Puth"
+PO-CLS-0101,train,classification,repaired,optimized_prompt,"Classify each celebrity as born in 1990 or 1991. Output a JSON array where each element has the name and a ""label"" field with value ""1990"" or ""1991"".","Classify each celebrity as born in 1990 or 1991. Output a JSON array where each element has the name and a ""label"" field with value ""1990"" or ""1991"".
+
+Items: Emma Watson, Jennifer Lawrence, Ed Sheeran, Charlie Puth"
+PO-CLS-0102,train,classification,repaired,optimized_prompt,"Classify each item as 'mammals' or 'non-mammals'. Output a JSON object mapping each item to its label, e.g., ""dog"": ""mammals"". No additional text.","Classify each item as 'mammals' or 'non-mammals'. Output a JSON object mapping each item to its label, e.g., ""dog"": ""mammals"". No additional text.
+
+Items: dog, human, ant, bird, cat, dolphin, pig, cow, shrimp, coral, shark, honeybee, capybara"
+PO-CLS-0103,train,classification,repaired,optimized_prompt,"Classify each issue as requiring a doctor, lawyer, or plumber. Output a comma-separated list of the same order as the given issues.","Classify each issue as requiring a doctor, lawyer, or plumber. Output a comma-separated list of the same order as the given issues.
+
+Items: a leaky faucet, a persistent cough, a small claims court summons, a torn meniscus, a urinary tract infection, a broken toilet, a federal indictment, or a search warrant from the FBI"
+PO-CLS-0104,train,classification,repaired,optimized_prompt,"Classify each vehicle as Car or Truck. Output a JSON array of objects with keys ""vehicle"" and ""type"" (Car/Truck).","Classify each vehicle as Car or Truck. Output a JSON array of objects with keys ""vehicle"" and ""type"" (Car/Truck).
+
+Items: Toyota Tacoma, Toyota Prius, Ford F-150, Honda Civic, Nissan Frontier,  Hyundai Accent, Chevrolet Corvette, Mazda Miata"
+PO-CLS-0105,train,classification,repaired,optimized_prompt,"For each listed species, output either ""domesticated"" or ""wild"". Provide a comma-separated list in the same order as the species appear.","For each listed species, output either ""domesticated"" or ""wild"". Provide a comma-separated list in the same order as the species appear.
+
+Items: Western honey bee, European honey bee, Chinese honey bee, Japanese honey bee, Indian honey bee"
+PO-CLS-0106,train,classification,repaired,optimized_prompt,Classify each city by its country. Output a list of the form: city – country. Provide only the country name for each city.,"Classify each city by its country. Output a list of the form: city – country. Provide only the country name for each city.
+
+Items: Tokyo, London, New York, Taipei"
+PO-CLS-0107,train,classification,repaired,optimized_prompt,"Classify each item as 'element' or 'mineral'. Output a list of key-value pairs in JSON, e.g., {""oxygen"":""element""}.","Classify each item as 'element' or 'mineral'. Output a list of key-value pairs in JSON, e.g., {""oxygen"":""element""}.
+
+Items: oxygen, cobalt, phosphorus, nitrogen, graphite, quartz, carbon, and clay"
+PO-CLS-0108,train,classification,repaired,optimized_prompt,"Classify each item as either ""conductor"" or ""insulator"". Output a single line per item in the format: item: label","Classify each item as either ""conductor"" or ""insulator"". Output a single line per item in the format: item: label
+
+Items: steel, copper, rubber, wood, cardboard, aluminum"
+PO-CLS-0109,train,classification,repaired,optimized_prompt,"Classify each item as either religion or country. Output a JSON object mapping each name to its label (""religion"" or ""country"").","Classify each item as either religion or country. Output a JSON object mapping each name to its label (""religion"" or ""country"").
+
+Items: Christianity, Judaism, Norway, Canada, Islam, Egypt, China, and Iran"
+PO-CLS-0110,train,classification,repaired,optimized_prompt,"Classify each artist as either ""country"" or ""pop"". Output a JSON object with artist names as keys and the assigned genre as values.","Classify each artist as either ""country"" or ""pop"". Output a JSON object with artist names as keys and the assigned genre as values.
+
+Items: Dua Lipa, Harry Styles, Alan Jackson, Morgan Wallen, Taylor Swift, Thomas Rhett"
+PO-CLS-0111,train,classification,repaired,optimized_prompt,"Classify each item as either ""liquid"" or ""solid"". Output a list of the same items with their classification, one per line, exactly ""liquid"" or ""solid"".","Classify each item as either ""liquid"" or ""solid"". Output a list of the same items with their classification, one per line, exactly ""liquid"" or ""solid"".
+
+Items: puddle, cup, house, dog, bowl, water, juice"
+PO-CLS-0112,train,classification,repaired,optimized_prompt,"Classify each item as either ""mammal"" or ""reptile"". Output a list of the labels in the same order as the items.","Classify each item as either ""mammal"" or ""reptile"". Output a list of the labels in the same order as the items.
+
+Input:
+goat
+snake
+cockroach
+pig
+dog
+caterpillar
+lion"
+PO-CLS-0113,train,classification,repaired,optimized_prompt,"Classify each satellite by its planet. Allowed labels: Earth, Jupiter, Saturn. Output each satellite’s name followed by its label, one per line.","Classify each satellite by its planet. Allowed labels: Earth, Jupiter, Saturn. Output each satellite’s name followed by its label, one per line.
+
+Items: Titan, Europa, Moon, Ganymede"
+PO-CLS-0114,train,classification,repaired,optimized_prompt,"Classify each job as ""blue collar"" or ""white collar"". Output a comma-separated list of labels in the same order as the jobs, e.g. ""blue, white, ...","Classify each job as ""blue collar"" or ""white collar"". Output a comma-separated list of labels in the same order as the jobs, e.g. ""blue, white, ...
+
+Items: auditor, electrician, plumber, data scientist, financial analyst, construction worker"
+PO-CLS-0115,train,classification,repaired,optimized_prompt,"Classify each beverage as ""acidic"" or ""not acidic"". Return a JSON object with beverage names as keys and the classification as values. Do not include any other text.","Classify each beverage as ""acidic"" or ""not acidic"". Return a JSON object with beverage names as keys and the classification as values. Do not include any other text.
+
+Items: Orange Juice, Grapefruit Juice, Coca-Cola, Soy Milk, Coconut Water, Carrot Juice"
+PO-CLS-0116,train,classification,repaired,optimized_prompt,"For each city, output the label ""Wallis and Futuna"" or ""Guinea"" in a JSON object where keys are city names and values are the assigned labels.","For each city, output the label ""Wallis and Futuna"" or ""Guinea"" in a JSON object where keys are city names and values are the assigned labels.
+
+Items: Mamou, Leava, Mata-Utu, Conakry, Guéckédou"
+PO-CLS-0117,train,classification,repaired,optimized_prompt,"Classify each element as 'metal' or 'non-metal'. Output a JSON array of objects with fields ""element"" and ""label"". Example: [{""element"":""Sodium"",""label"":""metal""}, ...]","Classify each element as 'metal' or 'non-metal'. Output a JSON array of objects with fields ""element"" and ""label"". Example: [{""element"":""Sodium"",""label"":""metal""}, ...]
+
+Items: Sodium, Helium, Aluminum, Chlorine, Gold"
+PO-CLS-0118,train,classification,repaired,optimized_prompt,"Classify each city as 'Asia' or 'Not Asia'. Output a JSON object mapping each city to its label, using only the labels 'Asia' and 'Not Asia'.","Classify each city as 'Asia' or 'Not Asia'. Output a JSON object mapping each city to its label, using only the labels 'Asia' and 'Not Asia'.
+
+Items: cardiff, amsterdam, mumbai, bangalore, delhi?"
+PO-CLS-0119,train,classification,repaired,optimized_prompt,"Classify each listed model as belonging to either Ford or Vauxhall. Provide the result as a JSON array where each element is an object with keys ""model"" and ""brand"" (brand must be either ""Ford"" or ""Vauxhall"").","Classify each listed model as belonging to either Ford or Vauxhall. Provide the result as a JSON array where each element is an object with keys ""model"" and ""brand"" (brand must be either ""Ford"" or ""Vauxhall"").
+
+Items: Escort, Cavalier, Nova, Ka"
+PO-CLS-0121,train,classification,repaired,optimized_prompt,"Classify each item as ""ground"" or ""aviation"". Output a JSON object with the item as key and the label as value. For example: {""airplane"": ""aviation""}","Classify each item as ""ground"" or ""aviation"". Output a JSON object with the item as key and the label as value. For example: {""airplane"": ""aviation""}
+
+Items: airplane, truck, bicycle, unicycle, jet, wagon, helicopter"
+PO-CLS-0122,train,classification,repaired,optimized_prompt,"For each word, output the label singular or plural only. Provide the labels in the same order as the words.","For each word, output the label singular or plural only. Provide the labels in the same order as the words.
+
+Items: lions, bee, door, fence, ocean, lakes, people"
+PO-CLS-0123,train,classification,repaired,optimized_prompt,"For each item, output the label ""drinking"" or ""eating"" only. Provide the labels in the same order as the list.","For each item, output the label ""drinking"" or ""eating"" only. Provide the labels in the same order as the list.
+
+Items: cup, bottle, plate, bowl, fork, spoon, can"
+PO-CLS-0125,train,classification,repaired,optimized_prompt,"Classify each item as either red or blue. Output a JSON array of objects, each with ""item"" and ""color"" fields, where color is ""red"" or ""blue"".","Classify each item as either red or blue. Output a JSON array of objects, each with ""item"" and ""color"" fields, where color is ""red"" or ""blue"".
+
+Items: tomato, sky, ice, fire, cherries"
+PO-CLS-0127,train,classification,repaired,optimized_prompt,"Classify each color as primary or not. Output a list of the colors followed by ""primary"" or ""not primary"".","Classify each color as primary or not. Output a list of the colors followed by ""primary"" or ""not primary"".
+
+Items: Red, Yellow, Blue, Orange, Green, Violet"
+PO-CLS-0128,train,classification,repaired,optimized_prompt,"Classify each item as a body part or not. Return a list of the items that are body parts, each on a new line. No additional text.","Classify each item as a body part or not. Return a list of the items that are body parts, each on a new line. No additional text.
+
+Items: head, ankle, banana, finger, earlobe, kiwi, toe, car, shoulder, bed"
+PO-CLS-0129,train,classification,repaired,optimized_prompt,Choose the word that is different from the rest. Return only that word.,"Choose the word that is different from the rest. Return only that word.
+
+Items: Mother, Friend, Sister, Father, Brother"
+PO-CLS-0130,train,classification,repaired,optimized_prompt,"For each animal, output the label ""exoskeleton"" or ""endoskeleton"" only. Provide a list of labels in the same order as the animals given.","For each animal, output the label ""exoskeleton"" or ""endoskeleton"" only. Provide a list of labels in the same order as the animals given.
+
+Items: grasshopper, fish, spider, scorpion, ant, monkey"
+PO-CLS-0131,train,classification,repaired,optimized_prompt,"Classify each name as either ""shoes brand"" or ""clothing brand"". Provide a comma-separated list of labels in the same order as the names.","Classify each name as either ""shoes brand"" or ""clothing brand"". Provide a comma-separated list of labels in the same order as the names.
+
+Items: Nike, Tommy Hilfiger, Adidas, Levi's, Reebok, Puma, Wrangler"
+PO-CLS-0133,train,classification,repaired,optimized_prompt,"Classify each name as either ""artist"" or ""football player"". Output a list of the same names with their corresponding label, one per line.","Classify each name as either ""artist"" or ""football player"". Output a list of the same names with their corresponding label, one per line.
+
+Items: Andy Warhol, Joe Montana, Jackson Pollock, Tom Brady, Mark Rothko"
+PO-CLS-0135,train,classification,repaired,optimized_prompt,"Classify each word as a noun, verb, or adjective. Output the label only for each word in the order given.","Classify each word as a noun, verb, or adjective. Output the label only for each word in the order given.
+
+Items: playground, eating, skinny, chubby, tall, sleeping, bed"
+PO-CLS-0136,train,classification,repaired,optimized_prompt,"Classify each sport as ""racket"" or ""non-racket"". Output a JSON array of objects with keys ""sport"" and ""type"". ""type"" must be either ""racket"" or ""non-racket"". Do not include any other text.","Classify each sport as ""racket"" or ""non-racket"". Output a JSON array of objects with keys ""sport"" and ""type"". ""type"" must be either ""racket"" or ""non-racket"". Do not include any other text.
+
+Items: Tennis, Badminton, Squash, Football, Soccer, Basketball, Cricket, Ping Pong"
+PO-CLS-0137,train,classification,repaired,optimized_prompt,"Classify each item as either ""bright"" or ""dark"". Output a JSON object with the item as the key and the label as the value. Example: {""sun"": ""bright""}","Classify each item as either ""bright"" or ""dark"". Output a JSON object with the item as the key and the label as the value. Example: {""sun"": ""bright""}
+
+Items: sun, lamp, cave, light, night, tunnel"
+PO-CLS-0138,train,classification,repaired,optimized_prompt,"For each item, output a single word: ""chip"" or ""cracker"". List the results in the same order as the items.","For each item, output a single word: ""chip"" or ""cracker"". List the results in the same order as the items.
+
+Items: Goldfish, Wheat Thins, Pringles, Doritos, Cheez-Its, Lays, Ruffles"
+PO-CLS-0139,train,classification,repaired,degraded_prompt,classify the cities if they are in namibia or yemen,"classify the cities if they are in namibia or yemen: Sanaa, Ta‘izz, Windhoek, Rundu, Oshakati, Al Ḩudaydah"
+PO-CLS-0139,train,classification,repaired,optimized_prompt,"Classify each city as either ""Namibia"" or ""Yemen"". Output a list of city-label pairs, one per line, in the format: City: Label","Classify each city as either ""Namibia"" or ""Yemen"". Output a list of city-label pairs, one per line, in the format: City: Label
+
+Items: Sanaa, Ta‘izz, Windhoek, Rundu, Oshakati, Al Ḩudaydah"
+PO-CLS-0140,train,classification,repaired,optimized_prompt,"Classify each store as selling furniture or not. Output a list of the stores that sell furniture, each on a new line.","Classify each store as selling furniture or not. Output a list of the stores that sell furniture, each on a new line.
+
+Items: Safeway, dollar tree, HEB, IKEA, home depot, walmart"
+PO-CLS-0141,train,classification,repaired,degraded_prompt,classify these movies as thriller or action,"classify these movies as thriller or action: Aks, Pyaar Tune Kya Kiya, Vadh, Farz, Angaar: The Fire"
+PO-CLS-0141,train,classification,repaired,optimized_prompt,"Classify each movie into one of the following genres: ""Thriller"" or ""Action"". Output a single word per movie, in the same order, separated by commas.","Classify each movie into one of the following genres: ""Thriller"" or ""Action"". Output a single word per movie, in the same order, separated by commas.
+
+Items: Aks, Pyaar Tune Kya Kiya, Vadh, Farz, Angaar: The Fire"
+PO-CLS-0142,train,classification,repaired,optimized_prompt,"Classify each animal as ""pet"" or ""not pet"". Output a list of the same animals with the assigned label next to each. Do not provide any additional text.","Classify each animal as ""pet"" or ""not pet"". Output a list of the same animals with the assigned label next to each. Do not provide any additional text.
+
+Items: Wolf, dog, rabbit, squirrel, cat, lion"
+PO-CLS-0143,train,classification,repaired,optimized_prompt,Classify each city as either 'Spain' or 'France'. Output a JSON object with city names as keys and the country as the value.,"Classify each city as either 'Spain' or 'France'. Output a JSON object with city names as keys and the country as the value.
+
+Items: Pamplona, Valencia, Nice, Marseille, Paris, Sevilla"
+PO-CLS-0144,train,classification,repaired,optimized_prompt,"Label each item as ""dog"" or ""cat"" toy. Output a list of tuples: [""item"", ""label""].","Label each item as ""dog"" or ""cat"" toy. Output a list of tuples: [""item"", ""label""].
+
+Items: ball, laser, bone, mouse, frisbee, catnip"
+PO-CLS-0145,train,classification,repaired,optimized_prompt,"Classify each item as ""drink"" or ""food"". Output a JSON array where each element has ""item"": <name> and ""label"": <drink|food>.","Classify each item as ""drink"" or ""food"". Output a JSON array where each element has ""item"": <name> and ""label"": <drink|food>.
+
+Items: apple juice, cake, hamburger, carrot, orange juice, soda"
+PO-CLS-0146,train,classification,repaired,optimized_prompt,Choose the word that is different from the others. Output the chosen word only.,"Choose the word that is different from the others. Output the chosen word only.
+
+Items: curd, butter, oil, cheese, cream"
+PO-CLS-0147,train,classification,repaired,optimized_prompt,"Classify each item as ""color"" or ""not color"". Output a JSON array of objects, each with ""item"" and ""label"" fields. Example: {""item"":""red"",""label"":""color""}.","Classify each item as ""color"" or ""not color"". Output a JSON array of objects, each with ""item"" and ""label"" fields. Example: {""item"":""red"",""label"":""color""}.
+
+Items: red, black, yellow, orange, sun, sunflower, chips, book, white, pink, blue, keyboard"
+PO-CLS-0148,train,classification,repaired,optimized_prompt,"Classify each item as a Country, State, or City. Output a JSON array where each element is an object with ""name"" and ""label"" keys. Example: {""name"": ""California"", ""label"": ""State""}.","Classify each item as a Country, State, or City. Output a JSON array where each element is an object with ""name"" and ""label"" keys. Example: {""name"": ""California"", ""label"": ""State""}.
+
+Items: California, Sacramento, Chicago, Singapore, New Delhi, London, Tennessee, New York"
+PO-CLS-0149,train,classification,repaired,optimized_prompt,"Classify each animal as ""domestic"" or ""non-domestic"". Output a JSON object with animal names as keys and the assigned label as value. Example: {""dog"":""domestic"", ""badgers"":""non-domestic""}","Classify each animal as ""domestic"" or ""non-domestic"". Output a JSON object with animal names as keys and the assigned label as value. Example: {""dog"":""domestic"", ""badgers"":""non-domestic""}
+
+Items: dog, cat, badgers, cougars"
+PO-CLS-0152,train,classification,repaired,optimized_prompt,"Classify each item as ""food"" or ""drink"". Output a JSON object with the item names as keys and the classification as values. Do not include any other text.","Classify each item as ""food"" or ""drink"". Output a JSON object with the item names as keys and the classification as values. Do not include any other text.
+
+Items: juice, hamburger, coke, pizza, hotdog, steak, lemonade, apple cider"
+PO-CLS-0153,train,classification,repaired,optimized_prompt,"Classify each listed Pokémon as either ""water"" or ""fire"" type. Output a JSON object with Pokémon names as keys and their type as the value.","Classify each listed Pokémon as either ""water"" or ""fire"" type. Output a JSON object with Pokémon names as keys and their type as the value.
+
+Items: Squirtle, Charizard, Ninetales, Arcanine, Poliwhirl, Psyduck"
+PO-CLS-0154,train,classification,repaired,optimized_prompt,"Classify each item as a dog breed or not. Output a list of the items followed by ""dog"" or ""not dog"".","Classify each item as a dog breed or not. Output a list of the items followed by ""dog"" or ""not dog"".
+
+Items: Dachshund, Tabby, Russian Blue, Airedale Terrier, Papillon, Bengal, Greyhound"
+PO-CLS-0155,train,classification,repaired,optimized_prompt,Classify each name as either 'fish' or 'insect'. Output a JSON object with the name as key and the assigned label as value.,"Classify each name as either 'fish' or 'insect'. Output a JSON object with the name as key and the assigned label as value.
+
+Items: Hilsa, Catla, Maggot, Mite"
+PO-CLS-0156,train,classification,repaired,optimized_prompt,"For each system in the list, assign the label ""Hadoop ecosystem"" if it is part of Hadoop, otherwise ""Not Hadoop ecosystem"". Output a JSON object with the system names as keys and the assigned labels as values.","For each system in the list, assign the label ""Hadoop ecosystem"" if it is part of Hadoop, otherwise ""Not Hadoop ecosystem"". Output a JSON object with the system names as keys and the assigned labels as values.
+
+Items: MapReduce, MySQL, Google apps, Hive, Pig"
+PO-CLS-0157,train,classification,repaired,optimized_prompt,"Classify each item as a programming language or not. Output a list of the same items with the label 'programming language' or 'not a programming language' for each, one per line.","Classify each item as a programming language or not. Output a list of the same items with the label 'programming language' or 'not a programming language' for each, one per line.
+
+Input:
+hindi
+urdu
+arabic
+python
+scala
+rust
+french
+R
+german
+java
+c"
+PO-CLS-0158,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line in the format ""Instrument: category"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line in the format ""Instrument: category"".
+
+Items: Kenong, Zeze"
+PO-CLS-0162,train,classification,repaired,optimized_prompt,Classify each listed animal as domesticated or wild. Output each animal followed by its label (domesticated or wild) in a simple list.,"Classify each listed animal as domesticated or wild. Output each animal followed by its label (domesticated or wild) in a simple list.
+
+Items: Cows (Cattle), Cheetah"
+PO-CLS-0163,train,classification,repaired,optimized_prompt,"Classify each item as ""bird"" or ""fish"". Output each name followed by its label, separated by a colon and a space, one per line.","Classify each item as ""bird"" or ""fish"". Output each name followed by its label, separated by a colon and a space, one per line.
+
+Items: Redfin perch, Red-breasted merganser"
+PO-CLS-0165,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on separate lines, e.g., ""Kundu: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on separate lines, e.g., ""Kundu: percussion"".
+
+Items: Kundu, Kabosy"
+PO-CLS-0169,train,classification,repaired,optimized_prompt,"Classify each of the listed manufacturers as ""British"" or ""American"". Output a JSON object with keys as the manufacturer names and values as the label (British or American).","Classify each of the listed manufacturers as ""British"" or ""American"". Output a JSON object with keys as the manufacturer names and values as the label (British or American).
+
+Items: Lotus, Lincoln"
+PO-CLS-0170,train,classification,repaired,optimized_prompt,"Classify each instrument as ""string"" or ""percussion"". Output a JSON object with keys as the instrument names and values as the label (string or percussion).","Classify each instrument as ""string"" or ""percussion"". Output a JSON object with keys as the instrument names and values as the label (string or percussion).
+
+Items: Kakko, Akonting"
+PO-CLS-0171,train,classification,repaired,optimized_prompt,"Classify each instrument as either ""string"" or ""woodwind"". Output as a list of ""instrument: label"" pairs, one per line, using only the two labels.","Classify each instrument as either ""string"" or ""woodwind"". Output as a list of ""instrument: label"" pairs, one per line, using only the two labels.
+
+Items: Panduri, Zurna"
+PO-CLS-0172,train,classification,repaired,optimized_prompt,"Classify each given instrument as either ""string"" or ""percussion"". Output only the label for each instrument, one per line, in the order presented.","Classify each given instrument as either ""string"" or ""percussion"". Output only the label for each instrument, one per line, in the order presented.
+
+Items: Thattai, Tanpura"
+PO-CLS-0175,train,classification,repaired,optimized_prompt,"Classify each listed character as belonging to the DC or Marvel universe. Output a JSON object mapping each character name to its label (""DC"" or ""Marvel"").","Classify each listed character as belonging to the DC or Marvel universe. Output a JSON object mapping each character name to its label (""DC"" or ""Marvel"").
+
+Items: Ray Palmer, Ant-Man"
+PO-CLS-0179,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output the instrument followed by its category on separate lines, e.g., ""Clavinet: string"". Use only the two given instruments.","Classify each listed instrument as either ""string"" or ""woodwind"". Output the instrument followed by its category on separate lines, e.g., ""Clavinet: string"". Use only the two given instruments.
+
+Items: Clavinet, Ocarina"
+PO-CLS-0180,train,classification,repaired,optimized_prompt,Identify the item in the list that is a bird. Output only the bird name.,"Identify the item in the list that is a bird. Output only the bird name.
+
+Items: Arctic skua, Monkey, Lily"
+PO-CLS-0181,train,classification,repaired,optimized_prompt,Classify each listed character as belonging to the DC or Marvel universe. Output each name followed by its universe label (DC or Marvel) on separate lines.,"Classify each listed character as belonging to the DC or Marvel universe. Output each name followed by its universe label (DC or Marvel) on separate lines.
+
+Items: Falcon, Hawkman"
+PO-CLS-0182,train,classification,repaired,optimized_prompt,"Classify each given instrument as either ""string"" or ""percussion"". Output each name followed by its label on a separate line, e.g., ""Whip: percussion"".","Classify each given instrument as either ""string"" or ""percussion"". Output each name followed by its label on a separate line, e.g., ""Whip: percussion"".
+
+Items: Whip, Waldzither"
+PO-CLS-0184,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Crotale: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Crotale: percussion"".
+
+Items: Crotale, Kannel"
+PO-CLS-0185,train,classification,repaired,optimized_prompt,"Classify each listed manufacturer as German or American. Output a JSON object with each name as a key and the label ""German"" or ""American"" as the value.","Classify each listed manufacturer as German or American. Output a JSON object with each name as a key and the label ""German"" or ""American"" as the value.
+
+Items: Audi, Buick"
+PO-CLS-0186,train,classification,repaired,optimized_prompt,"Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.","Classify each listed instrument as ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.
+
+Items: Kecer, Saz"
+PO-CLS-0187,train,classification,repaired,optimized_prompt,"Classify each instrument as either ""string"" or ""percussion"". Provide the label for each item in the order given, separated by commas.","Classify each instrument as either ""string"" or ""percussion"". Provide the label for each item in the order given, separated by commas.
+
+Items: Kus, Hackbrett"
+PO-CLS-0188,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with keys as species names and values as the label (alive or extinct).","Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with keys as species names and values as the label (alive or extinct).
+
+Items: Hovasaurus, Green Turtle"
+PO-CLS-0189,train,classification,removed,,Identify which rivers are located in India. Output a comma-separated list of the rivers that are in India.,
+PO-CLS-0190,train,classification,repaired,optimized_prompt,Classify each of the two characters as belonging to either DC or Marvel. Output each character name followed by its universe label (DC or Marvel) on separate lines.,"Classify each of the two characters as belonging to either DC or Marvel. Output each character name followed by its universe label (DC or Marvel) on separate lines.
+
+Items: Deadpool or Deadstroke"
+PO-CLS-0192,train,classification,repaired,optimized_prompt,Classify each listed character as belonging to the DC Universe or the Marvel Universe. Output a line for each character in the format: <character>: <DC or Marvel>.,"Classify each listed character as belonging to the DC Universe or the Marvel Universe. Output a line for each character in the format: <character>: <DC or Marvel>.
+
+Items: Tigra, Cheetah"
+PO-CLS-0194,train,classification,repaired,optimized_prompt,Classify each listed character as belonging to DC or Marvel. Output a JSON object with character names as keys and the universe ('DC' or 'Marvel') as values.,"Classify each listed character as belonging to DC or Marvel. Output a JSON object with character names as keys and the universe ('DC' or 'Marvel') as values.
+
+Items: She-Hulk, Wonder Woman"
+PO-CLS-0195,train,classification,removed,,"Classify each item as either ""liquid"" or ""solid"". Return the labels in a JSON array in the same order as the items are given.",
+PO-CLS-0196,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a line for each instrument in the format ""Instrument: label"".","Classify each listed instrument as either ""string"" or ""percussion"". Output a line for each instrument in the format ""Instrument: label"".
+
+Items: Djembe, Dotar"
+PO-CLS-0198,train,classification,repaired,optimized_prompt,"Classify each listed character as belonging to the DC Universe or the Marvel Universe. Output a JSON object with each character as a key and the value ""DC"" or ""Marvel"".","Classify each listed character as belonging to the DC Universe or the Marvel Universe. Output a JSON object with each character as a key and the value ""DC"" or ""Marvel"".
+
+Items: Banshee, Silver Banshee"
+PO-CLS-0199,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with species names as keys and the label (alive/extinct) as values.","Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with species names as keys and the label (alive/extinct) as values.
+
+Items: Pliosaur, Marine Iguana"
+PO-CLS-0201,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line in the format ""instrument: category"".","Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line in the format ""instrument: category"".
+
+Items: Agiarut, Piccolo"
+PO-CLS-0202,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with the species names as keys and the label (alive/extinct) as the value.","Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with the species names as keys and the label (alive/extinct) as the value.
+
+Items: Platybelodon, Lion"
+PO-CLS-0204,train,classification,repaired,optimized_prompt,"Classify each listed instrument as ""string"", ""percussion"", or ""other"". Output each instrument followed by its category on a separate line.","Classify each listed instrument as ""string"", ""percussion"", or ""other"". Output each instrument followed by its category on a separate line.
+
+Items: Whistle, Qiftelia"
+PO-CLS-0205,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line.","Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line.
+
+Items: Ukulele, Oboe"
+PO-CLS-0206,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.
+
+Items: Kebero, Vlier"
+PO-CLS-0207,train,classification,repaired,optimized_prompt,"Classify each listed animal as ""domesticated"" or ""wild"". Output a JSON object with the animal names as keys and the label (domesticated or wild) as the value.","Classify each listed animal as ""domesticated"" or ""wild"". Output a JSON object with the animal names as keys and the label (domesticated or wild) as the value.
+
+Items: Turkey, European goldfinch"
+PO-CLS-0209,train,classification,removed,,"Classify each item as either ""TV show"" or ""movie"". Output only the label for each item, one per line.",
+PO-CLS-0211,train,classification,repaired,optimized_prompt,"Classify each instrument as either ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.","Classify each instrument as either ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as values.
+
+Items: Tamborim, Veena"
+PO-CLS-0212,train,classification,repaired,optimized_prompt,"Classify each listed animal as ""domesticated"" or ""wild"". Provide a JSON object with keys as the animal names and values as the appropriate label.","Classify each listed animal as ""domesticated"" or ""wild"". Provide a JSON object with keys as the animal names and values as the appropriate label.
+
+Items: Arabian camel, European fallow"
+PO-CLS-0214,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""mridangam: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""mridangam: percussion"".
+
+Items: Mridangam, Gambus"
+PO-CLS-0216,train,classification,repaired,optimized_prompt,"Classify each listed manufacturer as ""Italian"" or ""American"". Output each name followed by its label on a separate line, e.g., ""Fiat: Italian"".","Classify each listed manufacturer as ""Italian"" or ""American"". Output each name followed by its label on a separate line, e.g., ""Fiat: Italian"".
+
+Items: Fiat, Dodge"
+PO-CLS-0219,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with keys as the species names and values as the label (alive or extinct).","Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with keys as the species names and values as the label (alive or extinct).
+
+Items: Meiolania, Tiger"
+PO-CLS-0221,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output each species followed by its label, one per line, e.g., ""Tasmanian Tiger: extinct"".","Classify each listed species as ""alive"" or ""extinct"". Output each species followed by its label, one per line, e.g., ""Tasmanian Tiger: extinct"".
+
+Items: Tasmanian Tiger, Macaw"
+PO-CLS-0222,train,classification,repaired,optimized_prompt,"Classify each listed car manufacturer as ""British"" or ""American"". Output a JSON object with keys as the manufacturer names and values as the corresponding label.","Classify each listed car manufacturer as ""British"" or ""American"". Output a JSON object with keys as the manufacturer names and values as the corresponding label.
+
+Items: Rolls-Royce, Ford"
+PO-CLS-0223,train,classification,repaired,optimized_prompt,"Classify each given instrument as ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.","Classify each given instrument as ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.
+
+Items: Jawbone, Grand Stick"
+PO-CLS-0224,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line.","Classify each listed instrument as either ""string"" or ""woodwind"". Output each instrument followed by its category on a separate line.
+
+Items: Biwa, Aulos"
+PO-CLS-0226,train,classification,repaired,optimized_prompt,"Classify each listed instrument as ""string"" or ""percussion"". Output each instrument on a separate line in the format ""instrument: category"". Allowed categories: string, percussion.","Classify each listed instrument as ""string"" or ""percussion"". Output each instrument on a separate line in the format ""instrument: category"". Allowed categories: string, percussion.
+
+Items: Esterilla, Geomungo"
+PO-CLS-0227,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON array where each element has fields ""instrument"" and ""category"" (string or percussion).","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON array where each element has fields ""instrument"" and ""category"" (string or percussion).
+
+Items: Madal, Craviola"
+PO-CLS-0230,train,classification,repaired,optimized_prompt,"Classify each listed animal as ""domesticated"" or ""wild"". Output a JSON object with the animal names as keys and the label (domesticated or wild) as the value.","Classify each listed animal as ""domesticated"" or ""wild"". Output a JSON object with the animal names as keys and the label (domesticated or wild) as the value.
+
+Items: Yak, Mute swan"
+PO-CLS-0232,train,classification,repaired,optimized_prompt,"Classify each given instrument as ""string"" or ""percussion"". Output each name followed by its category on separate lines, e.g., ""Jingle: string"". Use only the two labels string and percussion.","Classify each given instrument as ""string"" or ""percussion"". Output each name followed by its category on separate lines, e.g., ""Jingle: string"". Use only the two labels string and percussion.
+
+Items: Jingle, Utogardon"
+PO-CLS-0233,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Skrabalai: string"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Skrabalai: string"".
+
+Items: Skrabalai, Zeze"
+PO-CLS-0234,train,classification,removed,,"Classify each provided number as odd or even. Output the labels in order, separated by commas. Allowed labels: odd, even.",
+PO-CLS-0235,train,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Jhallari: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Jhallari: percussion"".
+
+Items: Jhallari, Chitarra battente"
+PO-CLS-0237,train,classification,repaired,optimized_prompt,"Classify each of the given instruments as either ""string"" or ""percussion"". Output a list of the instrument names followed by their classification, one per line.","Classify each of the given instruments as either ""string"" or ""percussion"". Output a list of the instrument names followed by their classification, one per line.
+
+Items: Tabla, Tres"
+PO-CLS-0239,train,classification,repaired,degraded_prompt,"i need to put these things into personal or business: email, financials, gov ids, system designs, marketing stuff, credit cards","i need to put these things into personal or business: email, financials, gov ids, system designs, marketing stuff, credit cards: e-mail address, financials, government identifiers, system designs, marketing materials, credit card numbers"
+PO-CLS-0240,train,classification,repaired,optimized_prompt,Identify which of the listed leagues belong to the Big 4 U.S. sports leagues. Output a comma‑separated list of the leagues from the given set that are part of the Big 4.,"Identify which of the listed leagues belong to the Big 4 U.S. sports leagues. Output a comma‑separated list of the leagues from the given set that are part of the Big 4.
+
+Items: MLS, NFL, La Liga, IPL, NHL"
+PO-CLS-0240,train,classification,regenerated,optimized_prompt,"Identify which of the listed leagues belong to the Big 4 U.S. sports leagues. Output a comma‑separated list of the leagues from the given set that are part of the Big 4.
+
+Items: MLS, NFL, La Liga, IPL, NHL","Identify which of the listed leagues belong to the Big 4 sports leagues in the United States. Output a comma‑separated list of the leagues from the given set that are part of the Big 4.
+
+Items: MLS, NFL, La Liga, IPL, NHL"
+PO-CLS-0241,train,classification,repaired,optimized_prompt,"Classify each listed country as having a single neighboring country or multiple neighboring countries. Output two bullet lists labeled ""One neighbour"" and ""More than one neighbour"" containing the appropriate country names.","Classify each listed country as having a single neighboring country or multiple neighboring countries. Output two bullet lists labeled ""One neighbour"" and ""More than one neighbour"" containing the appropriate country names.
+
+Items: Haiti, Russia, South Korea, Germany, Portugal, Ireland, Canada, Brazil, Denmark, Austria, Qatar and France"
+PO-CLS-0242,train,classification,repaired,optimized_prompt,Classify each listed US president as Republican or Democrat. Output a JSON object with each president’s name as a key and the party as the value. Do not provide additional text.,"Classify each listed US president as Republican or Democrat. Output a JSON object with each president’s name as a key and the party as the value. Do not provide additional text.
+
+Items: Dwight Eisenhower, John Kennedy, Lyndon Johnson, Richard Nixon, Gerald Ford, Jimmy Carter"
+PO-CLS-0243,train,classification,repaired,optimized_prompt,"Classify the listed sports into groups based on similarities in equipment, venue, and duration. Output a JSON array where each element is an object with a ""group"" key containing an array of sports that share those characteristics.","Classify the listed sports into groups based on similarities in equipment, venue, and duration. Output a JSON array where each element is an object with a ""group"" key containing an array of sports that share those characteristics.
+
+Items: Tennis, kick-boxing, football, squash, boxing, rugby, table tennis, taekwondo"
+PO-CLS-0244,train,classification,repaired,degraded_prompt,order these cars as fast slow or dangerously fast,"order these cars as fast slow or dangerously fast: A Doge Viper, Toyota 4Runner, Lamborghini Aventador, Chrysler Pacifica, Go-Kart, Lime Scooter, Porsche 911, Corvette"
+PO-CLS-0244,train,classification,repaired,optimized_prompt,"Classify each car in the list as 'fast', 'slow', or 'dangerously fast'. Output a JSON array where each element contains the car name and its assigned label. Do not include any additional text.","Classify each car in the list as 'fast', 'slow', or 'dangerously fast'. Output a JSON array where each element contains the car name and its assigned label. Do not include any additional text.
+
+Items: A Doge Viper, Toyota 4Runner, Lamborghini Aventador, Chrysler Pacifica, Go-Kart, Lime Scooter, Porsche 911, Corvette"
+PO-CLS-0245,train,classification,repaired,optimized_prompt,"Classify each manufacturer as either Germany or Japan. Output a comma-separated list of labels in the same order as the input names: ""Germany"" or ""Japan"".","Classify each manufacturer as either Germany or Japan. Output a comma-separated list of labels in the same order as the input names: ""Germany"" or ""Japan"".
+
+Items: Volkswagen, Toyota, BMW, Honda, Adam Opel, Mazda, Daimler, Subaru, Continental, Hino"
+PO-CLS-0246,train,classification,repaired,optimized_prompt,"For each vehicle listed, assign a label of ""electric"" or ""gas"". Output a JSON array where each element is an object with keys ""vehicle"" and ""label"". Do not include any additional text.","For each vehicle listed, assign a label of ""electric"" or ""gas"". Output a JSON array where each element is an object with keys ""vehicle"" and ""label"". Do not include any additional text.
+
+Items: Tesla Model Y, Kia Telluride, Lexus IS250, Mustang Mach-e, Chevy Bolt, Toyota Rav4"
+PO-CLS-0247,train,classification,repaired,optimized_prompt,"For each item, output only one of the labels: STATE or COUNTRY.","For each item, output only one of the labels: STATE or COUNTRY.
+
+Items: Georgia, California, Alaska, Canada, Peru, Texas, Florida, Pennsylvania, New Mexico, Mexico, Ireland, Russia, Oregon"
+PO-CLS-0248,train,classification,repaired,optimized_prompt,"Classify each dish as one of the following labels: 'Indian', 'Italian', 'Latin American', 'African', or 'Neither'. Output a JSON object mapping each dish name to its label.","Classify each dish as one of the following labels: 'Indian', 'Italian', 'Latin American', 'African', or 'Neither'. Output a JSON object mapping each dish name to its label.
+
+Items: Biriyani, Pasta, Dosa, Risotto, Burger, Lasagne, Tajine,  Empanadas, Tacos"
+PO-CLS-0249,train,classification,repaired,optimized_prompt,"Classify each item as ""inside a house"" or ""outside a house"". Output a JSON object with the items as keys and the classification as values.","Classify each item as ""inside a house"" or ""outside a house"". Output a JSON object with the items as keys and the classification as values.
+
+Items: car, chair, table, park, cloud, microwave"
+PO-CLS-0250,train,classification,repaired,optimized_prompt,"Classify each item as 'heavy', 'not heavy', or 'somewhat heavy'. Output a list of the items with their assigned label only.","Classify each item as 'heavy', 'not heavy', or 'somewhat heavy'. Output a list of the items with their assigned label only.
+
+Items: A tent, a compass, a sleeping bag, a camping stove, a cooler full of food"
+PO-CLS-0251,train,classification,repaired,degraded_prompt,"list which are tv shows, toothpaste brands, and water sport places from the list","list which are tv shows, toothpaste brands, and water sport places from the list: the beach, The Honeymooners, I Love Lucy, Colgate, Florida, a river, The Munsters, Crest, Aquafresh, a lake, a pool, Rembrandt, The Addams Family"
+PO-CLS-0251,train,classification,repaired,optimized_prompt,"Classify each item as one of: TV show, toothpaste brand, or water sports location. Return a JSON object with three arrays: ""tv_shows"", ""toothpaste_brands"", ""water_sports_locations"". Each array should contain the items that belong to that category.","Classify each item as one of: TV show, toothpaste brand, or water sports location. Return a JSON object with three arrays: ""tv_shows"", ""toothpaste_brands"", ""water_sports_locations"". Each array should contain the items that belong to that category.
+
+Items: the beach, The Honeymooners, I Love Lucy, Colgate, Florida, a river, The Munsters, Crest, Aquafresh, a lake, a pool, Rembrandt, The Addams Family"
+PO-CLS-0252,train,classification,repaired,optimized_prompt,"Classify each item as ""dessert"" or ""not dessert"". Output a list of pairs: item: label.","Classify each item as ""dessert"" or ""not dessert"". Output a list of pairs: item: label.
+
+Items: flan, steak, tofu, broccoli, cookies, Cheetos, banana bread, ice cream, giblets, macaron, doughnut, a toothbrush"
+PO-CLS-0253,train,classification,repaired,optimized_prompt,"Classify each wine as ""red"" or ""white"". Output a JSON object with the wine names as keys and the label as the value.","Classify each wine as ""red"" or ""white"". Output a JSON object with the wine names as keys and the label as the value.
+
+Items: Cabernet Sauvignon, Pinot Blanc, Riesling, Chardonnay, Pinot Grigio, Sauvignon Blanc, Merlot, Syrah, Shiraz"
+PO-CLS-0254,train,classification,repaired,degraded_prompt,"tell me the genre of each of these books, choose sci fi, fantasy or neither","tell me the genre of each of these books, choose sci fi, fantasy or neither: The Name of the Wind by Patrick Rothfuss, The Player of Games by Iain M. Banks, Crying in H Mart by Michelle Zauner, Crime and Punishment by Fyodr Dostoevsky, and Hyperion by Dan Simmons."
+PO-CLS-0254,train,classification,repaired,optimized_prompt,"Classify each book as ""science fiction"", ""fantasy"", or ""neither"". Output a JSON array of objects with ""title"" and ""genre"" fields.","Classify each book as ""science fiction"", ""fantasy"", or ""neither"". Output a JSON array of objects with ""title"" and ""genre"" fields.
+
+Items: The Name of the Wind by Patrick Rothfuss, The Player of Games by Iain M. Banks, Crying in H Mart by Michelle Zauner, Crime and Punishment by Fyodr Dostoevsky, and Hyperion by Dan Simmons."
+PO-CLS-0257,train,classification,repaired,optimized_prompt,"Classify each item as Apple, Amazon, or Microsoft. Output a JSON array of objects with fields ""item"" and ""label"". Example: [{""item"":""Airpods"",""label"":""Apple""}, …]","Classify each item as Apple, Amazon, or Microsoft. Output a JSON array of objects with fields ""item"" and ""label"". Example: [{""item"":""Airpods"",""label"":""Apple""}, …]
+
+Items: Airpods, Xbox, Alexa, Fire TV Stick, iPhone, Surface Pro, Macbook"
+PO-CLS-0258,train,classification,repaired,optimized_prompt,"Identify which of the given names are characters from the TV show ""I Love Lucy"". Return a JSON array containing only the names that are characters.","Identify which of the given names are characters from the TV show ""I Love Lucy"". Return a JSON array containing only the names that are characters.
+
+Items: "" Lucy Ricardo, Ethel Mertz, Donald Trump, John Fitzgerald Kennedy, Ricky Ricardo, Fred Mertz, Batman, John Smith"
+PO-CLS-0259,train,classification,repaired,optimized_prompt,"Classify each item as ""hardware"" or ""software"". Output a JSON array of objects with keys ""item"" and ""label"". No additional text.","Classify each item as ""hardware"" or ""software"". Output a JSON array of objects with keys ""item"" and ""label"". No additional text.
+
+Items: hard drive, text editor, keyboard, monitor, mouse, operating system, and Internet browser"
+PO-CLS-0260,train,classification,repaired,optimized_prompt,"Classify each name as ""recurring"" or ""not recurring"" on The Sopranos. Output a JSON object with each name as a key and its label as the value.","Classify each name as ""recurring"" or ""not recurring"" on The Sopranos. Output a JSON object with each name as a key and its label as the value.
+
+Items: Carmela, Tony, Christopher, Jody, Natasha, Silvio, Adriana, Tom & Jerry, Jerry Seinfeld, George Costanza"
+PO-CLS-0261,train,classification,repaired,degraded_prompt,"label these items as mandatory, good to have, or least important for traveling abroad","label these items as mandatory, good to have, or least important for traveling abroad: Passport, Cash of the country visiting, Power bank, Book, Pen, Laptop"
+PO-CLS-0261,train,classification,repaired,optimized_prompt,"Classify each item as one of the following labels: Mandatory, Good to have, Least important. Output a list where each item is paired with its label, e.g., ""Passport: Mandatory"". No additional text.","Classify each item as one of the following labels: Mandatory, Good to have, Least important. Output a list where each item is paired with its label, e.g., ""Passport: Mandatory"". No additional text.
+
+Items: Passport, Cash of the country visiting, Power bank, Book, Pen, Laptop"
+PO-CLS-0262,train,classification,repaired,optimized_prompt,"For each band, output a single label: ""Classic Rock"" or ""Not Classic Rock"". List the labels in the same order as the bands.","For each band, output a single label: ""Classic Rock"" or ""Not Classic Rock"". List the labels in the same order as the bands.
+
+Items: Led Zeppelin, Jimi Hendrix, Journey, Rolling Stones, Miley Cyrus, Taylor Swift, Aerosmith"
+PO-CLS-0263,train,classification,repaired,optimized_prompt,"Classify each title as either ""William Gibson"" or ""Not William Gibson"". Output a list of the same titles with the corresponding label in parentheses, e.g., ""Neuromancer (William Gibson)"".","Classify each title as either ""William Gibson"" or ""Not William Gibson"". Output a list of the same titles with the corresponding label in parentheses, e.g., ""Neuromancer (William Gibson)"".
+
+Items: The Peripheral, Do Androids Dream of Electric Sheep?, Foundation, Neuromancer, Mona Lisa Overdrive, Count Zero, Pattern Recognition, The Last Question, Jennifer Government"
+PO-CLS-0264,train,classification,repaired,optimized_prompt,"Classify each listed Australian city as ""Coast"" or ""Inland"". Output a JSON object with city names as keys and the classification as values.","Classify each listed Australian city as ""Coast"" or ""Inland"". Output a JSON object with city names as keys and the classification as values.
+
+Items: Brisbane, Melbourne, Canberra, Adelaide, Hobart, Darwin and Perth"
+PO-CLS-0265,train,classification,repaired,degraded_prompt,separate the exercises into cardio or strength,"separate the exercises into cardio or strength: Running, deadlifts, cycling, pushups, swimming, jump rope,  lunges and squats"
+PO-CLS-0265,train,classification,repaired,optimized_prompt,"Classify each exercise from the list as either ""cardio"" or ""strength"". Output only the label for each exercise, one per line.","Classify each exercise from the list as either ""cardio"" or ""strength"". Output only the label for each exercise, one per line.
+
+Items: Running, deadlifts, cycling, pushups, swimming, jump rope,  lunges and squats"
+PO-CLS-0266,train,classification,repaired,degraded_prompt,classify those movies by 2001 or 2002,"classify those movies by 2001 or 2002: Albela, Lagaan, Kabhi Khushi Kabhie Gham, Hum Tumhare Hain Sanam, Devdas, Na Tum Jaano Na Hum"
+PO-CLS-0266,train,classification,repaired,optimized_prompt,"Assign each movie to the label ""2001"" or ""2002"". Return only the label for each title, one per line.","Assign each movie to the label ""2001"" or ""2002"". Return only the label for each title, one per line.
+
+Items: Albela, Lagaan, Kabhi Khushi Kabhie Gham, Hum Tumhare Hain Sanam, Devdas, Na Tum Jaano Na Hum"
+PO-CLS-0267,train,classification,repaired,optimized_prompt,Classify each animal as 'Primates' or 'Non-primates'. Output a JSON array of objects with keys 'animal' and 'label'.,"Classify each animal as 'Primates' or 'Non-primates'. Output a JSON array of objects with keys 'animal' and 'label'.
+
+Items: Human, Dog, Bonobos, Cat, Bats, Goat, Bears, Orangutans, Wolf, Lion, Squirrel, Koala, Cheetah, Deer, Orca, Gorillas, Camel, Hamsters, Lemurs, Blue whale, Chimpanzee"
+PO-CLS-0268,train,classification,repaired,optimized_prompt,"Classify each country as ""Europe"" or ""Rest of World"". Output a JSON object with each country as a key and its label as the value. No additional text.","Classify each country as ""Europe"" or ""Rest of World"". Output a JSON object with each country as a key and its label as the value. No additional text.
+
+Items: Nicaragua, Australia, Austria, New Zealand, Morocco, Spain, Greece, China, Chile?"
+PO-CLS-0269,train,classification,repaired,optimized_prompt,"For each team listed, indicate whether it competes in the NRL or AFL. Output a JSON array where each element has ""team"" and ""league"" fields.","For each team listed, indicate whether it competes in the NRL or AFL. Output a JSON array where each element has ""team"" and ""league"" fields.
+
+Items: Sydney Swans, Penrith Panthers, South Sydney Rabbitohs, Brisbane Lions, Brisbane Broncos, Manly Sea Eagles & Fremantle Dockers"
+PO-CLS-0270,train,classification,repaired,optimized_prompt,"For each item, assign the label ""hotdog"" or ""not hotdog"". Return a JSON array of objects, each with keys ""item"" and ""label"". Example: [{""item"":""bratwurst"",""label"":""hotdog""}, ...]","For each item, assign the label ""hotdog"" or ""not hotdog"". Return a JSON array of objects, each with keys ""item"" and ""label"". Example: [{""item"":""bratwurst"",""label"":""hotdog""}, ...]
+
+Items: bratwurst, wienersnitschel, hoagie, legs, Hebrew National, finger, banana, sausage"
+PO-CLS-0271,train,classification,repaired,optimized_prompt,"For each name, label it as ""actor"" or ""athlete"". Output a list of objects with fields: name, label. No extra text.","For each name, label it as ""actor"" or ""athlete"". Output a list of objects with fields: name, label. No extra text.
+
+Items: Adam Sandler, Harry Kane, Hugo Lloris, Mike Myers, Tyreek Hill, Ryan Gosling, Joel Embiid"
+PO-CLS-0272,train,classification,repaired,optimized_prompt,Classify each phrase as French or English. Output a JSON object mapping each phrase to its language (French or English).,"Classify each phrase as French or English. Output a JSON object mapping each phrase to its language (French or English).
+
+Items: mon frère, c'est la vie, good morning, what's up, break the ice, bite the bullet, and je suis désolé"
+PO-CLS-0274,train,classification,repaired,optimized_prompt,"Classify each water body as ""below sea level"" or ""not below sea level"". Output a list with each name followed by its label. No additional text.","Classify each water body as ""below sea level"" or ""not below sea level"". Output a list with each name followed by its label. No additional text.
+
+Items: Dead Sea, Lake Ontario, Sea of Galilee, the Hudson Bay, Lake Assal?"
+PO-CLS-0276,train,classification,repaired,optimized_prompt,"Classify each item as ""plugged_in"" or ""not_plugged_in"". Output a JSON object with the item as the key and the label as the value. Example: {""table"": ""not_plugged_in""}","Classify each item as ""plugged_in"" or ""not_plugged_in"". Output a JSON object with the item as the key and the label as the value. Example: {""table"": ""not_plugged_in""}
+
+Items: table, hairdryer, television, chair, computer, fridge, comb, flowers"
+PO-CLS-0277,train,classification,repaired,optimized_prompt,"Classify each name as either ""basketball"" or ""hockey"". Output a list of the names with the corresponding label only, one per line. Do not provide explanations or additional text.","Classify each name as either ""basketball"" or ""hockey"". Output a list of the names with the corresponding label only, one per line. Do not provide explanations or additional text.
+
+Items: Lebron James, Steven Stamkos, Victor Hedman, Tyler Johnson, Kobe Bryant, Carmelo Anthony"
+PO-CLS-0278,train,classification,repaired,optimized_prompt,Classify each body part as having one or two. Output a JSON object with keys for each part and values 'one' or 'two'.,"Classify each body part as having one or two. Output a JSON object with keys for each part and values 'one' or 'two'.
+
+Items: eye, mouth, nose, leg, ear, neck"
+PO-CLS-0279,train,classification,repaired,optimized_prompt,Classify each title as either TV SHOW or MOVIE. Output a JSON object with the title as key and the label as value. Do not add any additional text.,"Classify each title as either TV SHOW or MOVIE. Output a JSON object with the title as key and the label as value. Do not add any additional text.
+
+Items: Ted Lasso, Schitt's Creek, The Office, Seinfeld, The Elephant Whisperers, Harry Potter and the Sorcerer's Stone, Delhi Crime, The Social Network"
+PO-CLS-0280,train,classification,repaired,optimized_prompt,Classify each mountain as part of the New Hampshire 4000‑footers. Return a JSON object with mountain names as keys and values 'included' or 'not included'.,"Classify each mountain as part of the New Hampshire 4000‑footers. Return a JSON object with mountain names as keys and values 'included' or 'not included'.
+
+Items: Washington, Adams,  Moosilauke, South Carter, Garfield, Wildcat A, Wildcat B, Wildcat C"
+PO-CLS-0281,train,classification,repaired,optimized_prompt,"Classify each item as ""expensive"" or ""cheap"". Output a JSON object with keys for each item and values ""expensive"" or ""cheap"" only.","Classify each item as ""expensive"" or ""cheap"". Output a JSON object with keys for each item and values ""expensive"" or ""cheap"" only.
+
+Items: a Rolex watch, a box of playing cards, a car, a laptop computer, a gallon of milk, an engagement ring, a house"
+PO-CLS-0282,train,classification,repaired,optimized_prompt,"Classify each sport as either indoor or outdoor. Output a list of the sports followed by the label (""indoor"" or ""outdoor"") on separate lines.","Classify each sport as either indoor or outdoor. Output a list of the sports followed by the label (""indoor"" or ""outdoor"") on separate lines.
+
+Items: Chess, Carrom, Cricket, Billiards, Table Tennis, Field Hockey, Rugby, Snooker, Soccer and Boxing"
+PO-CLS-0283,train,classification,repaired,optimized_prompt,"Classify each listed color as ""cold"", ""warm"", or ""both"" based on typical color perception. Output a JSON object where each key is the color name and the value is the classification.","Classify each listed color as ""cold"", ""warm"", or ""both"" based on typical color perception. Output a JSON object where each key is the color name and the value is the classification.
+
+Items: Yellow, Yellow-Orange, Orange, Red-Orange, Red, Red-Violet, Violet, Blue-Violet, Blue, Blue-Green, Green, Yellow-Green"
+PO-CLS-0284,train,classification,repaired,optimized_prompt,"For each vehicle, output only the category label (car, truck, or van).","For each vehicle, output only the category label (car, truck, or van).
+
+Items: Tesla Model 3, Ford F150, Chevy Silverado, Toyota Sienna, Honda Odyssey, Toyota Tacoma, Dodge Dart"
+PO-CLS-0285,train,classification,repaired,optimized_prompt,"Classify each title into its sci‑fi universe: Star Wars, Star Trek, or Marvel. Output a JSON array where each element is an object with keys ""title"" and ""universe"". No extra text.","Classify each title into its sci‑fi universe: Star Wars, Star Trek, or Marvel. Output a JSON array where each element is an object with keys ""title"" and ""universe"". No extra text.
+
+Items: The return of the Jedi, Deep Space 9, Avengers"
+PO-CLS-0286,train,classification,repaired,optimized_prompt,"Classify each country as located in Europe, North America, South America, Africa, or Asia. Output a JSON object with country names as keys and the region as the value. Ensure all countries are classified.","Classify each country as located in Europe, North America, South America, Africa, or Asia. Output a JSON object with country names as keys and the region as the value. Ensure all countries are classified.
+
+Items: France, Mexico, Peru, India, Nepal, Rwanda, Egypt, Portugal, Kenya, Argentina, Canada"
+PO-CLS-0287,train,classification,repaired,optimized_prompt,"Classify each title as written by a black author or not. Output a JSON array where each element has ""title"" and ""is_black_author"": true or false. No extra text.","Classify each title as written by a black author or not. Output a JSON array where each element has ""title"" and ""is_black_author"": true or false. No extra text.
+
+Items: I Know Why the Caged Bird Sings, Homegoing, Between the World and Me, Becoming, Beloved, The Color Purple"
+PO-CLS-0289,train,classification,repaired,optimized_prompt,"Classify each listed country as north or south of the equator. Output only the labels ""north"" or ""south"" in the same order as the countries, separated by commas.","Classify each listed country as north or south of the equator. Output only the labels ""north"" or ""south"" in the same order as the countries, separated by commas.
+
+Items: Finland, Canada, South Africa, Iceland, Germany, Uruguay, Zimbabwe"
+PO-CLS-0290,train,classification,repaired,optimized_prompt,"Classify each listed sport as ""ball required"" or ""no ball required"". Output a JSON object with sport names as keys and the corresponding label as the value.","Classify each listed sport as ""ball required"" or ""no ball required"". Output a JSON object with sport names as keys and the corresponding label as the value.
+
+Items: basketball, hockey, track and field, soccer, surfing, water polo, karate, football, gymnastics, skateboarding, golf, tennis, boxing, baseball, rugby, weightlifting, softball, rowing"
+PO-CLS-0291,train,classification,repaired,optimized_prompt,"Classify each item as either ""name"" or ""object"". Output a list of 10 lines, each containing the item followed by its label in parentheses. Example: Mike (name).","Classify each item as either ""name"" or ""object"". Output a list of 10 lines, each containing the item followed by its label in parentheses. Example: Mike (name).
+
+Items: Mike, car, paper, Roger, wheel, Will, lamp, Clara, Fabiana, Peter"
+PO-CLS-0292,train,classification,repaired,optimized_prompt,"Classify each listed country as ""EU member"" or ""Non‑EU member"". Output a JSON object with country names as keys and the classification as values. Do not include any other text.","Classify each listed country as ""EU member"" or ""Non‑EU member"". Output a JSON object with country names as keys and the classification as values. Do not include any other text.
+
+Items: The Netherlands, Switzerland, Germany, Finland, the United Kingdom, Italy, Luxembourg, Turkey, Australia, Vietnam, Canada"
+PO-CLS-0292,train,classification,regenerated,optimized_prompt,"Classify each listed country as ""EU member"" or ""Non‑EU member"". Output a JSON object with country names as keys and the classification as values. Do not include any other text.
+
+Items: The Netherlands, Switzerland, Germany, Finland, the United Kingdom, Italy, Luxembourg, Turkey, Australia, Vietnam, Canada","Classify each listed country as ""European Union member"" or ""Non‑EU member"". Output a JSON object with country names as keys and the classification as values. Do not include any other text.
+
+Items: The Netherlands, Switzerland, Germany, Finland, the United Kingdom, Italy, Luxembourg, Turkey, Australia, Vietnam, Canada"
+PO-CLS-0293,train,classification,repaired,optimized_prompt,"Classify each shape as ""curved"" or ""straight"". Output a JSON object with shape names as keys and ""curved"" or ""straight"" as values.","Classify each shape as ""curved"" or ""straight"". Output a JSON object with shape names as keys and ""curved"" or ""straight"" as values.
+
+Items: oval, rectangle, square, pentagon, circle and rhombus"
+PO-CLS-0294,train,classification,repaired,optimized_prompt,"Classify each item as either ""car"" or ""Amtrak line"". Output a JSON object with the item names as keys and the label as the value. Use only the two labels: ""car"" and ""Amtrak line"".","Classify each item as either ""car"" or ""Amtrak line"". Output a JSON object with the item names as keys and the label as the value. Use only the two labels: ""car"" and ""Amtrak line"".
+
+Items: Tesla Model 3, Capitol Corridor, Chevy Nova, Honda Accord, California Zephyr, Subaru Impreza, Coast Starlight, Pacific Surfliner, San Joaquins"
+PO-CLS-0295,train,classification,repaired,optimized_prompt,"Classify each option as a suitable medium for authentic analogue music from the 1980s. Output the label for each item only: ""vinyl"", ""cassette"", or ""other"".","Classify each option as a suitable medium for authentic analogue music from the 1980s. Output the label for each item only: ""vinyl"", ""cassette"", or ""other"".
+
+Items: ipod, vinyl, apple music, cassette, compact disc, spotify, youtube"
+PO-CLS-0296,train,classification,repaired,optimized_prompt,"Classify each item in the provided list as either a ""gluten product"" or a ""gluten free product"". Output the result as a JSON object with two keys: ""gluten"" and ""gluten_free"", each containing an array of the corresponding items.","Classify each item in the provided list as either a ""gluten product"" or a ""gluten free product"". Output the result as a JSON object with two keys: ""gluten"" and ""gluten_free"", each containing an array of the corresponding items.
+
+Items: sourdough bread, zucchini, barbecue sauce, hummus, amaranth, commercial chocolate milk"
+PO-CLS-0297,train,classification,repaired,optimized_prompt,"Classify each provided car brand and model into exactly one of the following categories: sedan, SUV, or sports car. Output the results as a bulleted list where each item starts with the car name followed by its assigned category in parentheses.","Classify each provided car brand and model into exactly one of the following categories: sedan, SUV, or sports car. Output the results as a bulleted list where each item starts with the car name followed by its assigned category in parentheses.
+
+Items: Volkswagon Atlas, Porsche Boxter, Ford Mustang, Porsche Cayenne, Toyota Camry, Toyota Corolla, Dodge Durango, Chevrolet Camaro, Ford Explorer, Nissan Sentra, Porsche 911, Ford Escape, Chevrolet Equinox, Honda Pilot, Kia Telluride, Genesis G90, Honda Accord, Honda Civic, Kia Forte"
+PO-CLS-0298,train,classification,repaired,optimized_prompt,"Classify each ski resort in the given list as being located in Utah or not. Output a JSON object mapping each resort name to a boolean value (true for Utah, false otherwise).","Classify each ski resort in the given list as being located in Utah or not. Output a JSON object mapping each resort name to a boolean value (true for Utah, false otherwise).
+
+Items: Alta Ski Area, Brighton Ski Resort, Snowbird, Solitude Mountain Resort, Deer Valley Resort, Park City Mountain,  Woodward Park City, Nordic Valley Resort, Powder Mountain, Snowbasin, Sundance Resort, Beaver Mountain Resort, Cherry Peak Resort, Brian Head Resort, Eagle Point Resort, Keystone, Copper Mountain, Vail Resort, Beaver Creek, Eldora"
+PO-CLS-0299,train,classification,repaired,optimized_prompt,"Classify each item in the provided list into one of the following categories: mountain range, river, or volcano. Output the results as a JSON object where the keys are the categories and the values are lists of the classified items.","Classify each item in the provided list into one of the following categories: mountain range, river, or volcano. Output the results as a JSON object where the keys are the categories and the values are lists of the classified items.
+
+Items: andes, sierra nevada, yangtze, brahmaputra, krakatoa, mt fuji, himalayas, atlas, lena, rhine, kilimanjaro, arkansas, ohio, vesuivus, mt st helens, caucusus"
+PO-CLS-0301,train,classification,repaired,optimized_prompt,"Classify the provided list of items into categories based on the type of signals they utilize. For each item, output the item name followed by its assigned signal category (e.g., 'Item: Category').","Classify the provided list of items into categories based on the type of signals they utilize. For each item, output the item name followed by its assigned signal category (e.g., 'Item: Category').
+
+Items: radio waves, television waves, sound waves, Computers, Digital Phones, Digital pens"
+PO-CLS-0304,train,classification,repaired,optimized_prompt,Classify each item in the provided list as either 'Vegetarian' or 'Non-Vegetarian'. Output a simple list with each item followed by its classification.,"Classify each item in the provided list as either 'Vegetarian' or 'Non-Vegetarian'. Output a simple list with each item followed by its classification.
+
+Items: chicken fried rice, green beans, strawberry banana smoothie, oatmeal, steak, scrambled eggs"
+PO-CLS-0305,train,classification,repaired,degraded_prompt,"which of these are good for black tie? tux, blue suit, sundress, gown","which of these are good for black tie? tux, blue suit, sundress, gown: A tuxedo, a blue suit, a loose sundress, a formal floor length gown?"
+PO-CLS-0306,train,classification,repaired,optimized_prompt,"Classify each item in the provided list as 'Vegan', 'Vegetarian', or 'Non-Vegetarian'. Output the result as a bulleted list where each line follows the format: 'Item: Category'.","Classify each item in the provided list as 'Vegan', 'Vegetarian', or 'Non-Vegetarian'. Output the result as a bulleted list where each line follows the format: 'Item: Category'.
+
+Items: milk, tofu, curd, chicken, mutton, bacon, clam, tomato, potato, onion, egg, beef, pork, mango, apple, salmon, soy milk, paneer"
+PO-CLS-0308,train,classification,repaired,optimized_prompt,"Classify each provided episode title from The X-Files as either 'Season 4', 'Season 5', or 'Other'. Output a JSON object mapping each title to its corresponding label.","Classify each provided episode title from The X-Files as either 'Season 4', 'Season 5', or 'Other'. Output a JSON object mapping each title to its corresponding label.
+
+Items: Schizogeny, Chinga, The Post-Modern Prometheus, Mind's Eye, All Souls, Herrenvolk, Unruhe, Teliko, Home, Tunguska"
+PO-CLS-0309,train,classification,repaired,optimized_prompt,"Classify the provided list of grape varieties as either white wine grapes or red wine grapes. Output a JSON object with two keys: ""white"" and ""red"", each containing a list of the corresponding grape names.","Classify the provided list of grape varieties as either white wine grapes or red wine grapes. Output a JSON object with two keys: ""white"" and ""red"", each containing a list of the corresponding grape names.
+
+Items: Chardonnay, Sauvignon Blanc, Riesling, Pinot Gris, Semillon, Gewurztraminer, Viognier, Chenin Blanc, Cabernet Sauvignon, Merlot, Syrah, Pinot Noir, Zinfandel, Sangiovese, Grenache, Malbec"
+PO-CLS-0310,train,classification,repaired,optimized_prompt,"Classify each movie in the given list as nominated for Best Picture or not. Output a JSON object mapping each movie title to a boolean value (true if nominated, false otherwise).","Classify each movie in the given list as nominated for Best Picture or not. Output a JSON object mapping each movie title to a boolean value (true if nominated, false otherwise).
+
+Items: ""All Quiet on the Western Front"", ""Everything Everywhere All at Once"", ""Avatar:  The Way of Water"", ""Glass Onion"", ""Pinocchio"", ""Navalny"", ""The Whale"""
+PO-CLS-0311,train,classification,repaired,optimized_prompt,Classify each word in the provided list as either a 'day of the week' or a 'month'. Output the result as a JSON object where keys are the input words and values are the assigned labels.,"Classify each word in the provided list as either a 'day of the week' or a 'month'. Output the result as a JSON object where keys are the input words and values are the assigned labels.
+
+Items: Monday, Saturday, March, December, October, Tuesday,  January, Wednesday, Friday, April"
+PO-CLS-0312,train,classification,repaired,optimized_prompt,Classify each item in the provided list as either a 'team sport' or 'individual sport'. Output the result as a JSON object where keys are the sport names and values are their corresponding classification label.,"Classify each item in the provided list as either a 'team sport' or 'individual sport'. Output the result as a JSON object where keys are the sport names and values are their corresponding classification label.
+
+Items: hockey, yoga, baseball, basketball, netball, running, handball, weightlifting, and ballet"
+PO-CLS-0315,train,classification,repaired,optimized_prompt,Identify which country from the provided list is located in North America. Respond with the country name only.,"Identify which country from the provided list is located in North America. Respond with the country name only.
+
+Items: Canada, China, or Poland"
+PO-CLS-0317,train,classification,repaired,optimized_prompt,Classify each of the provided words as either a 'virtue' or a 'vice'. Return a JSON object where the keys are the words and the values are the assigned labels.,"Classify each of the provided words as either a 'virtue' or a 'vice'. Return a JSON object where the keys are the words and the values are the assigned labels.
+
+Items: humility, kindness, patience, greed, anger, lust, envy, pride"
+PO-CLS-0318,train,classification,repaired,optimized_prompt,"Classify each item in the provided list as either ""drug"" or ""food"". Output a bulleted list where each item is followed by its corresponding label in parentheses, e.g., ""Item (label)"".","Classify each item in the provided list as either ""drug"" or ""food"". Output a bulleted list where each item is followed by its corresponding label in parentheses, e.g., ""Item (label)"".
+
+Items: marijuana, fried chicken, alcohol, caffeine, sushi, mango"
+PO-CLS-0321,train,classification,repaired,optimized_prompt,"Classify the provided list of place names into two categories: ""States"" and ""Cities"". Output the results as a JSON object with these two keys, containing arrays of the corresponding items.","Classify the provided list of place names into two categories: ""States"" and ""Cities"". Output the results as a JSON object with these two keys, containing arrays of the corresponding items.
+
+Items: Illinois, California, San Francisco, Austin, Texas"
+PO-CLS-0323,train,classification,repaired,optimized_prompt,Classify each of the provided titles as either 'novel' or 'poem'. Output a bulleted list where each item lists the title followed by its classification label.,"Classify each of the provided titles as either 'novel' or 'poem'. Output a bulleted list where each item lists the title followed by its classification label.
+
+Items: ""A Silvia"", ""L'Infinito"" , ""I Promessi Sposi"""
+PO-CLS-0327,train,classification,repaired,optimized_prompt,"Classify the provided list of words into two categories: nouns and verbs. Output the result as a JSON object with keys ""nouns"" and ""verbs"", each containing an array of the respective words.","Classify the provided list of words into two categories: nouns and verbs. Output the result as a JSON object with keys ""nouns"" and ""verbs"", each containing an array of the respective words.
+
+Items: dog, run ,cat, John, eat, swim, Adam, fly"
+PO-CLS-0334,train,classification,repaired,optimized_prompt,Classify each listed technology as either 'frontend' or 'backend'. Output a list where each line contains the technology name followed by its assigned label.,"Classify each listed technology as either 'frontend' or 'backend'. Output a list where each line contains the technology name followed by its assigned label.
+
+Items: React, Kafka, MySQL, JavaScript, gRPC, SQL, Prometheus, Android, Swift, Redis, JDBC"
+PO-CLS-0336,train,classification,repaired,optimized_prompt,"Identify the odd one out from the provided list of chemical elements. Return only the name of the element that does not fit the category, with no additional explanation.","Identify the odd one out from the provided list of chemical elements. Return only the name of the element that does not fit the category, with no additional explanation.
+
+Items: Silver, Gold, Mercury, Phosphorous, Copper, Zinc"
+PO-CLS-0339,train,classification,repaired,optimized_prompt,Classify the provided list of words by identifying the single item that does not belong with the others. Respond with only the word that is different.,"Classify the provided list of words by identifying the single item that does not belong with the others. Respond with only the word that is different.
+
+Items: Sketch, Diagram, Poster, Chart, Paper"
+PO-CLS-0345,train,classification,repaired,optimized_prompt,"Classify each item as either ""weapon"" or ""toy"". Output a list with each item followed by its label, one per line, e.g., ""gun: weapon"".","Classify each item as either ""weapon"" or ""toy"". Output a list with each item followed by its label, one per line, e.g., ""gun: weapon"".
+
+Items: gun, lego, knife, bomb, blocks, doll"
+PO-CLS-0346,train,classification,repaired,optimized_prompt,"Classify each listed animal as ""domesticated"" or ""not domesticated"". Output a JSON object with animal names as keys and the label as the value.","Classify each listed animal as ""domesticated"" or ""not domesticated"". Output a JSON object with animal names as keys and the label as the value.
+
+Items: cats, sheep, bald eagle, whale, dog, bat"
+PO-CLS-0347,train,classification,repaired,optimized_prompt,"Identify the sport each listed player plays. Output a JSON object with player names as keys and the sport (baseball, basketball, or football) as the value.","Identify the sport each listed player plays. Output a JSON object with player names as keys and the sport (baseball, basketball, or football) as the value.
+
+Items: Kris Bryant, Zach Lavine, Justin Fields"
+PO-CLS-0348,train,classification,repaired,optimized_prompt,"Classify each listed food as ""grain"" or ""animal"". Output a JSON object with food names as keys and the label (grain or animal) as values.","Classify each listed food as ""grain"" or ""animal"". Output a JSON object with food names as keys and the label (grain or animal) as values.
+
+Items: quinoa, millet, couscous, ribeye steak, pork belly, chicken wing"
+PO-CLS-0349,train,classification,repaired,optimized_prompt,"Classify each of the given items as either ""Indoor Activity"" or ""Outdoor Activity"". Output a plain list with each item followed by its label, e.g., ""Hiking: Outdoor Activity"".","Classify each of the given items as either ""Indoor Activity"" or ""Outdoor Activity"". Output a plain list with each item followed by its label, e.g., ""Hiking: Outdoor Activity"".
+
+Items: Hiking, Watching TV, Cooking, Surfing, Gardening"
+PO-CLS-0350,train,classification,repaired,optimized_prompt,"Identify the Taylor Swift album for each listed song. Output each song followed by its album on a separate line in the format ""Song: Album"".","Identify the Taylor Swift album for each listed song. Output each song followed by its album on a separate line in the format ""Song: Album"".
+
+Items: Love Story, Bad Blood, Begin Again, Cornelia Street"
+PO-CLS-0351,train,classification,repaired,optimized_prompt,"Classify each item as ""food"" or ""beverage"". Output a JSON array where each element is an object with keys ""item"" and ""label"". Labels must be either ""food"" or ""beverage"".","Classify each item as ""food"" or ""beverage"". Output a JSON array where each element is an object with keys ""item"" and ""label"". Labels must be either ""food"" or ""beverage"".
+
+Items: coffee, water, corn, tea, rice, beef"
+PO-CLS-0353,train,classification,repaired,optimized_prompt,"For each philosopher listed, output a JSON object mapping their name to the name of their philosophical school. The keys should be the philosopher names exactly as given, and the values should be the school name. No additional text.","For each philosopher listed, output a JSON object mapping their name to the name of their philosophical school. The keys should be the philosopher names exactly as given, and the values should be the school name. No additional text.
+
+Items: Democritus, Anaximander, Protagoras, Epictetus, Chrysippus, Theano, Pythagorus and Heraclides"
+PO-CLS-0353,train,classification,regenerated,optimized_prompt,"For each philosopher listed, output a JSON object mapping their name to the name of their philosophical school. The keys should be the philosopher names exactly as given, and the values should be the school name. No additional text.
+
+Items: Democritus, Anaximander, Protagoras, Epictetus, Chrysippus, Theano, Pythagorus and Heraclides","For each Greek philosopher listed, output a JSON object mapping their name to the name of their philosophical school. The keys should be the philosopher names exactly as given, and the values should be the school name. No additional text.
+
+Items: Democritus, Anaximander, Protagoras, Epictetus, Chrysippus, Theano, Pythagorus and Heraclides"
+PO-CLS-0354,train,classification,repaired,optimized_prompt,"Classify each item as either ""fruit"" or ""flower"". Output a JSON array where each element is an object with ""item"" and ""label"" fields. Example: [{""item"":""apple"",""label"":""fruit""}, ...].","Classify each item as either ""fruit"" or ""flower"". Output a JSON array where each element is an object with ""item"" and ""label"" fields. Example: [{""item"":""apple"",""label"":""fruit""}, ...].
+
+Items: apples, oranges, pineapples, bananas, strawberries, daisies, sunflowers, roses, poppies"
+PO-CLS-0356,train,classification,repaired,optimized_prompt,"Classify each item in the provided list as either ""Can Fly"" or ""Can't Fly"". Output the result as a list where each line contains the item name followed by its classification label.","Classify each item in the provided list as either ""Can Fly"" or ""Can't Fly"". Output the result as a list where each line contains the item name followed by its classification label.
+
+Items: Kite, bird, dog, plane, car, scooter"
+PO-CLS-0357,train,classification,repaired,optimized_prompt,"Classify each item in the provided list as either ""food"" or ""drinks"". Output a JSON object where keys are the item names and values are the assigned category.","Classify each item in the provided list as either ""food"" or ""drinks"". Output a JSON object where keys are the item names and values are the assigned category.
+
+Items: Fish, Meat, Salad, Apple, Lemonade, Coffee, Tea"
+PO-CLS-0359,train,classification,repaired,optimized_prompt,Classify each item in the provided list as either 'edible' or 'not edible'. Output the result as a bulleted list where each item is followed by its classification.,"Classify each item in the provided list as either 'edible' or 'not edible'. Output the result as a bulleted list where each item is followed by its classification.
+
+Input:
+1. Banana
+2. Laptop
+3. Marmite
+4. Tape
+5. Mushroom
+6. Pizza"
+PO-CLS-0361,train,classification,repaired,optimized_prompt,"Classify each listed item as needed or not needed to make biryani. Output a JSON object mapping each item to the label ""needed"" or ""not needed"".","Classify each listed item as needed or not needed to make biryani. Output a JSON object mapping each item to the label ""needed"" or ""not needed"".
+
+Input:
+rice
+chicken
+honey
+sugar
+oil
+pot
+towel
+barbeque
+onions
+oven"
+PO-CLS-0362,train,classification,repaired,optimized_prompt,"Identify which titles are Aamir Khan movies. Output a comma‑separated list of the titles that are Aamir Khan movies. If none, output ""None"".","Identify which titles are Aamir Khan movies. Output a comma‑separated list of the titles that are Aamir Khan movies. If none, output ""None"".
+
+Items: Sarfarosh, Mela, Dil, Darr, Beta"
+PO-CLS-0363,train,classification,repaired,degraded_prompt,classify these movies by release year,"classify these movies by release year: Kedarnath, Bala, Raazi, Kaashi, Article 15"
+PO-CLS-0364,train,classification,repaired,optimized_prompt,"Classify each of the following majors as either ""quantitative"" or ""qualitative"". Provide the result as a list of ""major: label"" pairs, one per line. Allowed labels: quantitative, qualitative.","Classify each of the following majors as either ""quantitative"" or ""qualitative"". Provide the result as a list of ""major: label"" pairs, one per line. Allowed labels: quantitative, qualitative.
+
+Items: English, mathematics, physics, statistics, history, law"
+PO-CLS-0365,train,classification,repaired,optimized_prompt,Identify which of the listed items were Summer Olympic sports in 2020. Output only the valid sports as a comma‑separated list.,"Identify which of the listed items were Summer Olympic sports in 2020. Output only the valid sports as a comma‑separated list.
+
+Items: tennis, cheerleading, chess, boxing, basketball, ski jumping"
+PO-CLS-0366,train,classification,repaired,optimized_prompt,"Classify the given list as either ""universities"" or ""companies"". Output only the appropriate label.","Classify the given list as either ""universities"" or ""companies"". Output only the appropriate label.
+
+Items: Alphabet, Microsoft, Dell, John Deere, and JP Morgan Chase?"
+PO-CLS-0368,train,classification,repaired,optimized_prompt,"Classify each of the items as either ""city"" or ""country"". Output the labels in the same order as the list, one per line.","Classify each of the items as either ""city"" or ""country"". Output the labels in the same order as the list, one per line.
+
+Items: Bangkok, India, London, Mexico"
+PO-CLS-0369,train,classification,repaired,optimized_prompt,Identify which of the listed countries are located in Asia. Output only the names of the Asian countries as a comma‑separated list.,"Identify which of the listed countries are located in Asia. Output only the names of the Asian countries as a comma‑separated list.
+
+Items: United States, Canada, Britain, France, Australia, Korea, China, Egypt, Israel, Japan, Brazil"
+PO-CLS-0371,train,classification,repaired,optimized_prompt,"Classify each listed country as ""Spanish"" or ""Portuguese"". Output a list with each country followed by its label.","Classify each listed country as ""Spanish"" or ""Portuguese"". Output a list with each country followed by its label.
+
+Items: Peru, Argentina, Chile, Brazil, Mexico, Portugal"
+PO-CLS-0373,train,classification,repaired,optimized_prompt,"Classify each listed character as belonging to the DC Universe or Marvel Universe. Output a JSON object with keys as the character names and values as ""DC"" or ""Marvel"".","Classify each listed character as belonging to the DC Universe or Marvel Universe. Output a JSON object with keys as the character names and values as ""DC"" or ""Marvel"".
+
+Items: Iron Man, Batman, Steel"
+PO-CLS-0374,train,classification,repaired,optimized_prompt,"From the provided list, list the items that are Chinese dishes. Output only the dish names as a comma‑separated list.","From the provided list, list the items that are Chinese dishes. Output only the dish names as a comma‑separated list.
+
+Items: hamburger, pizza, fried rice, soup dumplings, spaghetti, scallion pancakes"
+PO-CLS-0375,train,classification,repaired,optimized_prompt,"Identify which of the listed countries are in Asia and which are in North America. Output as two lines: ""Asia: <countries>"" and ""North America: <countries>"".","Identify which of the listed countries are in Asia and which are in North America. Output as two lines: ""Asia: <countries>"" and ""North America: <countries>"".
+
+Items: China, Canada, Pakistan, Mexico"
+PO-CLS-0376,train,classification,repaired,optimized_prompt,"Classify each listed animal as either ""domesticated"" or ""wild"". Output a JSON object where each animal name is a key and the value is the label ""domesticated"" or ""wild"".","Classify each listed animal as either ""domesticated"" or ""wild"". Output a JSON object where each animal name is a key and the value is the label ""domesticated"" or ""wild"".
+
+Items: dog, bear, dolphin, cat, cow, hippo, rhino"
+PO-CLS-0379,train,classification,repaired,optimized_prompt,"Classify each of the listed items as either ""cold"" or ""hot"". Output a simple list with each item followed by its label, e.g., ""sun: hot"". Allowed labels: cold, hot.","Classify each of the listed items as either ""cold"" or ""hot"". Output a simple list with each item followed by its label, e.g., ""sun: hot"". Allowed labels: cold, hot.
+
+Items: sun, snow, oven, fridge, freezer, fire, stove, ice cream"
+PO-CLS-0380,train,classification,repaired,optimized_prompt,Identify the word that does not belong to the same category as the others. Output only the word.,"Identify the word that does not belong to the same category as the others. Output only the word.
+
+Items: peel, organic, fruit, yellow, mushy, crunchy"
+PO-CLS-0381,train,classification,repaired,optimized_prompt,"Classify each of the given names as either ""streaming service"" or ""cable channel"". Output a JSON object with each name as a key and the corresponding label as the value.","Classify each of the given names as either ""streaming service"" or ""cable channel"". Output a JSON object with each name as a key and the corresponding label as the value.
+
+Items: Netflix, Hulu, Disney+, QVC, ABC, Comedy Central"
+PO-CLS-0382,train,classification,repaired,optimized_prompt,"Classify each listed animal as ""canine"" or ""feline"". Output a JSON object with animal names as keys and the label as the value.","Classify each listed animal as ""canine"" or ""feline"". Output a JSON object with animal names as keys and the label as the value.
+
+Items: French Bulldog, Siamese Cat, Sharpei"
+PO-CLS-0384,train,classification,repaired,optimized_prompt,"Classify each listed character as belonging to the DC Universe or the Marvel Universe. Output each name followed by its label (DC or Marvel) on separate lines, e.g., ""Ghost Rider: Marvel"".","Classify each listed character as belonging to the DC Universe or the Marvel Universe. Output each name followed by its label (DC or Marvel) on separate lines, e.g., ""Ghost Rider: Marvel"".
+
+Items: Ghost Rider, Atomic Skull"
+PO-CLS-0385,train,classification,repaired,optimized_prompt,Identify the prime numbers from the given list. Output only the prime numbers as a comma‑separated list.,"Identify the prime numbers from the given list. Output only the prime numbers as a comma‑separated list.
+
+Items: 7, 12, 23, 33, 64, 79, 97, and 100"
+PO-CLS-0386,train,classification,repaired,optimized_prompt,Identify which items from the given list are likely to be found on a pirate ship. Output only the valid items as a comma‑separated list.,"Identify which items from the given list are likely to be found on a pirate ship. Output only the valid items as a comma‑separated list.
+
+Items: oars, cannons, gym shoes, air conditioning, swords, frisbee golf set"
+PO-CLS-0387,train,classification,repaired,optimized_prompt,"Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with each species as a key and its status as the value.","Classify each listed species as ""alive"" or ""extinct"". Output a JSON object with each species as a key and its status as the value.
+
+Items: Arctodus, Cross River Gorilla"
+PO-CLS-0389,train,classification,repaired,optimized_prompt,"Classify each listed animal as ""reptile"" or ""amphibian"". Output a JSON object with animal names as keys and the label as the value.","Classify each listed animal as ""reptile"" or ""amphibian"". Output a JSON object with animal names as keys and the label as the value.
+
+Items: salamander, alligator, caiman, snake, toad"
+PO-CLS-0391,train,classification,repaired,optimized_prompt,"Classify each food item as ""Breakfast"" or ""Dinner"". Output a list where each line contains the food name followed by its label. Example: 
+Waffles: Breakfast
+Turkey: Dinner","Classify each food item as ""Breakfast"" or ""Dinner"". Output a list where each line contains the food name followed by its label. Example: 
+Waffles: Breakfast
+Turkey: Dinner
+
+Items: Waffles, pancakes, turkey, chicken noodle soup, salad, bacon and eggs, egg drop soup"
+PO-CLS-0392,train,classification,repaired,optimized_prompt,"Classify each animal as ""2-legged"" or ""4-legged"". Return a JSON object with animal names as keys and the corresponding label as the value. Do not add any other text.","Classify each animal as ""2-legged"" or ""4-legged"". Return a JSON object with animal names as keys and the corresponding label as the value. Do not add any other text.
+
+Items: kangaroo, dog, rhino, lion, giraffe, penguin, chimpanzee and cat"
+PO-CLS-0393,train,classification,repaired,optimized_prompt,"Classify each item as either ""dog"" or ""bird"". Output a JSON array with each item and its label, e.g., [{""item"":""Phoenix"",""label"":""bird""}, …].","Classify each item as either ""dog"" or ""bird"". Output a JSON array with each item and its label, e.g., [{""item"":""Phoenix"",""label"":""bird""}, …].
+
+Items: Phoenix, Siberian Husky, Alaskan Malamute, Hawk, Border Collie, Labrador,  Araucana"
+PO-CLS-0394,train,classification,repaired,optimized_prompt,"Classify each name as belonging to the DC Universe or the Marvel Universe. Output only the label (DC or Marvel) for each name, one per line. No additional text.","Classify each name as belonging to the DC Universe or the Marvel Universe. Output only the label (DC or Marvel) for each name, one per line. No additional text.
+
+Items: Harvey Dent, Wilson Fisk"
+PO-CLS-0395,train,classification,repaired,optimized_prompt,"Classify each country as ""Europe"" or ""America"". Output a JSON object with country names as keys and the region label as values. Example: {""England"": ""Europe"", ...}. No additional text.","Classify each country as ""Europe"" or ""America"". Output a JSON object with country names as keys and the region label as values. Example: {""England"": ""Europe"", ...}. No additional text.
+
+Items: England, United states, France, Spain, Canada, Italy, Colombia, Peru"
+PO-CLS-0396,train,classification,repaired,optimized_prompt,"Classify each item as either ""literary character"" or ""fruit"". Output a JSON object mapping each name to its label. Example: {""Gandalf"":""literary character"", ""banana"":""fruit"", …}. Do not provide any other text.","Classify each item as either ""literary character"" or ""fruit"". Output a JSON object mapping each name to its label. Example: {""Gandalf"":""literary character"", ""banana"":""fruit"", …}. Do not provide any other text.
+
+Items: Gandalf, banana, Frodo Baggins, Aragorn, orange, apple, Sauron"
+PO-CLS-0397,train,classification,repaired,optimized_prompt,"Classify each item as alcoholic or non-alcoholic. Output a JSON array of objects with fields ""drink"" and ""label"" (values: ""alcoholic"" or ""non-alcoholic"").","Classify each item as alcoholic or non-alcoholic. Output a JSON array of objects with fields ""drink"" and ""label"" (values: ""alcoholic"" or ""non-alcoholic"").
+
+Items: soda, wine, milk, beer, fruit juice, sparkling water, vodka, tequila"
+PO-CLS-0398,train,classification,repaired,optimized_prompt,"Classify each city as ""European"" or ""American"". Output a JSON object with city names as keys and their classification as values. Do not provide any additional text.","Classify each city as ""European"" or ""American"". Output a JSON object with city names as keys and their classification as values. Do not provide any additional text.
+
+Items: New York, Milan, Paris, Chicago, San Francisco, London"
+PO-CLS-0399,train,classification,repaired,optimized_prompt,"Classify each company as public or private. Output a JSON object mapping each company name to either ""public"" or ""private"".","Classify each company as public or private. Output a JSON object mapping each company name to either ""public"" or ""private"".
+
+Items: Meta, Microsoft, Amazon, Deloitte, KPMG, Ernst & Young"
+PO-CLS-0400,train,classification,repaired,optimized_prompt,"Classify each game as 'indoor' or 'outdoor' and output a list of the games with their corresponding label, one per line.","Classify each game as 'indoor' or 'outdoor' and output a list of the games with their corresponding label, one per line.
+
+Items: Cricket, Table Tennis, Soccer, Carom"
+PO-CLS-0401,train,classification,repaired,optimized_prompt,"Classify each item as ""state"" or ""city"". Output only the labels, one per line, in the same order as the list.","Classify each item as ""state"" or ""city"". Output only the labels, one per line, in the same order as the list.
+
+Items: Portland, Austin, San Antonio, Alaska, Anchorage, Maine, Vermont"
+PO-CLS-0402,train,classification,repaired,optimized_prompt,"Classify each item as ""physical"" or ""digital"". Output a JSON array of objects, each with the item name and its label (physical/digital).","Classify each item as ""physical"" or ""digital"". Output a JSON array of objects, each with the item name and its label (physical/digital).
+
+Items: pencil, pen, paper, email, social media, pavers, gutters, cryptocurrency"
+PO-CLS-0403,val,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Agiarut: string"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label on a separate line, e.g., ""Agiarut: string"".
+
+Items: Agiarut, Agung"
+PO-CLS-0404,val,classification,repaired,optimized_prompt,"Classify each listed food item as ""healthy"" or ""unhealthy"" for kids. Output a JSON object with the food names as keys and the label as the value, e.g., {""French Fries"": ""unhealthy"", ""Banana"": ""healthy"", ...}.","Classify each listed food item as ""healthy"" or ""unhealthy"" for kids. Output a JSON object with the food names as keys and the label as the value, e.g., {""French Fries"": ""unhealthy"", ""Banana"": ""healthy"", ...}.
+
+Items: French Fries, Banana, Candy, Vegetables"
+PO-CLS-0407,val,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.
+
+Items: Nagara, Sape"
+PO-CLS-0408,val,classification,repaired,optimized_prompt,"Classify each item as ""chocolate"" or ""non-chocolate"". Output only the label for each item in the same order, one per line.","Classify each item as ""chocolate"" or ""non-chocolate"". Output only the label for each item in the same order, one per line.
+
+Items: 5 Star, Dairy Milk, Bar One, Chips Ahoy, Oreo, Bounty, Mars, Milky Way, Lay's, Bananas"
+PO-CLS-0409,val,classification,repaired,optimized_prompt,"For each term, output only the label ""coffee bean"" or ""Latin dance style"". Provide the labels in the same order as the list.","For each term, output only the label ""coffee bean"" or ""Latin dance style"". Provide the labels in the same order as the list.
+
+Items: bachata, huehuetenango, tango, Jamaican Blue mountain, merengue, salsa, Tanzanian Peaberry, Ethiopian Harrar, Kenya AA, flamenco"
+PO-CLS-0411,val,classification,repaired,optimized_prompt,"For each animal in the list, assign the label ""mammal"" or ""reptile"". Output a JSON object with the animal names as keys and the assigned label as the value. No other text.","For each animal in the list, assign the label ""mammal"" or ""reptile"". Output a JSON object with the animal names as keys and the assigned label as the value. No other text.
+
+Input:
+Lizard, Alligator, Elephant, Crocodile, Lion, Dolphin, Snake, Platypus, Chimpanzee
+Turtle"
+PO-CLS-0412,val,classification,repaired,optimized_prompt,"Classify each sport as ""team sport"" or ""not a team sport"". Output a list with each sport and its label, one per line.","Classify each sport as ""team sport"" or ""not a team sport"". Output a list with each sport and its label, one per line.
+
+Items: golf, basketball, boxing, running, cycling, baseball"
+PO-CLS-0413,val,classification,repaired,optimized_prompt,"Classify each sport as played on grass or ice. Output a JSON object with sport names as keys and ""grass"" or ""ice"" as values.","Classify each sport as played on grass or ice. Output a JSON object with sport names as keys and ""grass"" or ""ice"" as values.
+
+Items: figure skating, hockey, football, soccer, curling"
+PO-CLS-0414,val,classification,repaired,optimized_prompt,"Classify each listed character as belonging to ""DC"" or ""Marvel"". Output a JSON object with keys as the character names and values as the universe label (""DC"" or ""Marvel"").","Classify each listed character as belonging to ""DC"" or ""Marvel"". Output a JSON object with keys as the character names and values as the universe label (""DC"" or ""Marvel"").
+
+Items: Catwoman, Black Cat"
+PO-CLS-0415,val,classification,repaired,optimized_prompt,"Classify each listed character as belonging to DC or Marvel. Output a JSON object mapping each character to its label (""DC"" or ""Marvel"").","Classify each listed character as belonging to DC or Marvel. Output a JSON object mapping each character to its label (""DC"" or ""Marvel"").
+
+Items: Sif, Wonder Woman"
+PO-CLS-0418,val,classification,repaired,optimized_prompt,"Classify each listed instrument as either string or percussion. Output a JSON object with the instrument names as keys and the label (""string"" or ""percussion"") as the value.","Classify each listed instrument as either string or percussion. Output a JSON object with the instrument names as keys and the label (""string"" or ""percussion"") as the value.
+
+Items: Fiddlesticks, Tricordia"
+PO-CLS-0419,val,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the chosen label as the value.","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the chosen label as the value.
+
+Items: Singing bowl, Kibangala"
+PO-CLS-0420,val,classification,repaired,optimized_prompt,Classify each name as 'actor' or 'author'. Return a JSON array of objects with keys 'name' and 'role'.,"Classify each name as 'actor' or 'author'. Return a JSON array of objects with keys 'name' and 'role'.
+
+Items: Russell Crowe, Tom Hanks, Jamie Lee Curtis, Joanne Woodward, Sara Jessica Parker, Tom Cruise, Alexander Dumas, JK Rowling, Ingrid Bergman, Grace Kelly,  Judi Dench, Kate Winslet, Jodie Foster, Doris Day, William Shakespeare, Jalal al-Din Muhammad Rumi"
+PO-CLS-0421,val,classification,repaired,degraded_prompt,which of these are nuts and which are legumes?,"which of these are nuts and which are legumes?: When categorizing walnuts, pistachios, peanuts, hazelnuts, macadamia nuts, almonds, lentils and chickpeas, which would you say are nuts and which a"
+PO-CLS-0421,val,classification,repaired,optimized_prompt,"Classify each item as ""nut"" or ""legume"". Output a JSON object with the item names as keys and the corresponding label as values.","Classify each item as ""nut"" or ""legume"". Output a JSON object with the item names as keys and the corresponding label as values.
+
+Items: When categorizing walnuts, pistachios, peanuts, hazelnuts, macadamia nuts, almonds, lentils and chickpeas, which would you say are nuts and which a"
+PO-CLS-0423,val,classification,repaired,optimized_prompt,"Classify each country as either ""EU member"" or ""non-EU member"". Output a list of objects with fields ""country"" and ""status"".","Classify each country as either ""EU member"" or ""non-EU member"". Output a list of objects with fields ""country"" and ""status"".
+
+Items: Spain, Albania, the United Kingdom, Ireland, Romania, Germany"
+PO-CLS-0423,val,classification,regenerated,optimized_prompt,"Classify each country as either ""EU member"" or ""non-EU member"". Output a list of objects with fields ""country"" and ""status"".
+
+Items: Spain, Albania, the United Kingdom, Ireland, Romania, Germany","Classify each European country as either ""EU member"" or ""non-EU member"". Output a list of objects with fields ""country"" and ""status"".
+
+Items: Spain, Albania, the United Kingdom, Ireland, Romania, Germany"
+PO-CLS-0424,val,classification,repaired,optimized_prompt,"Classify each item as either ""Flower"" or ""European Country"". Output a JSON object where keys are the items and values are the labels.","Classify each item as either ""Flower"" or ""European Country"". Output a JSON object where keys are the items and values are the labels.
+
+Items: roses, Norway, tulips, the Netherlands, Sweden, France, Spain, Greece, Italy, and sunflowers"
+PO-CLS-0425,val,classification,repaired,optimized_prompt,"Classify each song as performed by either ""Nick Cave & The Bad Seeds"" or ""Radiohead"". Provide a JSON object with song titles as keys and the assigned band as the value. Ensure every title is present and correctly labeled.","Classify each song as performed by either ""Nick Cave & The Bad Seeds"" or ""Radiohead"". Provide a JSON object with song titles as keys and the assigned band as the value. Ensure every title is present and correctly labeled.
+
+Items: Karma Police, The Good Son, The Mercy Seat, Creep, Planet Telex, Deanna, Pyramid Song, Airbag, Tupelo, Into My Arms, The National Anthem, Morning Bell, Lament, Idioteque, Red Right Hand, Straight To You"
+PO-CLS-0426,val,classification,regenerated,optimized_prompt,"For each item (bathroom break, music playlist, snacks, map), assign one of the labels: 'necessary', 'somewhat necessary', or 'nice to have'. Output a JSON object with the items as keys and the assigned label as the value.","For each item (bathroom break, music playlist, snacks, map) on a cross‑country roadtrip across the United States, assign one of the labels: 'necessary', 'somewhat necessary', or 'nice to have'. Output a JSON object with the items as keys and the assigned label as the value."
+PO-CLS-0428,val,classification,repaired,optimized_prompt,"Classify each item as either Mexican food or Vietnamese food. Return a JSON array where each element has 'item' and 'label' keys. Example: [{""item"":""pho"",""label"":""Vietnamese""}, ...]","Classify each item as either Mexican food or Vietnamese food. Return a JSON array where each element has 'item' and 'label' keys. Example: [{""item"":""pho"",""label"":""Vietnamese""}, ...]
+
+Items: pho, tacos, spring rolls, bun bo hue, burritos, frijoles, banh mi, nachos"
+PO-CLS-0429,val,classification,repaired,optimized_prompt,Classify each movie in the provided list as either 'Hollywood' or 'Bollywood'. Output the results as a bulleted list with each movie title followed by its classification label.,"Classify each movie in the provided list as either 'Hollywood' or 'Bollywood'. Output the results as a bulleted list with each movie title followed by its classification label.
+
+Items: Zanjeer; The Shawshank redemption; Sholay; Pride & prejudice"
+PO-CLS-0430,val,classification,removed,,Classify each food in the provided list as either 'Dirty Dozen' or 'Clean Fifteen' based on the EWG's list. Output a JSON object mapping each food to its corresponding label.,
+PO-CLS-0431,val,classification,repaired,optimized_prompt,Classify each color in the provided list as either 'primary' or 'not primary'. Output the results as a JSON object where each key is the color name and the value is its classification.,"Classify each color in the provided list as either 'primary' or 'not primary'. Output the results as a JSON object where each key is the color name and the value is its classification.
+
+Items: red, blue, green, orange, yellow, white, blue, pink, black, white, brown"
+PO-CLS-0432,val,classification,repaired,optimized_prompt,"Classify each item as a computer video game or not. Output a list with each item followed by ""game"" or ""not game"". Do not include any extra text.","Classify each item as a computer video game or not. Output a list with each item followed by ""game"" or ""not game"". Do not include any extra text.
+
+Items: Path of Exile; Playstation; Xbox; Nintendo; Starcraft; Civilization"
+PO-CLS-0433,test,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as the value.","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as the value.
+
+Items: Udu, Bulbul tarang"
+PO-CLS-0435,test,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Ratchet: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its category on a separate line, e.g., ""Ratchet: percussion"".
+
+Items: Ratchet, Hasapi"
+PO-CLS-0436,test,classification,repaired,optimized_prompt,"Classify each manufacturer as ""Italian"" or ""American"". Output a JSON object with keys as the manufacturers and values as the correct label.","Classify each manufacturer as ""Italian"" or ""American"". Output a JSON object with keys as the manufacturers and values as the correct label.
+
+Items: Ferrari, GMC"
+PO-CLS-0438,test,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with instrument names as keys and the label (string or percussion) as values.
+
+Items: Ashiko, Anzad"
+PO-CLS-0439,test,classification,repaired,optimized_prompt,"For each book title, assign one label from the set {memoir, autobiography, biography}. Output a JSON object mapping each title to its label, no additional text.","For each book title, assign one label from the set {memoir, autobiography, biography}. Output a JSON object mapping each title to its label, no additional text.
+
+Items: Grant, Confessions of a Bookseller by Shaun Bythell, Benjamin Franklin: An American Life by Walter Isaacson, H is for Hawk by Helen Macdonald, The Autobiography of Benjamin Franklin by Benjamin Franklin, Long Walk to Freedom by Nelson Mandela"
+PO-CLS-0440,test,classification,repaired,optimized_prompt,"For each Pokémon name listed, label it as ""Fire"" or ""Not Fire"". Output a JSON array of objects, each with ""name"" and ""type"" fields. Do not include any additional text.","For each Pokémon name listed, label it as ""Fire"" or ""Not Fire"". Output a JSON array of objects, each with ""name"" and ""type"" fields. Do not include any additional text.
+
+Items: Arcanine, Lapras, Glalie, Spheal, Magmar, Houndour, Entei, Ho-oh, Torchic, Kyurem, Cubchoo, Beartic, Numel, Ninetales, Rotom, Mamoswine"
+PO-CLS-0441,test,classification,repaired,optimized_prompt,"Classify each entry as either ""animal"" or ""band"". Output a list of objects with fields ""name"" and ""label"" (animal or band).","Classify each entry as either ""animal"" or ""band"". Output a list of objects with fields ""name"" and ""label"" (animal or band).
+
+Items: Eagles, Camels, Penguins, The Turtles, The Beatles, The Animals, Arctic Monkeys, Spain, France, Gorillas, Gorillaz, Crazy Horse, Lamb Of God, Beluga sturgeon"
+PO-CLS-0442,test,classification,repaired,optimized_prompt,"Classify each brand as either a motorcycle brand or a car brand. Output a JSON array where each element has the brand name and the label ""motorcycle"" or ""car"".","Classify each brand as either a motorcycle brand or a car brand. Output a JSON array where each element has the brand name and the label ""motorcycle"" or ""car"".
+
+Items: Maruti Suzuki, Ducati, Triumph, Royal Enfield, Harley Davidson,  Mahindra, Tata, Skoda, Honda, Toyota, Hero, TVS, Yamaha, Suzuki, Kawasaki, Volkswagen, Ferrari, Lamborgini, Volvo, Rolls royce, Bajaj, Kia, Hyundai, Ford, Chevrolet, Crystler, Fiat, Hummer, Citreon, KTM"
+PO-CLS-0443,test,classification,repaired,degraded_prompt,are those countries communist?,"are those countries communist?: Afghanistan, Albania, Algeria, Andorra, Angola, Antigua and Barbuda, Argentina, Armenia, Australia, Austria, Azerbaijan, Bahamas, Bahrain, Bangladesh, Barbados, Belarus, Belgium, Belize, Benin, Bhutan, Bolivia, Bosnia and Herzegovina, Botswana, Brazil, Brunei, Bulgaria, Burkina Faso, Burundi, Côte d'Ivoire, Cabo Verde, Cambodia, Cameroon, Canada, Central African Republic, Chad, Chile, China, Colombia, Comoros, Congo (Congo-Brazzaville), Costa Rica, Croatia, Cuba, Cyprus, Czechia (Czech Republic), Democratic Republic of the Congo, Denmark, Djibouti, Dominica, Dominican Republic, Ecuador, Egypt, El Salvador, Equatorial Guinea, Eritrea, Estonia, Eswatini , Ethiopia, Fiji, Finland, France, Gabon, Gambia, Georgia, Germany, Ghana, Greece, Grenada, Guatemala, Guinea, Guinea-Bissau, Guyana, Haiti, Holy See, Honduras, Hungary, Iceland, India, Indonesia, Iran, Iraq, Ireland, Israel, Italy, Jamaica, Japan, Jordan, Kazakhstan, Kenya, Kiribati, Kuwait, Kyrgyzstan, Laos, Latvia, Lebanon, Lesotho, Liberia, Libya, Liechtenstein, Lithuania, Luxembourg, Madagascar, Malawi, Malaysia, Maldives, Mali, Malta, Marshall Islands, Mauritania, Mauritius, Mexico, Micronesia, Moldova, Monaco, Mongolia, Montenegro, Morocco, Mozambique, Myanmar (formerly Burma), Namibia, Nauru, Nepal, Netherlands, New Zealand, Nicaragua, Niger, Nigeria, North Korea, North Macedonia, Norway, Oman, Pakistan, Palau, Palestine State, Panama, Papua New Guinea, Paraguay, Peru, Philippines, Poland, Portugal, Qatar, Romania, Russia, Rwanda, Saint Kitts and Nevis, Saint Lucia, Saint Vincent and the Grenadines, Samoa, San Marino, Sao Tome and Principe, Saudi Arabia, Senegal, Serbia, Seychelles, Sierra Leone, Singapore, Slovakia, Slovenia, Solomon Islands, Somalia, South Africa, South Korea, South Sudan, Spain, Sri Lanka, Sudan, Suriname, Sweden, Switzerland, Syria, Tajikistan, Tanzania, Thailand, Timor-Leste, Togo, Tonga, Trinidad and Tobago, Tunisia, Turkey, Turkmenistan, Tuvalu, Uganda, Ukraine, United Arab Emirates, United Kingdom, United States of America, Uruguay, Uzbekistan, Vanuatu, Venezuela, Vietnam, Yemen, Zambia, Zimbabwe"
+PO-CLS-0443,test,classification,repaired,optimized_prompt,"Classify each listed country as ""Communist"" or ""Non-Communist"". Output a comma-separated list of country names followed by their label in parentheses, e.g., Afghanistan (Non-Communist).","Classify each listed country as ""Communist"" or ""Non-Communist"". Output a comma-separated list of country names followed by their label in parentheses, e.g., Afghanistan (Non-Communist).
+
+Items: Afghanistan, Albania, Algeria, Andorra, Angola, Antigua and Barbuda, Argentina, Armenia, Australia, Austria, Azerbaijan, Bahamas, Bahrain, Bangladesh, Barbados, Belarus, Belgium, Belize, Benin, Bhutan, Bolivia, Bosnia and Herzegovina, Botswana, Brazil, Brunei, Bulgaria, Burkina Faso, Burundi, Côte d'Ivoire, Cabo Verde, Cambodia, Cameroon, Canada, Central African Republic, Chad, Chile, China, Colombia, Comoros, Congo (Congo-Brazzaville), Costa Rica, Croatia, Cuba, Cyprus, Czechia (Czech Republic), Democratic Republic of the Congo, Denmark, Djibouti, Dominica, Dominican Republic, Ecuador, Egypt, El Salvador, Equatorial Guinea, Eritrea, Estonia, Eswatini , Ethiopia, Fiji, Finland, France, Gabon, Gambia, Georgia, Germany, Ghana, Greece, Grenada, Guatemala, Guinea, Guinea-Bissau, Guyana, Haiti, Holy See, Honduras, Hungary, Iceland, India, Indonesia, Iran, Iraq, Ireland, Israel, Italy, Jamaica, Japan, Jordan, Kazakhstan, Kenya, Kiribati, Kuwait, Kyrgyzstan, Laos, Latvia, Lebanon, Lesotho, Liberia, Libya, Liechtenstein, Lithuania, Luxembourg, Madagascar, Malawi, Malaysia, Maldives, Mali, Malta, Marshall Islands, Mauritania, Mauritius, Mexico, Micronesia, Moldova, Monaco, Mongolia, Montenegro, Morocco, Mozambique, Myanmar (formerly Burma), Namibia, Nauru, Nepal, Netherlands, New Zealand, Nicaragua, Niger, Nigeria, North Korea, North Macedonia, Norway, Oman, Pakistan, Palau, Palestine State, Panama, Papua New Guinea, Paraguay, Peru, Philippines, Poland, Portugal, Qatar, Romania, Russia, Rwanda, Saint Kitts and Nevis, Saint Lucia, Saint Vincent and the Grenadines, Samoa, San Marino, Sao Tome and Principe, Saudi Arabia, Senegal, Serbia, Seychelles, Sierra Leone, Singapore, Slovakia, Slovenia, Solomon Islands, Somalia, South Africa, South Korea, South Sudan, Spain, Sri Lanka, Sudan, Suriname, Sweden, Switzerland, Syria, Tajikistan, Tanzania, Thailand, Timor-Leste, Togo, Tonga, Trinidad and Tobago, Tunisia, Turkey, Turkmenistan, Tuvalu, Uganda, Ukraine, United Arab Emirates, United Kingdom, United States of America, Uruguay, Uzbekistan, Vanuatu, Venezuela, Vietnam, Yemen, Zambia, Zimbabwe"
+PO-CLS-0444,test,classification,repaired,optimized_prompt,"Classify each state as ""mountainous"" or ""not mountainous"". Output a list of labels in the same order as the states provided.","Classify each state as ""mountainous"" or ""not mountainous"". Output a list of labels in the same order as the states provided.
+
+Items: Idaho, Vermont, Kansas, Hawaii, Florida, New Mexico, California, Rhode Island"
+PO-CLS-0445,test,classification,repaired,optimized_prompt,"Classify each company as Small Cap or Large Cap. Output a single line per company in the format: <Company>: <Label>. Allowed labels: Small Cap, Large Cap.","Classify each company as Small Cap or Large Cap. Output a single line per company in the format: <Company>: <Label>. Allowed labels: Small Cap, Large Cap.
+
+Items: Gravita, MapmyIndia, Airtel, Carysil"
+PO-CLS-0446,test,classification,repaired,optimized_prompt,"Classify each symbol as a periodic element or not. Output a list of the symbols that are periodic elements, one per line.","Classify each symbol as a periodic element or not. Output a list of the symbols that are periodic elements, one per line.
+
+Items: Ti, N, Pt, Fl, Zt, 1L, 2y, O, F, V, Y"
+PO-CLS-0447,test,classification,repaired,optimized_prompt,"Classify each word as verb, noun, or adjective. Output a JSON array of objects with keys ""word"" and ""label"". Example: [{""word"":""andare"",""label"":""verb""}, …]","Classify each word as verb, noun, or adjective. Output a JSON array of objects with keys ""word"" and ""label"". Example: [{""word"":""andare"",""label"":""verb""}, …]
+
+Items: andare, mangiare, buona, Alice, ristorante, veloce"
+PO-CLS-0447,test,classification,regenerated,optimized_prompt,"Classify each word as verb, noun, or adjective. Output a JSON array of objects with keys ""word"" and ""label"". Example: [{""word"":""andare"",""label"":""verb""}, …]
+
+Items: andare, mangiare, buona, Alice, ristorante, veloce","Classify each Italian word as verb, noun, or adjective. Output a JSON array of objects with keys ""word"" and ""label"". Example: [{""word"":""andare"",""label"":""verb""}, …]
+
+Items: andare, mangiare, buona, Alice, ristorante, veloce"
+PO-CLS-0448,test,classification,repaired,optimized_prompt,"For each of the ten cloud types listed, assign the correct altitude category (high, middle, low). Return a JSON array with objects containing ""cloud"" and ""altitude"" fields. Provide only the label for each cloud type. The altitude categories are: high, middle, low.","For each of the ten cloud types listed, assign the correct altitude category (high, middle, low). Return a JSON array with objects containing ""cloud"" and ""altitude"" fields. Provide only the label for each cloud type. The altitude categories are: high, middle, low.
+
+Items: Cirrus, Cumulus, Stratus, Stratocumulus, Cumulonimbus, NimboStratus, Cirrocumulus, Cirrostratus, Altostratus, Altocumulus,"
+PO-CLS-0449,test,classification,repaired,optimized_prompt,"Classify each item as either ""coffee"" or ""soft drink"". Output only the label for each item, one per line, in the same order as listed.","Classify each item as either ""coffee"" or ""soft drink"". Output only the label for each item, one per line, in the same order as listed.
+
+Items: Starbucks, Peet's, Blue Bottle, Coca-Cola, Sprite, Canada Dry, Pepsi"
+PO-CLS-0452,test,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output the instrument name followed by its category on separate lines, e.g., ""Bonang: percussion"".","Classify each listed instrument as either ""string"" or ""percussion"". Output the instrument name followed by its category on separate lines, e.g., ""Bonang: percussion"".
+
+Items: Bonang, Chiwang"
+PO-CLS-0453,test,classification,repaired,optimized_prompt,Classify each manufacturer as French or American. Output a JSON object with the manufacturers as keys and the label ('French' or 'American') as values.,"Classify each manufacturer as French or American. Output a JSON object with the manufacturers as keys and the label ('French' or 'American') as values.
+
+Items: Citroen, Chrysler"
+PO-CLS-0456,test,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label in the format ""Instrument: label"" on separate lines.","Classify each listed instrument as either ""string"" or ""percussion"". Output each instrument followed by its label in the format ""Instrument: label"" on separate lines.
+
+Items: Hang, Ruan"
+PO-CLS-0457,test,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as the value.","Classify each listed instrument as either ""string"" or ""percussion"". Output a JSON object with the instrument names as keys and the label (string or percussion) as the value.
+
+Items: Pandero jarocho, Sallaneh"
+PO-CLS-0458,test,classification,repaired,optimized_prompt,Identify the item in the list that is a bird. Output only the bird name.,"Identify the item in the list that is a bird. Output only the bird name.
+
+Items: Mouse, Balearic shearwater, Giraffe"
+PO-CLS-0459,test,classification,repaired,optimized_prompt,"For each name, classify it as ""director"" or ""author"". Return a JSON array of objects with fields ""name"" and ""label"". Example: [{""name"": ""Quentin Tarantino"", ""label"": ""director""}, …]","For each name, classify it as ""director"" or ""author"". Return a JSON array of objects with fields ""name"" and ""label"". Example: [{""name"": ""Quentin Tarantino"", ""label"": ""director""}, …]
+
+Items: Quentin Tarantino, Martin Scorsese, Christopher Nolan, Ernest Hemingway, Stephen King, J.K. Rowling"
+PO-CLS-0460,test,classification,repaired,optimized_prompt,Classify each word as noun or adjective. Output a JSON array where each element has the word and its label ('noun' or 'adjective').,"Classify each word as noun or adjective. Output a JSON array where each element has the word and its label ('noun' or 'adjective').
+
+Items: Fridge, wipe, bed, chair, jump, yell, sleep, fruit and talk"
+PO-CLS-0461,test,classification,repaired,optimized_prompt,"Classify each fish as ""inshore/nearshore"" or ""offshore"". Output a JSON object with the fish names as keys and the label as the value. Ensure all 13 fish are included.","Classify each fish as ""inshore/nearshore"" or ""offshore"". Output a JSON object with the fish names as keys and the label as the value. Ensure all 13 fish are included.
+
+Items: Tarpon, Bonefish, redfish, snook, trout, bass, swordfish, dolphinfish, gag, red snapper, yellowfin tuna, blackfin tuna, grouper"
+PO-CLS-0462,test,classification,repaired,degraded_prompt,split these sneakers into air jordan or air max,"split these sneakers into air jordan or air max: Tokyo 96, Big Bubble Red, Collector's Dream, Monarch, Chicago, Lucky Green"
+PO-CLS-0462,test,classification,repaired,optimized_prompt,"Classify each sneaker as either ""Air Jordan"" or ""Air Max"". Output a JSON object with keys being the sneaker names and values the assigned category.","Classify each sneaker as either ""Air Jordan"" or ""Air Max"". Output a JSON object with keys being the sneaker names and values the assigned category.
+
+Items: Tokyo 96, Big Bubble Red, Collector's Dream, Monarch, Chicago, Lucky Green"
+PO-CLS-0463,test,classification,repaired,optimized_prompt,"Classify each item as either ""flammable"" or ""inflammable"". Output a list of the items with their corresponding label only, one per line.","Classify each item as either ""flammable"" or ""inflammable"". Output a list of the items with their corresponding label only, one per line.
+
+Items: Here is the list of items: water, alcohol, gasoline, and orange juice"
+PO-CLS-0465,test,classification,repaired,optimized_prompt,"Classify each item in the provided list as either a necessary ingredient for baking chocolate chip cookies or not. Output the result as a JSON object with two keys: ""ingredients"" (array of strings) and ""non_ingredients"" (array of strings).","Classify each item in the provided list as either a necessary ingredient for baking chocolate chip cookies or not. Output the result as a JSON object with two keys: ""ingredients"" (array of strings) and ""non_ingredients"" (array of strings).
+
+Items: butter, spinach, eggs, flour, apples, sugar, vanilla extract, chocolate chips, charcoal, a positive COVID 19 test cassette, fingernail polish, salt"
+PO-CLS-0466,test,classification,repaired,optimized_prompt,"Classify each item in the provided list into one of two categories: 'outfits' or 'appliances'. Return a JSON object with two keys, 'outfits' and 'appliances', where each value is a list of the corresponding items.","Classify each item in the provided list into one of two categories: 'outfits' or 'appliances'. Return a JSON object with two keys, 'outfits' and 'appliances', where each value is a list of the corresponding items.
+
+Items: dress, shoes, toaster, jackets, fridge, air fryer, instant pot, vest, gloves, pants, jeans"
+PO-CLS-0467,test,classification,repaired,optimized_prompt,Classify each item in the provided list as either 'dog breed' or 'cat breed'. Output the result as a bulleted list where each line follows the format: '- [item]: [label]'.,"Classify each item in the provided list as either 'dog breed' or 'cat breed'. Output the result as a bulleted list where each line follows the format: '- [item]: [label]'.
+
+Items: german shepherd, bulldog, labrador retriever, french bulldog, siberian husky, alaskan malamute, poodle, chihuahua, rottweiler, british shorthair, maine coon, persian, ragdoll, sphynx, american shorthair, birman, russian blue"
+PO-CLS-0470,test,classification,repaired,optimized_prompt,"Classify each item in the provided list as either a rainbow color or not. Output a JSON object where keys are the item names and values are boolean (true if it is a rainbow color, false otherwise). Do not include any other text.","Classify each item in the provided list as either a rainbow color or not. Output a JSON object where keys are the item names and values are boolean (true if it is a rainbow color, false otherwise). Do not include any other text.
+
+Items: black, red, white, gold, purple, orange, green, blue, yellow, gray"
+PO-CLS-0473,benchmark,classification,repaired,optimized_prompt,"Classify each listed animal as ""domesticated"" or ""wild"". Output a JSON object with keys as the animal names and values as the label (domesticated or wild).","Classify each listed animal as ""domesticated"" or ""wild"". Output a JSON object with keys as the animal names and values as the label (domesticated or wild).
+
+Items: Hedgehog, Sea-monkey"
+PO-CLS-0474,benchmark,classification,repaired,optimized_prompt,"Classify each item as either ""insect"" or ""worm"". Output one label per item, one per line, in the same order as the list.","Classify each item as either ""insect"" or ""worm"". Output one label per item, one per line, in the same order as the list.
+
+Items: tequila worm, silk worm, glow worm, inchworms, earthworms, tapeworm, hookworm, liver fluke, threadworm"
+PO-CLS-0475,benchmark,classification,repaired,optimized_prompt,Classify each animal as either domesticated or wild. Output the label for each animal in a simple list format.,"Classify each animal as either domesticated or wild. Output the label for each animal in a simple list format.
+
+Items: Chicken, Mandarin duck, Egyptian goose"
+PO-CLS-0476,benchmark,classification,repaired,optimized_prompt,"Classify each company as ""bank"" or ""car manufacturer"". Output a JSON object with company names as keys and the label as the value.","Classify each company as ""bank"" or ""car manufacturer"". Output a JSON object with company names as keys and the label as the value.
+
+Items: Chase, Wells Fargo, GMC, Ford, Tesla, Truist"
+PO-CLS-0477,benchmark,classification,repaired,optimized_prompt,"Classify each sport as ""individual"" or ""team"". Output a JSON object with the sport names as keys and the label as the value. No additional text.","Classify each sport as ""individual"" or ""team"". Output a JSON object with the sport names as keys and the label as the value. No additional text.
+
+Items: wrestling, boxing, football, basketball, swimming, handball, weightlifting"
+PO-CLS-0478,benchmark,classification,repaired,optimized_prompt,"Identify for each of the given instruments whether it is a string or woodwind. Output a JSON object with the instrument names as keys and the label ""string"" or ""woodwind"" as values.","Identify for each of the given instruments whether it is a string or woodwind. Output a JSON object with the instrument names as keys and the label ""string"" or ""woodwind"" as values.
+
+Items: Guitaro, Tromboon"
+PO-CLS-0479,benchmark,classification,repaired,optimized_prompt,"Classify each listed instrument as either ""string"" or ""woodwind"". Output a JSON object with the instrument names as keys and the label (string or woodwind) as the value.","Classify each listed instrument as either ""string"" or ""woodwind"". Output a JSON object with the instrument names as keys and the label (string or woodwind) as the value.
+
+Items: Auto-harp, Saxophone"
+PO-CLS-0481,benchmark,classification,repaired,optimized_prompt,"For each item, assign the label ""dog"" or ""cat"" only. Output a JSON array where each element is an object with the fields ""bread"" and ""label"". Do not include any other text.","For each item, assign the label ""dog"" or ""cat"" only. Output a JSON array where each element is an object with the fields ""bread"" and ""label"". Do not include any other text.
+
+Items: Siamese, Ragdoll, Yorkshire Terrier, Birman, Cocker Spaniel, Saint Bernard"
+PO-CQA-0025,train,closed_qa,regenerated,optimized_prompt,Answer the closed question using only the provided text: how many canals are there and what are their uses? Respond with a concise answer (one sentence).,Answer the closed question using only the provided text about Putlacheruvu: how many canals are there and what are their uses? Respond with a concise answer (one sentence).
+PO-CQA-0027,train,closed_qa,regenerated,optimized_prompt,Answer from the provided text: give the percentage of infected people who develop symptoms and list the possible symptoms. Respond with a short sentence for the percentage and a bullet list of symptoms.,Answer from the provided text about COVID-19: give the percentage of infected people who develop symptoms and list the possible symptoms. Respond with a short sentence for the percentage and a bullet list of symptoms.
+PO-CQA-0033,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text: state Lord Acton's most famous pronouncement and the person to whom he wrote it. Provide a concise answer in one sentence.,Answer the question using only the provided text about John Dalberg-Acton: state Lord Acton's most famous pronouncement and the person to whom he wrote it. Provide a concise answer in one sentence.
+PO-CQA-0048,train,closed_qa,regenerated,optimized_prompt,"Answer the closed‑question using only the provided text. Provide a brief answer (2‑3 sentences) that states: 1) his birth date, 2) the place he was raised, 3) the subjects he specialized in, and 4) why he is known as the Missile Man of India.","Answer the closed‑question using only the provided text about A. P. J. Abdul Kalam (Abdul Kalam). Provide a brief answer (2‑3 sentences) that states: 1) his birth date, 2) the place he was raised, 3) the subjects he specialized in, and 4) why he is known as the Missile Man of India."
+PO-CQA-0092,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text: How many Asian countries have land in Europe? Respond with a short numeric answer (one number).,Answer the question using only the provided text: How many Asian countries (in continent Asia) have land in Europe? Respond with a short numeric answer (one number).
+PO-CQA-0100,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Provide a concise answer (one sentence) stating Napoleon Bonaparte's birth year and birthplace.,Answer the question using only the provided text. Provide a concise answer (one sentence) stating Napoleon Bonaparte's birth year and birthplace (as mentioned in the Corsica paragraph).
+PO-CQA-0109,train,closed_qa,regenerated,optimized_prompt,"Answer with the term used for sandals in Tabaka, Kenya, as stated in the provided text. Provide a brief answer (one phrase).","Answer with the term used for sandals in Tabaka, Kenya, as stated in the Gusii language description. Provide a brief answer (one phrase)."
+PO-CQA-0114,train,closed_qa,regenerated,optimized_prompt,"Answer using only the provided text: what do tigers symbolize in modern China, and which tiger species were common in the northeast. Provide a brief answer in up to two sentences.","Answer using only the provided text: what do tigers symbolize in modern China, and which tiger species were common in the northeast of Chinese culture. Provide a brief answer in up to two sentences."
+PO-CQA-0146,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text: what deal did the founder make on Shark Tank? Respond with a single sentence containing the deal details.,Answer the question using only the provided text: what deal did the Scrub Daddy founder make on Shark Tank? Respond with a single sentence containing the deal details.
+PO-CQA-0155,train,closed_qa,regenerated,optimized_prompt,"Based on the provided text, list any cards that could be considered for a Midrange deck. Answer with a comma‑separated list in one sentence.","Based on the provided text, list any Magic cards that could be considered for a Midrange deck. Answer with a comma‑separated list in one sentence."
+PO-CQA-0164,train,closed_qa,regenerated,optimized_prompt,Answer the closed question using only the provided text. State the number of regular-season games per team and the number of games in the World Series. Keep the answer to two short sentences.,Answer the closed question using only the provided text. State the number of regular-season games per Major League Baseball team and the number of games in the World Series. Keep the answer to two short sentences.
+PO-CQA-0165,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Provide the name of the stadium that the new stadium replaced in a single sentence.,Answer the question using only the provided text. Provide the name of the stadium that the new Tottenham Hotspur stadium replaced in a single sentence.
+PO-CQA-0189,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Provide a concise answer (one sentence) stating whether the temple is known and its basic description.,Answer the question using only the provided text. Provide a concise answer (one sentence) stating whether the Doleshwor Mahadeva temple is known and its basic description.
+PO-CQA-0190,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text: what secret must Izuku keep and from whom? Provide a brief answer (one sentence).,Answer the question using only the provided text: what secret must Izuku keep and from whom in My Hero Academia? Provide a brief answer (one sentence).
+PO-CQA-0221,train,closed_qa,regenerated,optimized_prompt,"Answer the following questions based only on the provided text: 1) Birthplace. 2) Middle school attended. 3) High school attended. 4) How she described herself in high school. Provide the answers as a single sentence, each fact separated by a semicolon.","Answer the following questions based only on the provided text about Lady Gaga: 1) Birthplace. 2) Middle school attended. 3) High school attended. 4) How she described herself in high school. Provide the answers as a single sentence, each fact separated by a semicolon."
+PO-CQA-0225,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. State the name of the record label. One sentence maximum.,Answer the question using only the provided text about 101 Damnations. State the name of the record label. One sentence maximum.
+PO-CQA-0234,train,closed_qa,regenerated,optimized_prompt,"Answer the following questions using only information from the provided text:
+1. How many people were aboard MR-1 during the failed launch?
+2. On what date did the launch occur?
+Respond in two sentences, one for each answer.","Answer the following questions using only information from the provided text about Mercury-Redstone 1:
+1. How many people were aboard MR-1 during the failed launch?
+2. On what date did the launch occur?
+Respond in two sentences, one for each answer."
+PO-CQA-0237,train,closed_qa,regenerated,optimized_prompt,"From the provided text, list the main actors and the roles they played. Provide the answer as a bullet list of actor – role pairs, no additional text.","From the provided text about Justice League Dark, list the main actors and the roles they played. Provide the answer as a bullet list of actor – role pairs, no additional text."
+PO-CQA-0243,train,closed_qa,regenerated,optimized_prompt,"Answer the question: 'Based on the provided text, what is the largest city in the state of California?' Provide only the city name, no extra words.","Answer the question: 'Based on the provided text about San Diego, what is the largest city in the state of California?' Provide only the city name, no extra words."
+PO-CQA-0248,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Provide the names of the main cast members. Response should be exactly one sentence.,Answer the question using only the provided text about Seinfeld. Provide the names of the main cast members. Response should be exactly one sentence.
+PO-CQA-0252,train,closed_qa,regenerated,optimized_prompt,"Based on the provided text, state the specific year when Confinity was acquired by X.com. Answer in a single sentence.","Based on the provided text, state the specific year when Confinity became eBay. Answer in a single sentence."
+PO-CQA-0302,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Give a single short sentence with the race duration.,Answer the question using only the provided text about the Tour De France. Give a single short sentence with the race duration.
+PO-CQA-0320,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Provide the exact number of signers as a short answer (one word or numeral).,Answer the question using only the provided text about American signers of the Declaration of Independence. Provide the exact number of signers as a short answer (one word or numeral).
+PO-CQA-0332,train,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Give a one‑sentence answer stating his birthplace.,Answer the question using only the provided text. Give a one‑sentence answer stating Kenneth McAlpine's birthplace.
+PO-CQA-0339,train,closed_qa,regenerated,optimized_prompt,Answer only from the provided text. Identify the two subgroups of the Western Iranian languages. Respond with the two subgroup names as a short list.,Answer only from the provided text. Identify the two subgroups of the Western Iranian languages of Persian. Respond with the two subgroup names as a short list.
+PO-CQA-0362,val,closed_qa,regenerated,optimized_prompt,Provide the median family income and the percentage of families below the poverty line from the provided text. Answer in a single sentence.,"Provide the median family income and the percentage of families below the poverty line for Chadwick, Illinois from the provided text. Answer in a single sentence."
+PO-CQA-0366,val,closed_qa,regenerated,optimized_prompt,Answer only from the provided text. State the highest temperature in Fahrenheit as a single numeric value.,Answer only from the provided text about Husinec. State the highest temperature in Fahrenheit as a single numeric value.
+PO-CQA-0379,test,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Provide the name of the academy in one sentence.,Answer the question using only the provided text about the United States. Provide the name of the academy in one sentence.
+PO-CQA-0387,test,closed_qa,regenerated,optimized_prompt,"Answer the closed question using only the provided text. Provide the season record (wins–losses) as a short answer, e.g., ""9–3"".","Answer the closed question about the University of Miami Hurricanes using only the provided text. Provide the season record (wins–losses) as a short answer, e.g., ""9–3""."
+PO-CQA-0391,test,closed_qa,regenerated,optimized_prompt,"Answer the question using only the provided text. State his birthplace and the places where he studied. Provide a brief answer: birthplace on one line, study locations on the next line.","Answer the question about Konstantin Konstantinovich Sluchevsky using only the provided text. State his birthplace and the places where he studied. Provide a brief answer: birthplace on one line, study locations on the next line."
+PO-CQA-0400,test,closed_qa,regenerated,optimized_prompt,Answer the two questions using only the provided text: 1) Who produced her debut single? 2) What is her chart‑topping single? Provide a concise answer (one sentence per question).,Answer the two questions about Billie Eilish using only the provided text: 1) Who produced her debut single? 2) What is her chart‑topping single? Provide a concise answer (one sentence per question).
+PO-CQA-0402,test,closed_qa,regenerated,optimized_prompt,"Answer the question using only the provided text. State the establishment year and the year it ceased publication in a brief answer (e.g., ""Established: 1869, Ceased: 2004"").","Answer the question about The Bobcaygeon Independent using only the provided text. State the establishment year and the year it ceased publication in a brief answer (e.g., ""Established: 1869, Ceased: 2004"")."
+PO-CQA-0408,test,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Output the size in acres as a single number.,Answer the question about Walt Disney World using only the provided text. Output the size in acres as a single number.
+PO-CQA-0417,benchmark,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text. Provide the continent name as a brief answer (1-2 words).,Answer the question about Callixena versicolora using only the provided text. Provide the continent name as a brief answer (1-2 words).
+PO-CQA-0421,benchmark,closed_qa,regenerated,optimized_prompt,Answer the question using only the provided text: state the interior square footage and the number of rooms. Provide a brief answer (one sentence).,Answer the question about the E.S. Hoyt House using only the provided text: state the interior square footage and the number of rooms. Provide a brief answer (one sentence).
+PO-CQA-0422,benchmark,closed_qa,regenerated,optimized_prompt,"Answer the question using only the provided text: state the breed's origin, typical size, and typical coat color. Provide a brief answer of up to three sentences.","Answer the question about Yorkshire Terriers using only the provided text: state the breed's origin, typical size, and typical coat color. Provide a brief answer of up to three sentences."
+PO-COD-0219,train,coding,repaired,optimized_prompt,"Classify the provided expression by its syntactic type (e.g., arithmetic, logical). Output only the classification label in a single code block.","Classify the provided expression by its syntactic type (e.g., arithmetic, logical). Output only the classification label in a single code block.
+
+Expression: 5 + 4 * 3 - 7"
+PO-COD-0320,train,coding,removed,,"Implement a C++ program that reads two dates (YYYY-MM-DD) from input, calculates the difference in days between them using the provided function, and outputs the integer number of days. The output should be a single integer on its own line.",
+PO-COD-0384,train,coding,repaired,optimized_prompt,"Analyze the provided Java code snippet. Determine the value of the variable `z` after execution. Explain the logic of the modulo operation briefly, then state the final value of `z`.","Analyze the provided Java code snippet. Determine the value of the variable `z` after execution. Explain the logic of the modulo operation briefly, then state the final value of `z`.
+
+Input:
+int x = 7;
+int y = 3;
+int z = x % y;"
+PO-IE-0025,train,information_extraction,regenerated,optimized_prompt,"Extract all influencer names mentioned in the provided text. Output as a bullet list, each bullet containing one name.","Extract all influencer names on Ruben Dario's poetry mentioned in the provided text. Output as a bullet list, each bullet containing one name."
+PO-IE-0033,train,information_extraction,regenerated,optimized_prompt,Extract the BBQ types mentioned in the provided text and list them as a bullet list.,Extract the BBQ types in North Carolina mentioned in the provided text and list them as a bullet list.
+PO-IE-0042,train,information_extraction,regenerated,optimized_prompt,Extract all endorsement names from the provided text and output them as a single comma‑separated list.,Extract all endorsement names of Twice from the provided text and output them as a single comma‑separated list.
+PO-IE-0060,train,information_extraction,regenerated,optimized_prompt,Extract the winter months mentioned in the provided text. Output them as a comma‑separated list.,Extract the winter months mentioned in the provided text for Andhra Pradesh. Output them as a comma‑separated list.
+PO-IE-0110,train,information_extraction,regenerated,optimized_prompt,"Extract the stop names from the provided text in travel order, excluding the return service, and output them as a single line with underscores separating each stop.","Extract the stop names of the South Western Mail from the provided text in travel order, excluding the return service, and output them as a single line with underscores separating each stop."
+PO-IE-0126,train,information_extraction,regenerated,optimized_prompt,"Extract the titles of all tracks in the provided text that have no Chinese name. Output as a plain list, one title per line.","Extract the titles of all tracks from The Story of June in the provided text that have no Chinese name. Output as a plain list, one title per line."
+PO-IE-0154,train,information_extraction,regenerated,optimized_prompt,Extract the role of the benzol barrels in the explosion described in the provided text. Output a concise sentence stating their role.,Extract the role of the benzol barrels in the explosion of the Mont-Blanc described in the provided text. Output a concise sentence stating their role.
+PO-IE-0177,train,information_extraction,regenerated,optimized_prompt,"Extract the following information from the provided text: 1) Name of the glacier, 2) Country where it is located, 3) Annual precipitation (rain or snow). Output as a three‑item bulleted list, each item a short phrase.","Extract the following information about Mýrdalsjökull from the provided text: 1) Name of the glacier, 2) Country where it is located, 3) Annual precipitation (rain or snow). Output as a three‑item bulleted list, each item a short phrase."
+PO-IE-0179,train,information_extraction,repaired,degraded_prompt,"which of these films won multiple filmfare awards? a, b, c or d?","which of these films won multiple filmfare awards? a, b, c or d?
+A. Mumbai Meri Jaan
+B. Govardhan
+C. C.I.D.
+D. The end titles are accompanied by the song Aye Dil Hain Mushkil."
+PO-IE-0179,train,information_extraction,repaired,optimized_prompt,Extract the film that won multiple Filmfare Awards from the provided text. Output only the film title as plain text.,"Extract the film that won multiple Filmfare Awards from the provided text. Output only the film title as plain text.
+
+Input:
+A. Mumbai Meri Jaan
+B. Govardhan
+C. C.I.D.
+D. The end titles are accompanied by the song Aye Dil Hain Mushkil."
+PO-IE-0180,train,information_extraction,regenerated,optimized_prompt,"Extract all celebrity guest names mentioned in the provided text. Output as a plain bullet list, one name per line.","Extract all celebrity guest names mentioned in the provided text about Parks and Recreation. Output as a plain bullet list, one name per line."
+PO-IE-0182,train,information_extraction,regenerated,optimized_prompt,"Extract the author names from the provided text. Output a plain list of the names, one per line.","Extract the author names from the provided text about Nobel laureate selections. Output a plain list of the names, one per line."
+PO-IE-0202,train,information_extraction,regenerated,optimized_prompt,Extract the names of all spin‑off games mentioned in the provided text. Output a single line with the game titles separated by commas.,Extract the names of all spin‑off games mentioned in the provided text about Clash of Clans. Output a single line with the game titles separated by commas.
+PO-IE-0206,train,information_extraction,regenerated,optimized_prompt,"Extract the number of fatalities reported in the provided text. Output the result as the exact range given (e.g., ""70 to 85 million"").","Extract the number of fatalities reported in the provided text about WWII. Output the result as the exact range given (e.g., ""70 to 85 million"")."
+PO-IE-0227,train,information_extraction,regenerated,optimized_prompt,Identify the economic sector that accounts for the largest output in the provided text. Output the sector name only.,Identify the economic sector that accounts for the largest output in the provided text about Sweden. Output the sector name only.
+PO-IE-0232,train,information_extraction,regenerated,optimized_prompt,"Extract the key facts explaining how Uzunkum became a sandy-beach park: location, year of declaration, area size, and main features. Output a concise JSON object with fields ""location"", ""year_declared"", ""area_ha"", and ""features"".","Extract the key facts explaining how Uzunkum became a sandy-beach park: location in Turkey, year of declaration, area size, and main features. Output a concise JSON object with fields ""location"", ""year_declared"", ""area_ha"", and ""features""."
+PO-IE-0327,train,information_extraction,regenerated,optimized_prompt,Extract the name of the athletic team that represents Concordia University Irvine from the provided text. Return the answer as a single string.,"Extract the name of the athletic team that represents Concordia University Irvine, California, from the provided text. Return the answer as a single string."
+PO-IE-0341,train,information_extraction,regenerated,optimized_prompt,Extract the main actors and actresses from the provided text. Output them as a JSON array of names.,Extract the main actors and actresses who played in the show Parks and Recreation from the provided text. Output them as a JSON array of names.
+PO-IE-0356,train,information_extraction,regenerated,optimized_prompt,Extract the number of boilers from the provided text. Output a single integer.,Extract the number of boilers that Juvenal had from the provided text. Output a single integer.
+PO-IE-0370,val,information_extraction,regenerated,optimized_prompt,"Extract from the provided text the names of the 13 departments and the main communities of the Occitania region. Output a JSON object with two fields: ""departments"": a list of the department names, and ""main_communities"": a list of the main community names.","Extract from the provided text the names of the 13 departments and the main communities of France's Occitania region. Output a JSON object with two fields: ""departments"": a list of the department names, and ""main_communities"": a list of the main community names."
+PO-IE-0394,val,information_extraction,regenerated,optimized_prompt,"Extract the name of the composer who wrote the score for the film mentioned in the provided text. Return the result as a single JSON object with the key ""composer"".","Extract the name of the composer who wrote the score for the film Rise of the Planet of the Apes. Return the result as a single JSON object with the key ""composer""."
+PO-IE-0408,test,information_extraction,regenerated,optimized_prompt,Extract the casualty figures for each nation mentioned in the provided text. Output as a JSON object with country names as keys and their corresponding casualty numbers (as given) as values.,Extract the casualty figures for each nation mentioned in the provided text about World War II. Output as a JSON object with country names as keys and their corresponding casualty numbers (as given) as values.
+PO-IE-0444,benchmark,information_extraction,regenerated,optimized_prompt,Extract the major APIs mentioned in the provided text and output them as a comma‑separated list.,Extract the major APIs in Kafka mentioned in the provided text and output them as a comma‑separated list.
+PO-IE-0445,benchmark,information_extraction,regenerated,optimized_prompt,Extract all names of Bengal freedom fighters mentioned in the provided text. Output a single comma-separated list of the names.,"Extract all names of Bengal, India freedom fighters mentioned in the provided text. Output a single comma-separated list of the names."
+PO-SUM-0007,train,summarization,regenerated,optimized_prompt,Summarize key facts about Aries from the provided text in 3 bullet points.,Summarize key facts about the Zodiac sign Aries from the provided text in 3 bullet points.
+PO-SUM-0038,train,summarization,regenerated,optimized_prompt,"Summarize the provided text in 3 concise bullet points, focusing on the film’s title, key personnel, and production background.","Summarize the provided text in 3 concise bullet points, focusing on the film Bjorck Family’s title, key personnel, and production background."
+PO-SUM-0040,train,summarization,regenerated,optimized_prompt,"Summarize the provided text in 3–4 sentences, focusing on the park’s size, key attractions, historical facts, and notable events.","Summarize the provided text in 3–4 sentences, focusing on Springfield’s park size, key attractions, historical facts, and notable events."
+PO-SUM-0213,train,summarization,regenerated,optimized_prompt,"Summarize the origin of the name ""Busan"" from the provided text in 2-3 sentences, focusing on its etymology and historical spelling changes.","Summarize the origin of the name ""Busan"" in Korea from the provided text in 2-3 sentences, focusing on its etymology and historical spelling changes."
+PO-SUM-0262,train,summarization,regenerated,optimized_prompt,"From the provided text, state the month and year when Videotron withdrew from the CTSC. Answer in a single sentence.","From the provided text, state the month and year when Videotron withdrew from the Cable Television Standards Council. Answer in a single sentence."
+PO-SUM-0267,train,summarization,regenerated,optimized_prompt,Summarize the main argument presented in the provided text regarding the shift from armed neutrality to the necessity of war. Provide a concise summary of 2-3 sentences.,Summarize the main argument presented in the provided text to Congress regarding the shift from armed neutrality to the necessity of war. Provide a concise summary of 2-3 sentences.
+PO-SUM-0315,train,summarization,regenerated,optimized_prompt,"Summarize the provided text to explain who Lewis Hamilton is. Focus on his role, team, and major achievements. Limit the response to 3-4 sentences.","Summarize the provided text to explain who Lewis Hamilton is in Formula 1. Focus on his role, team, and major achievements. Limit the response to 3-4 sentences."
+PO-SUM-0339,train,summarization,regenerated,optimized_prompt,Answer the question using only the provided text. Provide the name of the main character in a single sentence.,Answer the question using only the provided text. Provide the name of the main character in Naruto in a single sentence.
+PO-SUM-0403,test,summarization,regenerated,optimized_prompt,"Summarize the provided text in 2–3 sentences, focusing on Nike’s identity, her role as a goddess of victory, and her associations with Zeus and Athena.","Summarize the provided text about Greek mythology in 2–3 sentences, focusing on Nike’s identity, her role as a goddess of victory, and her associations with Zeus and Athena."
