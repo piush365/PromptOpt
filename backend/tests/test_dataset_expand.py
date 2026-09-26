@@ -21,20 +21,26 @@ def src(i, cat="closed_qa", instruction=None, context="", response="an answer he
 
 # ---- ledger and budget
 
-def test_ledger_tracks_per_day_model_and_tag(tmp_path):
-    day = ["2026-09-26"]
-    led = UsageLedger(tmp_path / "u.json", clock=lambda: day[0])
+def test_ledger_is_a_rolling_24_hour_window(tmp_path):
+    now = [1_000_000.0]
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: now[0])
     led.record("m", "evaluation", 300)
+    now[0] += 12 * 3600
     led.record("m", "generation", 400)
     led.record("m", "generation", 100)
+    led.record("other", "generation", 50)
     assert led.used("m", "generation") == {"requests": 2, "tokens": 500}
     assert led.used("m") == {"requests": 3, "tokens": 800}
-    day[0] = "2026-09-27"
+    now[0] += 12 * 3600 + 1                     # the first call is now more than 24 hours old
+    assert led.used("m") == {"requests": 2, "tokens": 500}
+    now[0] += 12 * 3600
     assert led.used("m") == {"requests": 0, "tokens": 0}
+    led.record("m", "evaluation", 1)            # recording drops expired events from the file
+    assert len(json.loads((tmp_path / "u.json").read_text())["events"]) == 1
 
 
 def test_budget_fraction_and_global_cap(tmp_path):
-    led = UsageLedger(tmp_path / "u.json", clock=lambda: "d")
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
     limits = {"m": {"requests": 10, "tokens": 1000}}
     b = x.Budget(led, fraction=0.7, global_cap=0.95, limits=limits)
     assert b.allows("m", 100)
@@ -43,7 +49,7 @@ def test_budget_fraction_and_global_cap(tmp_path):
     assert b.allows("m", 100) and not b.allows("m", 101)        # 600 + 100 = 700 = 70% of tokens
     led.record("m", "generation", 100)
     assert not b.allows("m", 1)                                 # 7 requests = 70% of 10
-    led2 = UsageLedger(tmp_path / "u2.json", clock=lambda: "d")
+    led2 = UsageLedger(tmp_path / "u2.json", clock=lambda: 1_000_000.0)
     for _ in range(9):
         led2.record("m", "evaluation", 100)                     # other tools used 900 of 1000
     b2 = x.Budget(led2, fraction=0.7, global_cap=0.95, limits=limits)
@@ -124,7 +130,7 @@ class FakeLLM:
         if self.ledger:
             self.ledger.record(model, "generation", 400)
         return SimpleNamespace(content=r, model=model, input_tokens=300, output_tokens=100, cached_tokens=200,
-                               rate_limited_tokens=200)
+                               total_tokens=400)
 
 
 def pair(d="deg", o="opt"):
@@ -147,7 +153,7 @@ def test_parse_pair():
 
 
 def test_generate_checkpoints_rotates_models_and_resumes(tmp_path):
-    led = UsageLedger(tmp_path / "u.json", clock=lambda: "d")
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
     budget = x.Budget(led, fraction=1.0, global_cap=1.0,
                       limits={m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS})
     sample = [src(i, "closed_qa") for i in range(3)] + [src(i, "coding", dataset="codealpaca") for i in range(3)]
@@ -170,7 +176,7 @@ def test_generate_checkpoints_rotates_models_and_resumes(tmp_path):
 def test_groq_json_failures_count_as_parse_failures(tmp_path):
     from app.evaluation.llm import JSONGenerationFailed
 
-    led = UsageLedger(tmp_path / "u.json", clock=lambda: "d")
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
     budget = x.Budget(led, fraction=1.0, global_cap=1.0,
                       limits={m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS})
     ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
@@ -182,7 +188,7 @@ def test_groq_json_failures_count_as_parse_failures(tmp_path):
 
 
 def test_generate_stops_at_the_budget(tmp_path):
-    led = UsageLedger(tmp_path / "u.json", clock=lambda: "d")
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
     budget = x.Budget(led, fraction=0.5, limits={m: {"requests": 4, "tokens": 10**6} for m in x.GROQ_MODELS})
     sample = [src(i) for i in range(20)]
     stats = x.generate(sample, x.Checkpoint(tmp_path / "ck.jsonl"), FakeLLM([pair()] * 20, led), budget,
@@ -192,12 +198,11 @@ def test_generate_stops_at_the_budget(tmp_path):
 
 def test_tokens_per_call_switches_to_measured(tmp_path):
     ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
-    ckpt.add({"source_id": "old", "tokens": 5000})                  # no cache info: ignored
     for i in range(x.MEASURE_AFTER - 1):
-        ckpt.add({"source_id": f"s{i}", "tokens": 900, "rate_limited_tokens": 400})
+        ckpt.add({"source_id": f"s{i}", "tokens": 900})
     assert ckpt.tokens_per_call() == x.DEFAULT_TOKENS_PER_CALL
-    ckpt.add({"source_id": "last", "tokens": 900, "rate_limited_tokens": 400})
-    assert ckpt.tokens_per_call() == 400
+    ckpt.add({"source_id": "last", "tokens": 900})
+    assert ckpt.tokens_per_call() == 900
 
 
 # ---- quality checks, splits, build

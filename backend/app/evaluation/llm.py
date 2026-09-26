@@ -5,8 +5,8 @@
 * Model not found / not allowed / decommissioned: raise ModelUnavailable.
 * Other API or connection errors: back off (3, 6, 12, ... s, capped at 30) and retry, at most `max_retries` times.
 * Calls are spaced at least `min_interval` seconds apart (about 27 requests/min, under the free-tier limit).
-* With a `ledger` (app.groq_budget.UsageLedger), every successful call's rate-limited tokens (input minus cached
-  input, plus output) are added to today's shared usage.
+* With a `ledger` (app.groq_budget.UsageLedger), every call's tokens (input, cached included, plus output) are added
+  to the shared rolling 24-hour usage; a JSON-validation failure is recorded as an estimate.
 * JSON mode, Groq's `json_validate_failed` (400): raise JSONGenerationFailed at once, no retries.
 * A model that rejects `reasoning_effort` is retried without it (remembered for the rest of the run).
 """
@@ -43,12 +43,11 @@ class Completion:
     reasoning_tokens: int | None    # part of output_tokens spent on reasoning, when the API reports it
     latency_ms: int                 # Groq's usage.total_time; wall clock only if the API does not report it
     finish_reason: str | None
-    cached_tokens: int = 0          # part of input_tokens served from Groq's prompt cache (not rate-limited)
+    cached_tokens: int = 0          # part of input_tokens served from Groq's prompt cache (still counts per day)
 
     @property
-    def rate_limited_tokens(self) -> int:
-        """Tokens that count toward Groq's rate limits: cached input tokens do not."""
-        return self.input_tokens - self.cached_tokens + self.output_tokens
+    def total_tokens(self) -> int:
+        return self.input_tokens + self.output_tokens
 
 
 def _is_daily(e: Exception) -> bool:
@@ -125,6 +124,9 @@ class GroqChat:
                 continue
             except (groq.APIStatusError, groq.APIConnectionError) as e:
                 if "json_validate_failed" in str(e):
+                    if self.ledger is not None:      # Groq generated tokens before it gave up: estimate them
+                        prompt_chars = sum(len(m.get("content", "")) for m in kwargs["messages"])
+                        self.ledger.record(model, self.tag, prompt_chars // 4 + max_tokens)
                     raise JSONGenerationFailed(str(e)) from e
                 if _unavailable(e):
                     raise ModelUnavailable(str(e)) from e
@@ -134,7 +136,7 @@ class GroqChat:
             wall_ms = int(1000 * (time.perf_counter() - start))
             c = _completion(resp, model, wall_ms)
             if self.ledger is not None:
-                self.ledger.record(model, self.tag, c.rate_limited_tokens)
+                self.ledger.record(model, self.tag, c.total_tokens)
             return c
         raise RuntimeError(f"{model}: failed after {self.max_retries} attempts: {last_error}")
 

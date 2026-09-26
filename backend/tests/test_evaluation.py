@@ -82,7 +82,7 @@ def test_judge_retries_with_more_tokens_after_json_failure():
 def test_successful_calls_are_recorded_in_the_usage_ledger(tmp_path):
     from app.groq_budget import UsageLedger
 
-    ledger = UsageLedger(tmp_path / "usage.json", clock=lambda: "2026-09-26")
+    ledger = UsageLedger(tmp_path / "usage.json", clock=lambda: 1_000_000.0)
     client = FakeClient([_http_error(groq.RateLimitError, 429, "Rate limit reached (RPM)", {"retry-after": "1"}),
                          _response("hi", "m", prompt_tokens=30, completion_tokens=12)])
     llm, _ = _chat(client, ledger=ledger, tag="evaluation")
@@ -93,8 +93,20 @@ def test_successful_calls_are_recorded_in_the_usage_ledger(tmp_path):
     cached.usage.prompt_tokens_details = SimpleNamespace(cached_tokens=25)
     llm2, _ = _chat(FakeClient([cached]), ledger=ledger, tag="generation")
     c = llm2.complete("m", [{"role": "user", "content": "q"}], max_tokens=50)
-    assert c.cached_tokens == 25 and c.rate_limited_tokens == 17
-    assert ledger.used("m", "generation") == {"requests": 1, "tokens": 17}      # cached input is not rate-limited
+    assert c.cached_tokens == 25 and c.total_tokens == 42
+    assert ledger.used("m", "generation") == {"requests": 1, "tokens": 42}      # cached input still counts per day
+
+
+def test_json_validation_failure_is_charged_to_the_ledger(tmp_path):
+    from app.evaluation.llm import JSONGenerationFailed
+    from app.groq_budget import UsageLedger
+
+    ledger = UsageLedger(tmp_path / "usage.json", clock=lambda: 1_000_000.0)
+    err = _http_error(groq.BadRequestError, 400, "json_validate_failed")
+    llm, _ = _chat(FakeClient([err]), ledger=ledger, tag="generation")
+    with pytest.raises(JSONGenerationFailed):
+        llm.complete("m", [{"role": "user", "content": "x" * 400}], max_tokens=50, json_mode=True)
+    assert ledger.used("m") == {"requests": 1, "tokens": 100 + 50}             # prompt chars / 4 + max tokens
 
 
 def test_rate_limit_waits_retry_after_then_succeeds():

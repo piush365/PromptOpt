@@ -23,8 +23,9 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   rendered per target LLM by `app/rendering.py` (Claude XML tags, GPT markdown sections, Gemini labelled sections;
   tests parse every rendering back to check no field is lost). A user-selected category overrides Stage A
   (`optimize(..., category=...)`). `app/pipeline.py` runs one request end to end and saves the renderings.
-- **Groq usage:** every Groq call records its rate-limited tokens (cached input excluded) in `data/groq_usage.json`;
-  dataset generation stays within `--budget-fraction` (0.7) of each model's daily limit.
+- **Groq usage:** every Groq call records its tokens (input incl. cached, plus output; failed JSON calls estimated)
+  in `data/groq_usage.json`, over a rolling 24 hours like Groq's own limit; dataset generation stays within
+  `--budget-fraction` (0.7) of each model's limit. Measured cost: ~1,050 tokens per generation call.
 - **Evaluation:** net token change (input AND output), rubric quality score, task success on verifiable tasks, cost,
   latency, plus an ablation study. Target LLMs are treated as black boxes.
 

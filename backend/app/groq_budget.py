@@ -1,18 +1,24 @@
-"""Daily Groq usage ledger, shared by everything that calls Groq (evaluation, dataset expansion, repair).
+"""Groq usage ledger over a rolling 24 hours, shared by everything that calls Groq (evaluation, dataset expansion,
+repair).
 
-Groq's free tier limits each model per day (requests and tokens). The API only reports the per-minute token budget
-in its headers, so the daily totals are tracked here: every successful call adds its tokens to
-data/groq_usage.json under the UTC date, the model and a tag ("evaluation", "generation", ...). Budgets are checked
-against this file, and Groq's own daily-limit error remains the final stop. Only rate-limited tokens are recorded:
-input tokens served from Groq's prompt cache (gpt-oss models) do not count toward the limits.
+Groq's free tier limits each model per rolling 24 hours (its 429 says "try again in 3m"), in requests and tokens,
+and the API only reports the per-minute token budget in its headers. So every call is recorded here with a
+timestamp, the model, a tag ("evaluation", "generation", ...) and its tokens, and budgets are checked against the
+last 24 hours. Groq's own limit error remains the final stop.
+
+What counts, as measured on 2026-09-26 (Groq's count vs this ledger): all input tokens, cached ones included (the
+docs say cached tokens do not count, but gpt-oss-20b reached Groq's 200K with 164K raw tokens recorded), plus the
+output. Calls that fail inside Groq (JSON validation) also use tokens; they are recorded as an estimate.
 """
 import json
-from datetime import datetime, timezone
+import time
 from pathlib import Path
+from typing import Callable
 
 from app.config import BACKEND_DIR
 
 LEDGER_PATH = BACKEND_DIR.parent / "data" / "groq_usage.json"
+WINDOW_SECONDS = 24 * 3600
 
 # Free-tier limits per model (console.groq.com/docs/rate-limits, checked 2026-09-26).
 DAILY_LIMITS = {
@@ -23,31 +29,28 @@ DAILY_LIMITS = {
 TOKENS_PER_MINUTE = 8000
 
 
-def today() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
-
 class UsageLedger:
-    def __init__(self, path: Path = LEDGER_PATH, clock=today):
+    """events.json: {"events": [[unix_time, model, tag, tokens], ...]}; events older than the window are dropped."""
+
+    def __init__(self, path: Path = LEDGER_PATH, clock: Callable[[], float] = time.time):
         self.path, self.clock = Path(path), clock
 
-    def _load(self) -> dict:
+    def _load(self) -> list[list]:
         if not self.path.exists():
-            return {}
-        return json.loads(self.path.read_text(encoding="utf-8") or "{}")
+            return []
+        return json.loads(self.path.read_text(encoding="utf-8") or "{}").get("events", [])
 
     def record(self, model: str, tag: str, tokens: int) -> None:
-        data = self._load()
-        entry = data.setdefault(self.clock(), {}).setdefault(model, {}).setdefault(tag, {"requests": 0, "tokens": 0})
-        entry["requests"] += 1
-        entry["tokens"] += int(tokens)
+        now = self.clock()
+        events = [e for e in self._load() if e[0] > now - WINDOW_SECONDS]
+        events.append([now, model, tag, int(tokens)])
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(data, indent=1), encoding="utf-8")
+        tmp.write_text(json.dumps({"events": events}), encoding="utf-8")
         tmp.replace(self.path)
 
     def used(self, model: str, tag: str | None = None) -> dict[str, int]:
-        """Today's requests and tokens for `model`: for one tag, or all tags together."""
-        by_tag = self._load().get(self.clock(), {}).get(model, {})
-        rows = [by_tag.get(tag, {})] if tag else list(by_tag.values())
-        return {"requests": sum(r.get("requests", 0) for r in rows), "tokens": sum(r.get("tokens", 0) for r in rows)}
+        """Requests and tokens for `model` in the last 24 hours: for one tag, or all tags together."""
+        since = self.clock() - WINDOW_SECONDS
+        rows = [e for e in self._load() if e[0] > since and e[1] == model and (tag is None or e[2] == tag)]
+        return {"requests": len(rows), "tokens": sum(e[3] for e in rows)}

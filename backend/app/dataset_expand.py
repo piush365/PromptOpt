@@ -15,9 +15,9 @@ Steps (the notebook's, plus the fixes found in v1.1):
 4. Generation: one call per row returns both prompts (SYSTEM_PROMPT, with the rule that data written in the
    instruction is kept verbatim). Rows go round-robin over the categories; models rotate when one reaches its
    budget. Every result is appended to generation_checkpoint.jsonl at once, so a stopped run loses nothing.
-5. Budget: generation uses at most --budget-fraction (default 0.7) of each model's daily requests and tokens, and
-   never pushes a model's total (all tools, app.groq_budget ledger) above GLOBAL_CAP, so the evaluation harness can
-   still run the same day. The per-call token estimate is DEFAULT_TOKENS_PER_CALL until MEASURE_AFTER calls are in
+5. Budget: generation uses at most --budget-fraction (default 0.7) of each model's requests and tokens over the
+   last 24 hours, and never pushes a model's total (all tools, app.groq_budget ledger) above GLOBAL_CAP, so the
+   evaluation harness can still run the same day. The per-call token estimate is DEFAULT_TOKENS_PER_CALL until MEASURE_AFTER calls are in
    the checkpoint, then the measured average.
 6. Quality checks as in the notebook (sentence-embedding drift, format left in the degraded prompt, too long, ...),
    then app.dataset_repair on every passing row (dropped data put back, dropped subjects fixed with cached Groq
@@ -68,7 +68,7 @@ MIN_CODING_OUTPUT_WORDS = 3
 GROQ_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
 BUDGET_FRACTION = 0.7
 GLOBAL_CAP = 0.95             # never push a model's total daily usage (every tool) above this share of its limit
-DEFAULT_TOKENS_PER_CALL = 430 # rate-limited tokens, measured in the notebook runs (120b: 469 rows on 200K; 20b: 448)
+DEFAULT_TOKENS_PER_CALL = 1050  # measured 2026-09-26: input (cached included) + output per call
 MEASURE_AFTER = 20
 MAX_CONTEXT_CHARS = 1000
 MAX_COMPLETION_TOKENS = 1024
@@ -365,9 +365,9 @@ class Checkpoint:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
     def tokens_per_call(self) -> float:
-        """Measured rate-limited tokens per call once MEASURE_AFTER rows have them, else the notebook's figure.
-        (Rows from before cached tokens were recorded only have the raw total and are not used.)"""
-        used = [r["rate_limited_tokens"] for r in self.done.values() if r.get("rate_limited_tokens")]
+        """Measured tokens per call (input, cached included, plus output) once MEASURE_AFTER rows are in, else the
+        notebook's figure."""
+        used = [r["tokens"] for r in self.done.values() if r.get("tokens")]
         return sum(used) / len(used) if len(used) >= MEASURE_AFTER else DEFAULT_TOKENS_PER_CALL
 
 
@@ -442,8 +442,7 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
                 break
             ckpt.add({"source_id": row["source_id"], "degraded_prompt": pair[0], "optimized_prompt": pair[1],
                       "model": c.model if c.model in models else model,
-                      "tokens": c.input_tokens + c.output_tokens, "cached_tokens": c.cached_tokens,
-                      "rate_limited_tokens": c.rate_limited_tokens})
+                      "tokens": c.total_tokens, "cached_tokens": c.cached_tokens})
             stats["generated"] += 1
             stats["by_model"][model] += 1
             llm.min_interval = pace_for(ckpt.tokens_per_call())
@@ -675,12 +674,13 @@ def plan_text(plans: dict[str, CategoryPlan], sample: list[dict[str, Any]], ckpt
     calls = remaining + regen_calls
     tokens = calls * per_call
     daily = sum(budget.fraction * DAILY_LIMITS[m]["tokens"] for m in models)
-    today = sum(budget.left(m)["tokens"] for m in models)
+    now = sum(budget.left(m)["tokens"] for m in models)
     lines += ["", f"Tokens per call: {per_call:.0f} ({'measured' if measured else 'notebook estimate'}).",
               f"Remaining: {remaining} generation calls + ~{regen_calls} subject-repair calls = ~{calls} calls, "
               f"~{tokens / 1e6:.2f}M tokens.",
               f"Budget: {budget.fraction:.0%} of {len(models)} models x 200K tokens = {daily / 1e3:.0f}K tokens/day "
-              f"(~{daily / per_call:.0f} calls); left today: {today / 1e3:.0f}K tokens (~{today / per_call:.0f} calls).",
+              f"(~{daily / per_call:.0f} calls); left now (last 24 h): {now / 1e3:.0f}K tokens "
+              f"(~{now / per_call:.0f} calls).",
               f"Estimated days: {tokens / daily:.1f}. Pace: {pace_for(per_call):.1f} s between calls "
               f"(8K tokens/min per model)."]
     return "\n".join(lines)
@@ -703,7 +703,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--models", nargs="+", default=GROQ_MODELS)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("plan", help="sample the new rows and estimate Groq usage (no Groq calls)")
-    g = sub.add_parser("generate", help="generate pairs within today's budget (resumable)")
+    g = sub.add_parser("generate", help="generate pairs within the 24-hour budget (resumable)")
     g.add_argument("--max-calls", type=int, help="stop after this many generation calls")
     g.add_argument("--max-repair-calls", type=int, default=20, help="Groq calls for subject repairs after generation")
     sub.add_parser("build", help="quality checks, repair, splits -> v1.2 files (works on a partial run)")
