@@ -167,6 +167,20 @@ def test_generate_checkpoints_rotates_models_and_resumes(tmp_path):
     assert x.generate(sample, resumed, FakeLLM([]), budget, log=lambda s: None)["calls"] == 0
 
 
+def test_groq_json_failures_count_as_parse_failures(tmp_path):
+    from app.evaluation.llm import JSONGenerationFailed
+
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: "d")
+    budget = x.Budget(led, fraction=1.0, global_cap=1.0,
+                      limits={m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS})
+    ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
+    bad = JSONGenerationFailed("json_validate_failed")
+    llm = FakeLLM([bad, pair(), bad, bad, bad, pair()], led)
+    stats = x.generate([src(1), src(2), src(3)], ckpt, llm, budget, log=lambda s: None)
+    assert stats["parse_failures"] == 4 and stats["generated"] == 2        # src(2) skipped after 3 failures
+    assert set(ckpt.done) == {"dolly-1", "dolly-3"}
+
+
 def test_generate_stops_at_the_budget(tmp_path):
     led = UsageLedger(tmp_path / "u.json", clock=lambda: "d")
     budget = x.Budget(led, fraction=0.5, limits={m: {"requests": 4, "tokens": 10**6} for m in x.GROQ_MODELS})

@@ -403,7 +403,7 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
              models: list[str] = GROQ_MODELS, max_calls: int | None = None,
              log: Callable[[str], None] = print) -> dict[str, Any]:
     """Generate the rows of `sample` not in the checkpoint, within the budget. Returns counters."""
-    from app.evaluation.llm import DailyLimitReached, ModelUnavailable
+    from app.evaluation.llm import DailyLimitReached, JSONGenerationFailed, ModelUnavailable
 
     todo = [r for r in round_robin(sample) if r["source_id"] not in ckpt.done]
     stats: dict[str, Any] = {"generated": 0, "calls": 0, "parse_failures": 0, "errors": 0, "stopped": "",
@@ -424,6 +424,14 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
                 stats["calls"] += 1
                 c = llm.complete(model, build_messages(row), max_tokens=MAX_COMPLETION_TOKENS,
                                  temperature=TEMPERATURE, reasoning_effort=reasoning_for(model), json_mode=True)
+                pair = parse_pair(c.content)
+            except (ValueError, JSONGenerationFailed):   # unusable JSON, from the model or from Groq's JSON mode
+                stats["parse_failures"] += 1
+                row["_parse_failures"] = row.get("_parse_failures", 0) + 1
+                if row["_parse_failures"] >= PARSE_ATTEMPTS:
+                    log(f"  {row['source_id']}: unusable JSON {PARSE_ATTEMPTS} times, skipped until the next run")
+                    break
+                continue
             except (DailyLimitReached, ModelUnavailable) as e:
                 exhausted.add(model)
                 log(f"{model}: {type(e).__name__}, switching model. Groq: {str(e)[:300]}")
@@ -432,15 +440,6 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
                 stats["errors"] += 1
                 log(f"  {row['source_id']}: {str(e)[:200]}")
                 break
-            try:
-                pair = parse_pair(c.content)
-            except ValueError:
-                stats["parse_failures"] += 1
-                row["_parse_failures"] = row.get("_parse_failures", 0) + 1
-                if row["_parse_failures"] >= PARSE_ATTEMPTS:
-                    log(f"  {row['source_id']}: unusable JSON {PARSE_ATTEMPTS} times, skipped until the next run")
-                    break
-                continue
             ckpt.add({"source_id": row["source_id"], "degraded_prompt": pair[0], "optimized_prompt": pair[1],
                       "model": c.model if c.model in models else model,
                       "tokens": c.input_tokens + c.output_tokens, "cached_tokens": c.cached_tokens,
