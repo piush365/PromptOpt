@@ -52,9 +52,26 @@ classification, a trailing "Items:" line that only repeats the question or subje
 
 **v1.2 build** (`data/promptopt_dataset_v1_2/build_report.md`): 3,203 rows generated, 2,983 passed the automatic
 checks, 11 removed by the repair (no source data), 2,972 added. Generating models of the new rows:
-cerebras/gpt-oss-120b 2,628, openai/gpt-oss-20b 154, openai/gpt-oss-120b 122, qwen/qwen3.8-27b 68. Per split and
-category: train 920-1,013, val 30, test 40 (information_extraction 49: the leakage guard moved 6 new rows that repeat
-a test instruction into test), benchmark 10.
+cerebras/gpt-oss-120b 2,628, openai/gpt-oss-20b 154, openai/gpt-oss-120b 122, qwen/qwen3.8-27b 68.
+
+**Splits (v1.2)**
+
+| category | train | val | test | benchmark | total |
+|---|---|---|---|---|---|
+| closed_qa | 953 | 30 | 100 | 10 | 1,093 |
+| information_extraction | 869 | 30 | 100 | 10 | 1,009 |
+| classification | 908 | 30 | 100 | 10 | 1,048 |
+| summarization | 928 | 30 | 101 | 10 | 1,069 |
+| coding | 869 | 30 | 100 | 10 | 1,009 |
+| **all** | 4,527 | 150 | 501 | 50 | 5,228 |
+
+Test was 40 per category through v1.1 and is 100 from v1.2, so the final numbers rest on more rows. The extra rows
+(292) come only from new v1.2 rows, which no tuning ever saw (Stage B was tuned on val only), picked stratified by
+complexity. The 40 v1.1 test rows per category (49 in information_extraction, see below) are unchanged. Rows on a
+rater sheet keep their split, and no row sharing an instruction with one was moved. The leakage guard still applies:
+no instruction appears in two splits (summarization has 101 test rows because a picked instruction had a second
+copy). In information_extraction 6 of the 49 test rows before the enlargement came from the leakage guard (new rows
+repeating a v1.1 test instruction).
 
 ## Pipeline (v1.2 rows)
 
@@ -73,7 +90,8 @@ a test instruction into test), benchmark 10.
 5. **Repair**: `dataset_repair` on every passing row (dropped data appended verbatim; rows whose data exists
    nowhere removed; dropped subjects restored by a cached model edit).
 6. **Splits**, keyed by `source_id`: v1.1 rows keep their split and id. New rows go to train unless a held-out split
-   of their category is short (benchmark 10, test 40, val 30 per category). A new row repeating a held-out
+   of their category is short (benchmark 10, val 30, test 100 per category, filled in that order); rows on a rater
+   sheet keep their split. A new row repeating a held-out
    instruction goes to that held-out split; a new row repeating any v1.1 instruction never fills a held-out split.
 
 ## Columns

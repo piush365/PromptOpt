@@ -61,7 +61,10 @@ ABBREV = {"closed_qa": "CQA", "information_extraction": "IE", "classification": 
           "coding": "COD"}
 TARGET_PER_CATEGORY = 1000
 SAMPLE_MARGIN = 1.05          # sample 5% more than the v1 pass rate says, so a category still reaches the target
-SPLIT_SIZES = {"benchmark": 10, "test": 40, "val": 30}     # per category, as in the notebook
+# Per category. Test was 40 (as in the notebook) and is 100 from v1.2: the extra 60 per category come only from new
+# v1.2 rows, which no tuning has seen (Stage B was tuned on val; v1 test rows were never looked at either).
+SPLIT_SIZES = {"benchmark": 10, "val": 30, "test": 100}      # filled in this order: val never waits on test
+ASSIGNMENT_CSV = DATA_DIR / "validation" / "assignment.csv"     # rows on a rater sheet keep their split
 
 # Cleaning (notebook Step 2-3)
 OUTLIER_STD = 3
@@ -640,12 +643,18 @@ def to_dataset_row(r: dict[str, Any]) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------- frozen splits and ids (notebook Step 11)
-def assign_splits(old: list[dict[str, str]], new: list[dict[str, str]]) -> None:
-    """Set `split` on the new rows in place. Old rows are never changed."""
+def assign_splits(old: list[dict[str, str]], new: list[dict[str, str]], frozen: dict[str, str] | None = None) -> None:
+    """Set `split` on the new rows in place. Old rows are never changed. `frozen` maps new rows that are on a rater
+    sheet to the split they had when assigned: they keep it, and neither they nor any row sharing an instruction with
+    them is picked to fill a held-out split (the leakage guard would otherwise move the rated row along)."""
+    frozen = frozen or {}
     held = {normalize(r["original_instruction"]): r["split"] for r in old if r["split"] != "train"}
+    held.update({normalize(r["original_instruction"]): frozen[r["source_id"]] for r in new
+                 if frozen.get(r["source_id"], "train") != "train"})
     old_groups = {normalize(r["original_instruction"]) for r in old}
+    old_groups |= {normalize(r["original_instruction"]) for r in new if r["source_id"] in frozen}
     for r in new:
-        r["split"] = held.get(normalize(r["original_instruction"]), "train")      # leakage guard
+        r["split"] = frozen.get(r["source_id"]) or held.get(normalize(r["original_instruction"]), "train")
     for c in CATEGORIES:
         for split, size in SPLIT_SIZES.items():
             have = sum(r["category"] == c and r["split"] == split for r in old + new)
@@ -684,7 +693,7 @@ class BuildResult:
 
 
 def build(v11: list[dict[str, str]], generated: list[dict[str, Any]], nlp: Any = None,
-          regen_cache: dict[str, str] | None = None) -> BuildResult:
+          regen_cache: dict[str, str] | None = None, frozen: dict[str, str] | None = None) -> BuildResult:
     res = BuildResult(rows=[], new_rows=[])
     old_ids = {r["source_id"] for r in v11}
     passing = []
@@ -711,7 +720,7 @@ def build(v11: list[dict[str, str]], generated: list[dict[str, Any]], nlp: Any =
         if k != "total":
             res.counts[(c, k)] += n
     new = rep.rows
-    assign_splits(v11, new)
+    assign_splits(v11, new, frozen)
     assign_ids(v11, new)
     final = {r["source_id"]: r for r in new}
     for e in [*res.repair_log, *rep.log]:
@@ -822,6 +831,17 @@ def plan_text(plans: dict[str, CategoryPlan], sample: list[dict[str, Any]], ckpt
     return "\n".join(lines)
 
 
+def frozen_splits(out_dir: Path) -> dict[str, str]:
+    """New rows that are on a rater sheet (role other than "none" in the validation assignment), with the split they
+    have in the current v1.2 build: a rebuild must not move them."""
+    if not ASSIGNMENT_CSV.exists():
+        return {}
+    rated = {r["source_id"] for r in _read_csv(ASSIGNMENT_CSV) if r["role"] != "none"}
+    current = out_dir / V12_CSV_NAME
+    rows = _read_csv(current) if current.exists() else []
+    return {r["source_id"]: r["split"] for r in rows if r["source_id"] in rated}
+
+
 def _embedder() -> Callable[[list[str]], Any]:
     from sentence_transformers import SentenceTransformer
 
@@ -887,7 +907,7 @@ def main(argv: list[str] | None = None) -> None:
     gen = generated_rows(sample, ckpt, _embedder())
     cache_path = args.out / "regenerated.json"
     cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
-    res = build(_read_csv(V11_CSV), gen, spacy.load("en_core_web_sm"), cache)
+    res = build(_read_csv(V11_CSV), gen, spacy.load("en_core_web_sm"), cache, frozen_splits(args.out))
     write(res, args.out)
     print(report_text(res))
     print(f"wrote {len(res.rows)} rows ({len(res.new_rows)} new) to {args.out}")

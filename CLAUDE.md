@@ -78,7 +78,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | # | Step | Status |
 |---|------|--------|
 | 1 | Dataset v1.1 repair, then send rater sheets | **CURRENT**: v1.1 repair done (2,256 rows); sheets generated for the team (3 x 150) and faculty (20), not sent yet |
-| 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category), `docs/DATASET_CARD.md`. `DATASET_DIR` stays v1.1 until the ratings are merged |
+| 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. `DATASET_DIR` stays v1.1 until the ratings are merged |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |

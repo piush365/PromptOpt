@@ -386,10 +386,40 @@ def test_assign_splits_fills_short_held_out_and_guards_leakage():
     assert old == before                                                             # v1.1 never changes
     assert new[0]["split"] == "test" and new[1]["split"] == "train"
     split = Counter(r["split"] for r in new)
-    assert split["val"] == 1 and split["benchmark"] == 10 and split["test"] == 39    # 38 filled + the leak copy
+    assert split["val"] == 1 and split["benchmark"] == 10 and split["test"] == 48    # leak copy + all 47 left
     x.assign_ids(old, new)
     ids = [r["id"] for r in new]
     assert len(set(ids)) == len(ids) and min(ids) == "PO-CLS-0102"
+
+
+def test_test_split_fills_to_100_from_new_rows_stratified_and_spares_rated_rows(monkeypatch):
+    old = [old_row(i, "coding", "test") for i in range(1, 41)] + [old_row(50, "coding", "train", "shared")]
+    new = [dict(x.to_dataset_row(gen_row(i, "coding", bucket=("short", "medium", "long")[i % 3])),
+                original_instruction=f"new {i}") for i in range(300)]
+    new[0]["original_instruction"] = new[1]["original_instruction"] = "rated group"   # new[1] shares new[0]'s
+    new[2]["original_instruction"] = "rated val row"
+    frozen = {new[0]["source_id"]: "train", new[2]["source_id"]: "val"}
+    x.assign_splits(old, new, frozen)
+    test = [r for r in new if r["split"] == "test"]
+    assert len(test) == 60                                                   # 40 old + 60 new = 100
+    assert new[0]["split"] == "train" and new[1]["split"] == "train"         # rated row and its group untouched
+    assert new[2]["split"] == "val"                                          # a rated row keeps its held-out split
+    buckets = Counter(r["complexity_bucket"] for r in test)
+    assert max(buckets.values()) - min(buckets.values()) <= 1               # stratified by complexity
+    assert sum(r["split"] == "val" for r in new) == 30 and sum(r["split"] == "benchmark" for r in new) == 10
+
+
+def test_frozen_splits_only_rated_rows(tmp_path, monkeypatch):
+    import csv as _csv
+    assign = tmp_path / "assignment.csv"
+    with open(assign, "w", newline="") as f:
+        w = _csv.writer(f)
+        w.writerow(["source_id", "category", "split", "role", "raters"])
+        w.writerows([["a", "coding", "train", "extra_v1.2", "X"], ["b", "coding", "train", "none", ""],
+                     ["c", "coding", "val", "overlap", "X;Y"]])
+    (tmp_path / x.V12_CSV_NAME).write_text("source_id,split\na,train\nb,train\nc,val\n")
+    monkeypatch.setattr(x, "ASSIGNMENT_CSV", assign)
+    assert x.frozen_splits(tmp_path) == {"a": "train", "c": "val"}
 
 
 def test_build_repairs_new_rows_and_keeps_v11(tmp_path):
