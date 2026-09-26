@@ -351,6 +351,24 @@ def test_unusable_judge_output_is_retried_and_not_recorded(db, tmp_path):
     assert db.query(EvaluationRun).count() == 0                                  # retried on the next run
 
 
+def test_judge_gives_up_on_an_item_after_failing_in_two_runs(db, tmp_path):
+    judge_calls = []
+
+    def answer(kwargs):
+        if kwargs["model"] == ev.JUDGE_MODEL:
+            judge_calls.append(1)
+            return _response("I refuse to use JSON", ev.JUDGE_MODEL)
+        return _default_answer(kwargs)
+    llm, _ = _chat(FakeClient(default=answer))
+    cache = ev.Cache(tmp_path / "r.jsonl")
+    for _ in range(ev.JUDGE_GIVE_UP_RUNS):
+        ev.run(db, ROWS[:1], llm, DETECTOR, "t", "v", cache, variants=("degraded",), log=lambda s: None)
+    n = len(judge_calls)
+    stats = ev.run(db, ROWS[:1], llm, DETECTOR, "t", "v", ev.Cache(tmp_path / "r.jsonl"), variants=("degraded",),
+                   log=lambda s: None)
+    assert len(judge_calls) == n and stats["judge_given_up"] == 1 and stats["recorded"] == 0
+
+
 def test_select_rows_is_fixed_balanced_and_interleaved():
     rows = [{"source_id": f"{c}-{i}", "category": c} for c in ev.CATEGORIES for i in range(20)]
     a, b = ev.select_rows(rows, 5), ev.select_rows(list(reversed(rows)), 5)

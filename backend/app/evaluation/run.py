@@ -39,6 +39,7 @@ JUDGE_MODEL = "qwen/qwen3.8-27b"  # a different model from the target, so it doe
 JUDGE_MAX_TOKENS = 512
 JUDGE_REASONING = "none"          # skip qwen's thinking step (as in the notebook)
 JUDGE_ATTEMPTS = 3                # retries when the judge returns unusable JSON
+JUDGE_GIVE_UP_RUNS = 2            # after this many runs with a failed judgment, the item is skipped (and reported)
 SEED = "promptopt-eval-v1"
 FINAL_SPLITS = {"test", "benchmark"}
 
@@ -132,11 +133,16 @@ def run(db: Session, rows: list[dict[str, str]], llm: Any, detector: Any, run_na
                               reasoning_effort=reasoning_effort, judgment=None)
                     rec = cache.get(sid, v)
                 if rec.get("judgment") is None:
+                    if rec.get("judge_failed_runs", 0) >= JUDGE_GIVE_UP_RUNS:
+                        stats["judge_given_up"] = stats.get("judge_given_up", 0) + 1
+                        log(f"  {sid} {v}: judge failed in {JUDGE_GIVE_UP_RUNS} runs, skipped (not recorded)")
+                        continue
                     try:
                         j = _judge(llm, cat, rec["request"], row.get("context", ""), row["reference_response"],
                                    rec["response"])
                     except ValueError as e:
                         stats["judge_failures"] += 1
+                        cache.add(sid, v, judge_failed_runs=rec.get("judge_failed_runs", 0) + 1)
                         log(f"  {sid} {v}: {e}")
                         continue
                     stats["judge_calls"] += 1
