@@ -50,3 +50,27 @@ no instruction shared across splits. The dataset is NOT stored in the database.
 - Keep every Stage B rule a separate, unit-tested function.
 - New features come with tests; run the full test suite before saying something works.
 - Environment: Fedora 44, zsh, Python 3.14 venv at `backend/.venv`.
+
+## Product goals
+- The user enters any prompt and selects:
+  1. Target LLM: GPT, Gemini or Claude.
+  2. Category: one of the 5, or auto-detect. A user choice overrides Stage A.
+  3. Optional attachment type (image, PDF, PPTX, ...) as a modifier, NOT a new category.
+- Core feature, **Compare**: original vs optimized prompt on the chosen LLM, side by side: answers, input/output/total
+  tokens, cost, latency, judge score. Plus a history of past prompts (30-day retention).
+- Phase 2 (only after the core works): image-generation prompts (Nano Banana, DALL-E) as a sixth category.
+
+## Roadmap (strict order)
+Work only on the current step unless the user says otherwise.
+
+| # | Step | Status |
+|---|------|--------|
+| 1 | Dataset v1.1 repair, then send rater sheets | **CURRENT**: rater-sheet tooling exists (`app/validation.py`); v1.1 repair not done, sheets not sent |
+| 2 | Expand dataset to ~1,000 per category (frozen splits) | Not started |
+| 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Not started |
+| 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
+| 5 | Evaluation on val, per LLM | Not started (harness in `app/evaluation/` is built) |
+| 6 | Validation results -> retrain classifier -> train Stage C LoRA | Not started |
+| 7 | Ablation, then final test/benchmark evaluation (once) | Not started |
+| 8 | FastAPI + React app with Compare and history | Not started |
+| 9 | Phase 2: image generation | Not started |
