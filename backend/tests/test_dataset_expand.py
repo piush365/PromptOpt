@@ -305,6 +305,18 @@ def test_ledger_keeps_cached_tokens_separately(tmp_path, monkeypatch):
     assert led.used("m")["tokens"] == 600
 
 
+def test_cerebras_budget_follows_its_headers():
+    cer = SimpleNamespace(remaining={})
+    r = x.Router(None, cer)
+    budget = SimpleNamespace(allows=lambda m, e: False)                      # our ledger says: spent
+    assert x._allows(budget, r, "cerebras/gpt-oss-120b", 1000) is True       # unknown: one call to read the headers
+    cer.remaining = {"tokens-day": 500_000, "requests-day": 900}
+    assert x._allows(budget, r, "cerebras/gpt-oss-120b", 1000) is True       # headers say there is room
+    cer.remaining = {"tokens-day": 15_000, "requests-day": 900}
+    assert x._allows(budget, r, "cerebras/gpt-oss-120b", 1000) is False      # inside the 2% reserve
+    assert x._allows(budget, r, "openai/gpt-oss-20b", 1000) is False         # Groq: the ledger decides
+
+
 def test_generate_stops_at_the_budget(tmp_path):
     led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
     budget = x.Budget(led, fraction=0.5, limits={m: {"requests": 4, "tokens": 10**6} for m in x.GROQ_MODELS},

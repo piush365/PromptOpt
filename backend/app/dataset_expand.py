@@ -478,6 +478,16 @@ def usage_row(model: str, rows: list[dict[str, Any]], c: Any, returned: int) -> 
             "response_format": "json_object", "finish_reason": c.finish_reason, "rows_returned": returned}
 
 
+def _allows(budget: Budget, llm: Any, model: str, est: float) -> bool:
+    """Cerebras reports its remaining daily quota in every response: trust that when known (its daily window may
+    reset before our 24-hour ledger frees up). Before the first response, one call is allowed to read it (a 429 when
+    the quota is spent costs nothing). Groq: the ledger budget."""
+    if provider_of(model) == "cerebras" and hasattr(llm, "cerebras_allows"):
+        by_headers = llm.cerebras_allows(est)
+        return True if by_headers is None else by_headers
+    return budget.allows(model, est)
+
+
 def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: Budget,
              models: list[str] | None = None, max_calls: int | None = None,
              log: Callable[[str], None] = print, usage_log: int = 0, usage_path: Path | None = None,
@@ -503,7 +513,7 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
             return stats
         rows = [queue.popleft() for _ in range(min(batch_size, len(queue)))]
         est = ckpt.tokens_per_row(len(rows)) * len(rows)
-        model = next((m for m in models if m not in exhausted and budget.allows(m, est)), None)
+        model = next((m for m in models if m not in exhausted and _allows(budget, llm, m, est)), None)
         if model is None:
             stats["stopped"] = "budget reached for every model"
             return stats
