@@ -450,3 +450,22 @@ def test_context_ref(context, separate, att, ref):
 
 def test_target_llm_is_recorded_in_the_ir():
     assert optimize("sort a list", feats("sort a list", "coding"), target_llm="gemini").ir.target_llm == "gemini"
+
+
+
+@pytest.mark.parametrize("text, labels", [
+    # val dolly-7818: got "yes"/"no" and the model answered "no" for every country
+    ("Which of these are flowers and which are european countries? roses, norway, tulips",
+     ["flowers", "european countries"]),
+    ("Which are dogs and which are birds: Phoenix, Husky", ["dogs", "birds"]),
+])
+def test_b06_two_groups_with_words_before_are(text, labels):
+    assert b.extract_labels(text.rstrip(".?!")) == labels
+    ir = b.b06_add_labels(ir_of(text, "classification"), feats(text, "classification"))
+    assert "yes" not in ir.requirements[0] and labels[0] in ir.requirements[0]
+
+
+def test_b06_yes_no_only_without_named_groups():
+    text = "Which of these ski resorts are in utah"
+    ir = b.b06_add_labels(ir_of(text, "classification"), feats(text, "classification"))
+    assert ir.requirements == ('Use only these labels: "yes", "no".',)

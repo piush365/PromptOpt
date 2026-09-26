@@ -39,6 +39,8 @@ JUDGE_MODEL = "qwen/qwen3.8-27b"  # a different model from the target, so it doe
 JUDGE_MAX_TOKENS = 512
 JUDGE_REASONING = "none"          # skip qwen's thinking step (as in the notebook)
 JUDGE_ATTEMPTS = 3                # retries when the judge returns unusable JSON
+JUDGE_VERSION = 2                 # 2: long responses shown whole (up to 12,000 chars) or head + tail (judge.py)
+OLD_JUDGE_RESPONSE_CHARS = 6000   # version 1 cut responses here; longer ones need a new judgment
 JUDGE_GIVE_UP_RUNS = 2            # after this many runs with a failed judgment, the item is skipped (and reported)
 SEED = "promptopt-eval-v1"
 FINAL_SPLITS = {"test", "benchmark"}
@@ -102,11 +104,13 @@ def _judge(llm: GroqChat, category: str, request: str, context: str, reference: 
 def run(db: Session, rows: list[dict[str, str]], llm: Any, detector: Any, run_name: str, version: str,
         cache: Cache, variants: tuple[str, ...] = VARIANTS, max_tokens: int = TARGET_MAX_TOKENS,
         reasoning_effort: str | None = TARGET_REASONING, log: Callable[[str], None] = print,
-        target_model: str = TARGET_MODEL) -> dict[str, int]:
+        target_model: str = TARGET_MODEL, refresh: bool = False) -> dict[str, int]:
     """Evaluate every (row, variant) not yet in the database. Returns counters."""
     done = set(db.execute(select(EvaluationRun.dataset_item_id, EvaluationRun.variant)
                           .where(EvaluationRun.run_name == run_name, EvaluationRun.target_llm == target_model)).all())
     stats = {"recorded": 0, "skipped": 0, "target_calls": 0, "judge_calls": 0, "judge_failures": 0}
+    if refresh:
+        done -= _stale(db, rows, detector, variants, run_name, target_model, cache, done, stats, log)
     try:
         for i, row in enumerate(rows, start=1):
             sid, cat = row["source_id"], row["category"]
@@ -146,7 +150,7 @@ def run(db: Session, rows: list[dict[str, str]], llm: Any, detector: Any, run_na
                         log(f"  {sid} {v}: {e}")
                         continue
                     stats["judge_calls"] += 1
-                    cache.add(sid, v, judgment=asdict(j))
+                    cache.add(sid, v, judgment=asdict(j), judge_version=JUDGE_VERSION)
                     rec = cache.get(sid, v)
                 j = rec["judgment"]
                 t = rec["target"]
@@ -160,6 +164,35 @@ def run(db: Session, rows: list[dict[str, str]], llm: Any, detector: Any, run_na
         log(f"Stopped: {type(e).__name__}: {str(e)[:200]}\nProgress is saved; run the same command again later.")
         stats["stopped"] = 1
     return stats
+
+
+def _stale(db: Session, rows: list[dict[str, str]], detector: Any, variants: tuple[str, ...], run_name: str,
+           target_model: str, cache: Cache, done: set, stats: dict, log: Callable[[str], None]) -> set:
+    """--refresh: recorded items that are out of date. A changed prompt (a Stage B fix) is called and judged again; a
+    response longer than the old judge's cut, judged by an older judge version, is judged again from the cached
+    response (no target call). Their records are deleted so the run redoes them. Returns the (sid, variant) keys."""
+    stale = set()
+    for row in rows:
+        sid = row["source_id"]
+        keys = [v for v in variants if (sid, v) in done]
+        if not keys:
+            continue
+        built = build_variants(row, detector, tuple(keys))
+        for v in keys:
+            rec = cache.get(sid, v)
+            if rec.get("prompt") is not None and rec.get("prompt") != built[v]["prompt"]:
+                stats["refreshed_prompt"] = stats.get("refreshed_prompt", 0) + 1
+            elif (len(rec.get("response") or "") > OLD_JUDGE_RESPONSE_CHARS
+                  and rec.get("judge_version", 1) < JUDGE_VERSION):
+                cache.add(sid, v, judgment=None)
+                stats["rejudged_long"] = stats.get("rejudged_long", 0) + 1
+            else:
+                continue
+            repo.delete_evaluation(db, run_name, sid, v, target_model)
+            stale.add((sid, v))
+            log(f"  {sid} {v}: out of date, redone")
+    db.commit()
+    return stale
 
 
 # ---------------------------------------------------------------- summary
@@ -245,11 +278,16 @@ def main() -> None:
     ap.add_argument("--variants", nargs="+", default=list(VARIANTS), choices=list(VARIANTS))
     ap.add_argument("--max-tokens", type=int, default=TARGET_MAX_TOKENS)
     ap.add_argument("--summary-only", action="store_true")
+    ap.add_argument("--refresh", action="store_true",
+                    help="redo recorded items whose prompt changed, and re-judge long responses judged by an older "
+                         "judge version (dev runs only)")
     ap.add_argument("--target", choices=["groq", "cerebras"], default="groq",
                     help="provider of the target gpt-oss-120b (same model); the judge is always Groq's qwen")
     args = ap.parse_args()
     if args.split in FINAL_SPLITS and not args.final:
         raise SystemExit(f"{args.split} is held out for the final numbers; develop on val (or pass --final, once).")
+    if args.refresh and args.final:
+        raise SystemExit("--refresh is for dev runs; final numbers are run once")
     target_model = TARGETS[args.target]
 
     from app.db.base import SessionLocal
@@ -269,7 +307,7 @@ def main() -> None:
                   f"target {target_model}")
             llm = make_llm(args.target)
             stats = run(db, rows, llm, FeatureDetector(), run_name, version, cache, tuple(args.variants),
-                        args.max_tokens, target_model=target_model)
+                        args.max_tokens, target_model=target_model, refresh=args.refresh)
             print("Stats:", stats)
         text = summary(db, run_name, cache, target_model)
     print(text)

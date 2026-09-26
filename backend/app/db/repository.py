@@ -149,6 +149,15 @@ def record_evaluation(db: Session, run_name: str, dataset_version: str, dataset_
     return row
 
 
+def delete_evaluation(db: Session, run_name: str, dataset_item_id: str, variant: str, target_llm: str) -> int:
+    """Remove one recorded result (a dev run redoing an out-of-date item). Returns the number of rows deleted."""
+    n = db.execute(delete(EvaluationRun).where(
+        EvaluationRun.run_name == run_name, EvaluationRun.dataset_item_id == dataset_item_id,
+        EvaluationRun.variant == variant, EvaluationRun.target_llm == target_llm)).rowcount
+    db.flush()
+    return n or 0
+
+
 def evaluation_summary(db: Session, run_name: str) -> list[dict[str, Any]]:
     """Averages per category and variant for one run (feeds the results table/charts)."""
     total_tokens = EvaluationRun.input_tokens + func.coalesce(EvaluationRun.output_tokens, 0)

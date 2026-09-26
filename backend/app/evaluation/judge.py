@@ -10,11 +10,17 @@ import re
 from dataclasses import dataclass
 
 MAX_CONTEXT_CHARS = 2000
-MAX_RESPONSE_CHARS = 6000
+# Responses up to this length are shown whole. Longer ones keep their start and end, with a note that the evaluator
+# (not the assistant) left the middle out: with a plain cut at 6,000 characters the judge scored a complete
+# 8,608-character answer 0 for "missing the main block" (val codealpaca-15059).
+MAX_RESPONSE_CHARS = 12000
+RESPONSE_TAIL_CHARS = 3000
 
 SYSTEM = """You are a strict, fair grader of answers written by an AI assistant.
 You get the USER REQUEST exactly as the assistant received it, the TEXT attached to it (may be shortened), a
-REFERENCE ANSWER written by a human, and the assistant's RESPONSE.
+REFERENCE ANSWER written by a human, and the assistant's RESPONSE. A very long RESPONSE may have its middle left out
+by the evaluator (marked "[... N characters omitted by the evaluator ...]"): that is not the assistant's fault, so
+never count it as missing or truncated.
 
 Score the RESPONSE from 0 to 10, considering together:
 - correctness: agrees with the reference answer and the attached text; no invented facts
@@ -37,6 +43,15 @@ class Judgment:
     answers_correctly: bool | None = None
 
 
+def shorten_response(response: str) -> str:
+    if len(response) <= MAX_RESPONSE_CHARS:
+        return response
+    head = MAX_RESPONSE_CHARS - RESPONSE_TAIL_CHARS
+    omitted = len(response) - head - RESPONSE_TAIL_CHARS
+    return (f"{response[:head]}\n[... {omitted} characters omitted by the evaluator, not by the assistant ...]\n"
+            f"{response[-RESPONSE_TAIL_CHARS:]}")
+
+
 def messages(category: str, request: str, context: str | None, reference: str, response: str) -> list[dict]:
     closed_qa = category == "closed_qa"
     schema = ('{"score": <0-10>, "answers_correctly": <true|false>, "reason": "<one short sentence>"}' if closed_qa
@@ -45,9 +60,7 @@ def messages(category: str, request: str, context: str | None, reference: str, r
     context = (context or "").strip()
     if len(context) > MAX_CONTEXT_CHARS:
         context = context[:MAX_CONTEXT_CHARS] + " [...]"
-    response = response.strip() or "(empty response)"
-    if len(response) > MAX_RESPONSE_CHARS:
-        response = response[:MAX_RESPONSE_CHARS] + " [...]"
+    response = shorten_response(response.strip() or "(empty response)")
     user = "\n\n".join([f"USER REQUEST:\n{request.strip()}", f"TEXT:\n{context or '(none)'}",
                         f"REFERENCE ANSWER:\n{reference.strip()}", f"RESPONSE:\n{response}"])
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]

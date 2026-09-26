@@ -233,8 +233,18 @@ def test_judge_parse_rejects_unusable_output(content):
 
 
 def test_long_context_and_response_are_shortened_for_the_judge():
-    msgs = judge.messages("summarization", "sum", "x" * 5000, "ref", "y" * 9000)
+    msgs = judge.messages("summarization", "sum", "x" * 5000, "ref", "y" * 20000)
     assert len(msgs[1]["content"]) < judge.MAX_CONTEXT_CHARS + judge.MAX_RESPONSE_CHARS + 500
+
+
+def test_long_responses_keep_their_end_and_say_who_cut_them():
+    whole = "start " + "x" * 8600 + " END-OF-SCRIPT"            # val codealpaca-15059: 8,608 chars, complete
+    assert judge.shorten_response(whole) == whole                # shown whole now
+    long = "start " + "y" * 20000 + " END-OF-SCRIPT"
+    short = judge.shorten_response(long)
+    assert short.startswith("start ") and short.endswith("END-OF-SCRIPT")
+    assert "omitted by the evaluator, not by the assistant" in short and len(short) < judge.MAX_RESPONSE_CHARS + 100
+    assert "never count it as missing" in judge.messages("coding", "q", None, "r", long)[0]["content"]
 
 
 # ---------------------------------------------------------------- task success
@@ -436,3 +446,39 @@ def test_cerebras_target_is_recorded_as_such(db):
     run_mod.run(db, rows, llm, DETECTOR, "dev-x", "v", run_mod.Cache(Path("/dev/null")), ("degraded",),
                 log=lambda s: None, target_model=run_mod.TARGETS["cerebras"])
     assert target.calls == ["gpt-oss-120b"]
+
+
+
+def test_refresh_redoes_changed_prompts_and_rejudges_long_responses(db, tmp_path):
+    judged = []
+
+    def answer(kwargs):
+        if kwargs["model"] == ev.JUDGE_MODEL:
+            judged.append(kwargs["messages"][1]["content"])
+            return _response('{"score": 9, "answers_correctly": true, "reason": "ok"}', ev.JUDGE_MODEL)
+        return _response("z" * 7000, ev.TARGET_MODEL)                       # a long answer
+    llm, _ = _chat(FakeClient(default=answer))
+    cache = ev.Cache(tmp_path / "r.jsonl")
+    ev.run(db, ROWS[:1], llm, DETECTOR, "t", "v", cache, variants=("degraded",), log=lambda s: None)
+    sid = ROWS[0]["source_id"]
+    cache.add(sid, "degraded", judge_version=1)                               # as if judged by the old judge
+    n_judged = len(judged)
+    stats = ev.run(db, ROWS[:1], llm, DETECTOR, "t", "v", ev.Cache(tmp_path / "r.jsonl"), variants=("degraded",),
+                   log=lambda s: None, refresh=True)
+    assert stats["rejudged_long"] == 1 and stats["target_calls"] == 0 and len(judged) == n_judged + 1
+    assert db.query(EvaluationRun).count() == 1
+    again = ev.run(db, ROWS[:1], llm, DETECTOR, "t", "v", ev.Cache(tmp_path / "r.jsonl"), variants=("degraded",),
+                   log=lambda s: None, refresh=True)
+    assert "rejudged_long" not in again and len(judged) == n_judged + 1       # judged once, not every run
+
+    c = ev.Cache(tmp_path / "r.jsonl")
+    c.add(sid, "degraded", prompt="an older prompt")                           # a Stage B fix changed the prompt
+    stats = ev.run(db, ROWS[:1], llm, DETECTOR, "t", "v", ev.Cache(tmp_path / "r.jsonl"), variants=("degraded",),
+                   log=lambda s: None, refresh=True)
+    assert stats["refreshed_prompt"] == 1 and stats["target_calls"] == 1 and db.query(EvaluationRun).count() == 1
+
+
+def test_refresh_is_refused_for_final_runs(monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["run", "--split", "benchmark", "--final", "--refresh"])
+    with pytest.raises(SystemExit, match="dev runs"):
+        ev.main()

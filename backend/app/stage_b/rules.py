@@ -187,13 +187,16 @@ LABEL_PATTERNS = [re.compile(p, _I) for p in (
     rf"\b(?:as|into)\s+(?:either\s+)?(?:an?\s+|the\s+)?(?P<labels>{_LABEL}(?:,\s*{_LABEL})*,?\s+(?:or|and)\s+"
     rf"(?:an?\s+)?{_LABEL}){_END}",
     # "which are X and which are Y"
-    rf"\bwhich (?:\w+ )?(?:is|are) (?:an?\s+)?(?P<a>{_LABEL}),? and which (?:\w+ )?(?:is|are) (?:an?\s+)?(?P<b>{_LABEL}){_END}",
+    # (up to two words between "which" and "is/are": "which of these are X and which are Y", val dolly-7818)
+    rf"\bwhich (?:\w+ ){{0,2}}(?:is|are) (?:an?\s+)?(?P<a>{_LABEL}),? and which (?:\w+ ){{0,2}}(?:is|are) (?:an?\s+)?"
+    rf"(?P<b>{_LABEL}){_END}",
     # "which one is string or percussion", "is it a fruit or a vegetable"
     rf"\b(?:is|are)\s+(?:(?:it|this|each|they|these)\s+)?(?:an?\s+|the\s+)?(?P<labels>{_LABEL}\s+or\s+(?:an?\s+)?"
     rf"{_LABEL}){_END}",
 )]
 # "which of these ski resorts are in utah" (no alternatives given): a yes/no decision per item
-_YES_NO = re.compile(r"^which (?:of )?(?:these|the following|the|those)\b(?:(?! or ).)*\b(?:is|are|was|were|can|could|"
+# never for two groups ("which ... are X and which are Y"): that names the labels, it is not a yes/no question
+_YES_NO = re.compile(r"^(?!.*\band which\b)which (?:of )?(?:these|the following|the|those)\b(?:(?! or ).)*\b(?:is|are|was|were|can|could|"
                      r"has|have)\b(?:(?! or ).)*$", _I)
 _ARTICLE = re.compile(r"^(?:an?|the)\s+", _I)
 _LABELS_GIVEN = re.compile(r"\b(?:labels?|categories|classes)\s*:", _I)       # already optimized, or user listed them
