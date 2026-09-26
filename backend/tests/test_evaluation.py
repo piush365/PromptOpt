@@ -491,9 +491,47 @@ def test_summary_lists_wrong_references_separately(db, tmp_path):
     ev.run(db, ROWS[:2], llm, DETECTOR, "t", "v", cache, variants=("degraded",), log=lambda s: None)
     bad = ROWS[0]["source_id"]
     text = ev.summary(db, "t", cache, wrong_references={bad: "prints the wrong split", "not-in-run": "x"})
-    assert "Excluded: wrong reference** (1 items" in text and f"`{bad}`: prints the wrong split" in text
+    assert "Excluded after the run** (1 items, left out for ALL variants" in text
+    assert f"`{bad}`: wrong reference: prints the wrong split" in text
+    assert "with and without the exclusions" in text
     assert "not-in-run" not in text
     rows = [l for l in text.splitlines() if l.startswith("| **all** | degraded")]
     assert rows and rows[0].split("|")[3].strip() == "1"                        # n counts only the good item
     plain = ev.summary(db, "t", cache, wrong_references={})
     assert [l for l in plain.splitlines() if l.startswith("| **all** | degraded")][0].split("|")[3].strip() == "2"
+
+
+
+def test_an_item_the_judge_could_not_score_is_excluded_for_every_variant(db, tmp_path):
+    bad_prompt = ROWS[0]["degraded_prompt"]
+
+    def answer(kwargs):
+        content = kwargs["messages"][-1]["content"]
+        if kwargs["model"] == ev.JUDGE_MODEL:
+            if "BAD-ANSWER" in content:
+                return _response("no json here", ev.JUDGE_MODEL)
+            return _response('{"score": 6, "answers_correctly": true, "reason": "ok"}', ev.JUDGE_MODEL)
+        return _response("BAD-ANSWER" if content.startswith(bad_prompt) else "fine", ev.TARGET_MODEL)
+    llm, _ = _chat(FakeClient(default=answer))
+    for _ in range(ev.JUDGE_GIVE_UP_RUNS):
+        ev.run(db, ROWS[:2], llm, DETECTOR, "t", "v", ev.Cache(tmp_path / "r.jsonl"),
+               variants=("degraded", "dataset_target"), log=lambda s: None)
+    cache = ev.Cache(tmp_path / "r.jsonl")
+    sid = ROWS[0]["source_id"]
+    assert cache.get(sid, "degraded").get("judgment") is None                  # the degraded answer is unscorable
+    assert cache.get(sid, "dataset_target").get("judgment") is not None        # the other variant was scored
+    text = ev.summary(db, "t", cache, wrong_references={})
+    assert f"`{sid}`: judge could not score the degraded response" in text
+    counted = {l.split("|")[2].strip(): l.split("|")[3].strip() for l in text.splitlines() if l.startswith("| **all** |")}
+    assert counted == {"degraded": "1", "dataset_target": "1"}                 # row 0 out of BOTH variants
+
+
+def test_headline_comparison_warns_above_one_point():
+    def rows(q, succ):
+        return [{"category": "coding", "variant": "stage_b", "n": 10, "avg_quality": q, "task_success_rate": succ,
+                 "n_success_checked": 10, "avg_total_tokens": 100, "avg_latency_ms": 50}]
+    quiet = "\n".join(ev.headline_comparison(rows(9.0, 0.90), rows(9.05, 0.905)))
+    assert "change no headline number by more than 1 point" in quiet
+    loud = "\n".join(ev.headline_comparison(rows(9.0, 0.90), rows(8.5, 0.80)))
+    assert "Warning: the exclusions change headline numbers" in loud
+    assert "stage_b quality 8.50 -> 9.00" in loud and "stage_b task success 80.0% -> 90.0%" in loud

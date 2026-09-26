@@ -202,13 +202,19 @@ def _fmt(x: Any, digits: int = 1) -> str:
 
 def summary(db: Session, run_name: str, cache: Cache, target_model: str = TARGET_MODEL,
             wrong_references: dict[str, str] | None = None) -> str:
-    """The results table. Rows whose reference answer is wrong (evaluation/wrong_references.csv) are not counted as
-    failures: they are left out of the table and listed separately, as are items the judge could not score."""
+    """The results table. Items excluded after the run are not counted as failures: an item whose reference answer is
+    wrong (evaluation/wrong_references.csv) or that the judge could not score for some variant is left out for ALL
+    variants (so every variant is compared on the same items), listed with its reason, and the headline numbers are
+    shown with and without the exclusions, with a warning when an exclusion moves one by more than 1 point."""
     from app.reference_check import load_wrong_references
 
     wrong = load_wrong_references() if wrong_references is None else wrong_references
     in_run = {sid for (sid, _v) in cache.data}
-    excluded = {sid: reason for sid, reason in wrong.items() if sid in in_run}
+    excluded = {sid: f"wrong reference: {reason}" for sid, reason in wrong.items() if sid in in_run}
+    for (sid, v), rec in sorted(cache.data.items()):
+        if (sid not in excluded and rec.get("judgment") is None
+                and rec.get("judge_failed_runs", 0) >= JUDGE_GIVE_UP_RUNS):
+            excluded[sid] = f"judge could not score the {v} response"
     rows = repo.evaluation_summary(db, run_name, exclude_ids=excluded)
     if not rows:
         return f"No results for run `{run_name}` yet."
@@ -250,14 +256,59 @@ def summary(db: Session, run_name: str, cache: Cache, target_model: str = TARGET
         if by_variant.get(v):
             out.append(line("all", v, by_variant[v]).replace("| all |", "| **all** |", 1))
     if excluded:
-        out += ["", f"**Excluded: wrong reference** ({len(excluded)} items, all variants; not counted above):"]
+        out += ["", f"**Excluded after the run** ({len(excluded)} items, left out for ALL variants; not counted above):"]
         out += [f"- `{sid}`: {reason}" for sid, reason in sorted(excluded.items())]
-    unjudged = sorted((sid, v) for (sid, v), rec in cache.data.items() if sid not in excluded
-                      and rec.get("judgment") is None and rec.get("judge_failed_runs", 0) >= JUDGE_GIVE_UP_RUNS)
-    if unjudged:
-        out += ["", f"**Excluded: judge could not score** ({len(unjudged)}; not counted above):"]
-        out += [f"- `{sid}` {v}" for sid, v in unjudged]
+        out += ["", *headline_comparison(repo.evaluation_summary(db, run_name, exclude_ids=excluded),
+                                         repo.evaluation_summary(db, run_name))]
     return "\n".join(out) + "\n"
+
+
+QUALITY_WARN = 0.1        # quality is 0-10: 0.1 is 1 point on a 0-100 scale
+SUCCESS_WARN = 0.01       # task success: 1 percentage point
+
+
+def headline(rows: list[dict]) -> dict[str, dict[str, float | None]]:
+    """Per variant over all categories: n, quality, task success, total tokens, latency (weighted like the table)."""
+    out = {}
+    for v in VARIANTS:
+        rs = [r for r in rows if r["variant"] == v]
+        n = sum(r["n"] for r in rs)
+        if not n:
+            continue
+        w = lambda k: sum(float(r[k] or 0) * r["n"] for r in rs) / n  # noqa: E731
+        checked = sum(r["n_success_checked"] for r in rs)
+        succ = sum(float(r["task_success_rate"] or 0) * r["n_success_checked"] for r in rs) / checked if checked else None
+        out[v] = {"n": n, "quality": w("avg_quality"), "success": succ, "total_tokens": w("avg_total_tokens"),
+                  "latency": w("avg_latency_ms")}
+    return out
+
+
+def headline_comparison(with_ex: list[dict], without_ex: list[dict]) -> list[str]:
+    a, b = headline(with_ex), headline(without_ex)
+    lines = ["**Headline numbers with and without the exclusions** (all categories)", "",
+             "| variant | n with / without | quality with / without | task success with / without | "
+             "total tok with / without | latency ms with / without |", "|---|---|---|---|---|---|"]
+    warnings = []
+    pct = lambda x: "-" if x is None else f"{100 * x:.0f}%"  # noqa: E731
+    for v in VARIANTS:
+        if v not in b:
+            continue
+        x, y = a.get(v, {}), b[v]
+        lines.append(f"| {v} | {x.get('n', 0)} / {y['n']} | {_fmt(x.get('quality'))} / {_fmt(y['quality'])} | "
+                     f"{pct(x.get('success'))} / {pct(y['success'])} | {_fmt(x.get('total_tokens'), 0)} / "
+                     f"{_fmt(y['total_tokens'], 0)} | {_fmt(x.get('latency'), 0)} / {_fmt(y['latency'], 0)} |")
+        if x.get("quality") is not None and abs(x["quality"] - y["quality"]) > QUALITY_WARN:
+            warnings.append(f"{v} quality {y['quality']:.2f} -> {x['quality']:.2f}")
+        if x.get("success") is not None and y["success"] is not None and abs(x["success"] - y["success"]) > SUCCESS_WARN:
+            warnings.append(f"{v} task success {100 * y['success']:.1f}% -> {100 * x['success']:.1f}%")
+    lines.append("")
+    if warnings:
+        lines.append("**Warning: the exclusions change headline numbers by more than 1 point** (quality: more than "
+                     "0.1 on the 0-10 scale; task success: more than 1 percentage point): " + "; ".join(warnings) + ".")
+    else:
+        lines.append("The exclusions change no headline number by more than 1 point (quality: 0.1 on the 0-10 scale; "
+                     "task success: 1 percentage point).")
+    return lines
 
 
 # ---------------------------------------------------------------- CLI
