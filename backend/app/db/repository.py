@@ -158,8 +158,9 @@ def delete_evaluation(db: Session, run_name: str, dataset_item_id: str, variant:
     return n or 0
 
 
-def evaluation_summary(db: Session, run_name: str) -> list[dict[str, Any]]:
-    """Averages per category and variant for one run (feeds the results table/charts)."""
+def evaluation_summary(db: Session, run_name: str, exclude_ids: Any = ()) -> list[dict[str, Any]]:
+    """Averages per category and variant for one run (feeds the results table/charts). Items in `exclude_ids` (e.g.
+    rows with a wrong reference answer) are left out."""
     total_tokens = EvaluationRun.input_tokens + func.coalesce(EvaluationRun.output_tokens, 0)
     success = case((EvaluationRun.task_success.is_(True), 1.0), (EvaluationRun.task_success.is_(False), 0.0))
     q = (select(EvaluationRun.category, EvaluationRun.variant, func.count().label("n"),
@@ -170,7 +171,8 @@ def evaluation_summary(db: Session, run_name: str) -> list[dict[str, Any]]:
                 func.count(EvaluationRun.task_success).label("n_success_checked"),
                 func.avg(EvaluationRun.quality_score).label("avg_quality"),
                 func.avg(EvaluationRun.latency_ms).label("avg_latency_ms"))
-         .where(EvaluationRun.run_name == run_name)
+         .where(EvaluationRun.run_name == run_name,
+                *([EvaluationRun.dataset_item_id.notin_(list(exclude_ids))] if exclude_ids else []))
          .group_by(EvaluationRun.category, EvaluationRun.variant)
          .order_by(EvaluationRun.category, EvaluationRun.variant))
     return [dict(r._mapping) for r in db.execute(q)]

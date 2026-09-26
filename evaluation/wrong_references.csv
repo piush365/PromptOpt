@@ -1,0 +1,3 @@
+source_id,reason,found_by
+codealpaca-16240,"reference prints an ""equal-sum"" split whose halves sum to 10 and 18",judge rationale (val run dev-val-n5-v11)
+codealpaca-12152,"reference says the maximum depth of a binary tree with n nodes is log2(n); it is n",judge rationale (val run dev-val-n10)

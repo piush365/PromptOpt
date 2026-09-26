@@ -200,12 +200,22 @@ def _fmt(x: Any, digits: int = 1) -> str:
     return "-" if x is None else f"{float(x):.{digits}f}"
 
 
-def summary(db: Session, run_name: str, cache: Cache, target_model: str = TARGET_MODEL) -> str:
-    rows = repo.evaluation_summary(db, run_name)
+def summary(db: Session, run_name: str, cache: Cache, target_model: str = TARGET_MODEL,
+            wrong_references: dict[str, str] | None = None) -> str:
+    """The results table. Rows whose reference answer is wrong (evaluation/wrong_references.csv) are not counted as
+    failures: they are left out of the table and listed separately, as are items the judge could not score."""
+    from app.reference_check import load_wrong_references
+
+    wrong = load_wrong_references() if wrong_references is None else wrong_references
+    in_run = {sid for (sid, _v) in cache.data}
+    excluded = {sid: reason for sid, reason in wrong.items() if sid in in_run}
+    rows = repo.evaluation_summary(db, run_name, exclude_ids=excluded)
     if not rows:
         return f"No results for run `{run_name}` yet."
     extra = defaultdict(lambda: {"reasoning": [], "truncated": 0})
     for (sid, v), rec in cache.data.items():
+        if sid in excluded:
+            continue
         t = rec.get("target")
         if t:
             key = (rec.get("category"), v)
@@ -239,6 +249,14 @@ def summary(db: Session, run_name: str, cache: Cache, target_model: str = TARGET
     for v in VARIANTS:
         if by_variant.get(v):
             out.append(line("all", v, by_variant[v]).replace("| all |", "| **all** |", 1))
+    if excluded:
+        out += ["", f"**Excluded: wrong reference** ({len(excluded)} items, all variants; not counted above):"]
+        out += [f"- `{sid}`: {reason}" for sid, reason in sorted(excluded.items())]
+    unjudged = sorted((sid, v) for (sid, v), rec in cache.data.items() if sid not in excluded
+                      and rec.get("judgment") is None and rec.get("judge_failed_runs", 0) >= JUDGE_GIVE_UP_RUNS)
+    if unjudged:
+        out += ["", f"**Excluded: judge could not score** ({len(unjudged)}; not counted above):"]
+        out += [f"- `{sid}` {v}" for sid, v in unjudged]
     return "\n".join(out) + "\n"
 
 

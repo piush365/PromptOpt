@@ -482,3 +482,18 @@ def test_refresh_is_refused_for_final_runs(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["run", "--split", "benchmark", "--final", "--refresh"])
     with pytest.raises(SystemExit, match="dev runs"):
         ev.main()
+
+
+
+def test_summary_lists_wrong_references_separately(db, tmp_path):
+    llm, _ = _chat(FakeClient(default=_default_answer))
+    cache = ev.Cache(tmp_path / "r.jsonl")
+    ev.run(db, ROWS[:2], llm, DETECTOR, "t", "v", cache, variants=("degraded",), log=lambda s: None)
+    bad = ROWS[0]["source_id"]
+    text = ev.summary(db, "t", cache, wrong_references={bad: "prints the wrong split", "not-in-run": "x"})
+    assert "Excluded: wrong reference** (1 items" in text and f"`{bad}`: prints the wrong split" in text
+    assert "not-in-run" not in text
+    rows = [l for l in text.splitlines() if l.startswith("| **all** | degraded")]
+    assert rows and rows[0].split("|")[3].strip() == "1"                        # n counts only the good item
+    plain = ev.summary(db, "t", cache, wrong_references={})
+    assert [l for l in plain.splitlines() if l.startswith("| **all** | degraded")][0].split("|")[3].strip() == "2"
