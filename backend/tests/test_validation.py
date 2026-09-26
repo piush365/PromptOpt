@@ -291,3 +291,30 @@ def test_faculty_agreement_against_team_majority():
     assert "Faculty check" in text and "4 of 6 faculty records" in text and "Cohen's kappa" in text
     n, _ = v.agreement(sheets)
     assert n == len(rows)                                               # the faculty sheet is not a team rater
+
+
+def test_recent_v12_rows_are_dealt_per_category_and_kept_frozen(tmp_path):
+    rows = make_rows(100)
+    for r in rows:
+        r["generation_version"] = "v1.2-batch5" if int(r["source_id"].rsplit("-", 1)[1]) >= 60 else "v1"
+    a = v.assign(rows, TEAM, recent_per_rater=20)
+    cat = {r["source_id"]: r for r in rows}
+    flat = a.overlap + [x for ids in a.single.values() for x in ids] + [x for ids in a.recent.values() for x in ids]
+    assert len(flat) == len(set(flat))                                             # nothing rated twice
+    for s in TEAM:
+        assert len(a.recent[s]) == 20
+        assert all(cat[x]["generation_version"] != "v1" for x in a.recent[s])
+        assert all(sum(cat[x]["category"] == c for x in a.recent[s]) == 4 for c in CATS)
+        assert a.raters_of(a.recent[s][0]) == [s] and a.role_of(a.recent[s][0]) == "extra_v1.2"
+    path = tmp_path / v.ASSIGNMENT_FILE
+    v.write_assignment(path, rows, a)
+    b = v.read_assignment(path, TEAM)
+    assert all(set(b.recent[s]) == set(a.recent[s]) for s in TEAM)
+    again = v.assign(rows, TEAM, frozen=b, recent_per_rater=20)
+    assert all(again.recent[s] == b.recent[s] for s in TEAM) and again.overlap == b.overlap
+    v.build_sheets(rows, again, tmp_path)
+    assert len(v.read_sheet(tmp_path / f"{A}.xlsx")) == 90 + 60 + 20
+
+
+def test_no_recent_rows_without_generation_version():
+    assert all(ids == [] for ids in v.assign(make_rows(100), TEAM, recent_per_rater=20).recent.values())

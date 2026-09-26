@@ -36,6 +36,7 @@ CATEGORIES = ["closed_qa", "information_extraction", "classification", "summariz
 OVERLAP_PER_CATEGORY = 18     # records rated by the whole team, per category (90 in total), for Fleiss' Kappa
 FACULTY_PER_CATEGORY = 4      # overlap records the faculty also rate, per category (20 in total)
 EXTRA_PER_RATER = 60          # records each team member rates alone, for filtering
+RECENT_PER_RATER = 20         # v1.2 rows (generated for the expansion) each team member rates alone, 4 per category
 SEED = "promptopt-validation-v1"
 
 # Automatic-check thresholds used when the dataset was built (DATASET_CARD.md). Pairs that passed by less than
@@ -103,27 +104,31 @@ class Assignment:
     overlap: list[str] = field(default_factory=list)                    # source_ids rated by the whole team
     faculty: list[str] = field(default_factory=list)                    # subset of overlap, also rated by faculty
     single: dict[str, list[str]] = field(default_factory=dict)          # team member -> extra source_ids
+    recent: dict[str, list[str]] = field(default_factory=dict)          # team member -> v1.2 source_ids
 
     def raters_of(self, source_id: str) -> list[str]:
         if source_id in self.overlap:
             return list(self.single) + ([FACULTY_SHEET] if source_id in self.faculty else [])
-        return [s for s, ids in self.single.items() if source_id in ids]
+        return [s for s, ids in (*self.single.items(), *self.recent.items()) if source_id in ids]
 
     def role_of(self, source_id: str) -> str:
         if source_id in self.overlap:
             return "overlap"
-        return "extra" if any(source_id in ids for ids in self.single.values()) else "none"
+        if any(source_id in ids for ids in self.single.values()):
+            return "extra"
+        return "extra_v1.2" if any(source_id in ids for ids in self.recent.values()) else "none"
 
 
 def assign(rows: list[dict[str, str]], team: list[str], faculty_per_category: int = FACULTY_PER_CATEGORY,
            overlap_per_category: int = OVERLAP_PER_CATEGORY, extra: int = EXTRA_PER_RATER,
-           frozen: Assignment | None = None) -> Assignment:
+           frozen: Assignment | None = None, recent_per_rater: int = 0) -> Assignment:
     """Choose the overlap, faculty and extra records, keeping every record already in `frozen`.
 
     Overlap: overlap_per_category per category, fixed pseudo-random pick. Faculty: faculty_per_category per category
     from the overlap records, benchmark split first (those rows are used in the live A/B evaluation), then test.
     Extra: up to `extra` per team member, most useful first (`extra_priority`), dealt out so the shares stay equally
-    useful.
+    useful. Recent: up to `recent_per_rater` rows per team member (spread evenly over the categories) from the rows
+    generated for v1.2 (`generation_version` other than v1), same priority, none shared.
     """
     if len(set(team)) != len(team) or FACULTY_SHEET in team or not team:
         raise ValueError(f"team members must be distinct names, and not '{FACULTY_SHEET}'")
@@ -166,7 +171,23 @@ def assign(rows: list[dict[str, str]], team: list[str], faculty_per_category: in
         if nxt is None:
             break
         single[s].append(nxt["source_id"])
-    return Assignment(overlap=overlap, faculty=faculty, single=single)
+
+    recent = {s: [x for x in frozen.recent.get(s, []) if x in present and x not in taken] for s in team}
+    for ids_ in recent.values():
+        taken.update(ids_)
+    per_cat = recent_per_rater // len(CATEGORIES)
+    for cat in CATEGORIES:
+        pool = iter(sorted((r for r in by_cat.get(cat, []) if r["source_id"] not in taken
+                            and r.get("generation_version", "v1") not in ("", "v1")), key=extra_priority))
+        for s in team * per_cat:
+            if sum(cat_of[x] == cat for x in recent[s]) >= per_cat:
+                continue
+            nxt = next(pool, None)
+            if nxt is None:
+                break
+            recent[s].append(nxt["source_id"])
+            taken.add(nxt["source_id"])
+    return Assignment(overlap=overlap, faculty=faculty, single=single, recent=recent)
 
 
 def read_assignment(path: Path, team: list[str]) -> Assignment:
@@ -176,16 +197,17 @@ def read_assignment(path: Path, team: list[str]) -> Assignment:
     if rows and ("id" in rows[0] or any(r["role"] in ("single", "lab") for r in rows)):
         raise SystemExit(f"{path} is from an old assignment design (lab assistants or 6% overlap). Nobody had "
                          f"rated it yet, so re-run with --reset to start from the current design.")
-    a = Assignment(single={s: [] for s in team})
+    a = Assignment(single={s: [] for s in team}, recent={s: [] for s in team})
     dropped = set()
     for r in rows:
         if r["role"] == "overlap":
             a.overlap.append(r["source_id"])
             if FACULTY_SHEET in r["raters"].split(";"):
                 a.faculty.append(r["source_id"])
-        elif r["role"] == "extra":
-            if r["raters"] in a.single:
-                a.single[r["raters"]].append(r["source_id"])
+        elif r["role"] in ("extra", "extra_v1.2"):
+            target = a.single if r["role"] == "extra" else a.recent
+            if r["raters"] in target:
+                target[r["raters"]].append(r["source_id"])
             else:
                 dropped.add(r["raters"])
     if dropped:
@@ -281,7 +303,7 @@ def write_sheet(path: Path, rater: str, rows: list[dict[str, str]]) -> None:
 def build_sheets(rows: list[dict[str, str]], a: Assignment, folder: Path) -> dict[str, dict[str, int]]:
     """Create or update one sheet per rater, keeping existing answers. Returns per-sheet statistics."""
     by_id = {r["source_id"]: r for r in rows}
-    wanted = {FACULTY_SHEET: a.faculty, **{s: a.overlap + ids for s, ids in a.single.items()}}
+    wanted = {FACULTY_SHEET: a.faculty, **{s: a.overlap + ids + a.recent.get(s, []) for s, ids in a.single.items()}}
     stats = {}
     for rater, ids in wanted.items():
         path = _sheet_path(folder, rater)
@@ -452,12 +474,15 @@ def cmd_assign(args) -> None:
     frozen_path = args.sheets / ASSIGNMENT_FILE
     team = [sheet_name(t) for t in args.team]
     frozen = read_assignment(frozen_path, team) if frozen_path.exists() and not args.reset else None
-    a = assign(rows, team, args.faculty_per_category, args.overlap_per_category, args.extra, frozen)
+    a = assign(rows, team, args.faculty_per_category, args.overlap_per_category, args.extra, frozen,
+               args.new_per_rater)
     stats = build_sheets(rows, a, args.sheets)
     write_assignment(frozen_path, rows, a)
     extras = sum(map(len, a.single.values()))
+    recent = sum(map(len, a.recent.values()))
     print(f"{len(rows)} records: {len(a.overlap)} overlap (whole team; {len(a.faculty)} of them also faculty), "
-          f"{extras} extra (one team member each), {len(rows) - len(a.overlap) - extras} not human-rated")
+          f"{extras} extra and {recent} v1.2 (one team member each), "
+          f"{len(rows) - len(a.overlap) - extras - recent} not human-rated")
     known = {sheet_name(x) for x in wanted_sheets(a)}
     stale = [p.name for p in args.sheets.glob("*.xlsx") if p.stem not in known and not p.name.startswith("~$")]
     if stale:
@@ -556,6 +581,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--overlap-per-category", type=int, default=OVERLAP_PER_CATEGORY,
                    help="records per category rated by the whole team (for Fleiss' Kappa)")
     p.add_argument("--extra", type=int, default=EXTRA_PER_RATER, help="records each team member rates alone")
+    p.add_argument("--new-per-rater", type=int, default=RECENT_PER_RATER,
+                   help="v1.2 rows (generation_version other than v1) each team member rates alone")
     p.add_argument("--reset", action="store_true",
                    help=f"ignore the frozen {ASSIGNMENT_FILE} and choose again (answers in the sheets are kept)")
     p.set_defaults(func=cmd_assign)

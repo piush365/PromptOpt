@@ -1,4 +1,4 @@
-# PromptOpt Dataset v1.1: validation guide for raters
+# PromptOpt Dataset v1.2: validation guide for raters
 
 Each record is a pair: a **degraded** prompt (vague, the way a real user might type it) and an **optimized**
 prompt (the clear version PromptOpt should learn to produce). The **original instruction** and **context** come
@@ -13,9 +13,10 @@ The team: **Nirzara Manade** (`Nirzara_Manade.xlsx`), **Siddhi Bolaikar** (`Sidd
 |---|---|
 | Every team member | the **overlap set**: 90 records (18 per category), rated by all three for Fleiss' Kappa |
 | Each team member, alone | 60 **extra** records, to filter out bad pairs |
+| Each team member, alone | 20 **v1.2** records (4 per category) from the rows generated for v1.2, so the new rows are human-checked too |
 | Faculty (`faculty.xlsx`) | 20 records (4 per category) taken **from the overlap set**, benchmark and test split first |
 
-So each team sheet has 150 rows and the faculty sheet has 20. Records nobody rates stay in the dataset and rely on
+So each team sheet has 170 rows and the faculty sheet has 20. Records nobody rates stay in the dataset and rely on
 the automatic checks.
 
 The faculty rate records the team also rates, so the report can compare the faculty's answers with the team's
