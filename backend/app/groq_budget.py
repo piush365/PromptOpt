@@ -6,9 +6,10 @@ and the API only reports the per-minute token budget in its headers. So every ca
 timestamp, the model, a tag ("evaluation", "generation", ...) and its tokens, and budgets are checked against the
 last 24 hours. Groq's own limit error remains the final stop.
 
-What counts, as measured on 2026-09-26 (Groq's count vs this ledger): all input tokens, cached ones included (the
-docs say cached tokens do not count, but gpt-oss-20b reached Groq's 200K with 164K raw tokens recorded), plus the
-output. Calls that fail inside Groq (JSON validation) also use tokens; they are recorded as an estimate.
+Each event keeps the call's total tokens and the part served from Groq's prompt cache. Groq's docs say cached
+tokens do not count toward the limits; that is not verified yet (2026-09-26: the test was confounded by usage from
+the day before), so COUNT_CACHED is True, the conservative choice, until a measurement settles it. Calls that fail
+inside Groq (JSON validation) also use tokens; they are recorded as an estimate.
 """
 import json
 import time
@@ -27,10 +28,11 @@ DAILY_LIMITS = {
     "qwen/qwen3.8-27b": {"requests": 1000, "tokens": 200_000},
 }
 TOKENS_PER_MINUTE = 8000
+COUNT_CACHED = True
 
 
 class UsageLedger:
-    """events.json: {"events": [[unix_time, model, tag, tokens], ...]}; events older than the window are dropped."""
+    """{"events": [[unix_time, model, tag, tokens, cached_tokens], ...]}; events older than the window are dropped."""
 
     def __init__(self, path: Path = LEDGER_PATH, clock: Callable[[], float] = time.time):
         self.path, self.clock = Path(path), clock
@@ -40,10 +42,10 @@ class UsageLedger:
             return []
         return json.loads(self.path.read_text(encoding="utf-8") or "{}").get("events", [])
 
-    def record(self, model: str, tag: str, tokens: int) -> None:
+    def record(self, model: str, tag: str, tokens: int, cached: int = 0) -> None:
         now = self.clock()
         events = [e for e in self._load() if e[0] > now - WINDOW_SECONDS]
-        events.append([now, model, tag, int(tokens)])
+        events.append([now, model, tag, int(tokens), int(cached)])
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp")
         tmp.write_text(json.dumps({"events": events}), encoding="utf-8")
@@ -53,4 +55,5 @@ class UsageLedger:
         """Requests and tokens for `model` in the last 24 hours: for one tag, or all tags together."""
         since = self.clock() - WINDOW_SECONDS
         rows = [e for e in self._load() if e[0] > since and e[1] == model and (tag is None or e[2] == tag)]
-        return {"requests": len(rows), "tokens": sum(e[3] for e in rows)}
+        return {"requests": len(rows),
+                "tokens": sum(e[3] - (0 if COUNT_CACHED else (e[4] if len(e) > 4 else 0)) for e in rows)}

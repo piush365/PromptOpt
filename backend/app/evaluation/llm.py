@@ -136,7 +136,7 @@ class GroqChat:
             wall_ms = int(1000 * (time.perf_counter() - start))
             c = _completion(resp, model, wall_ms)
             if self.ledger is not None:
-                self.ledger.record(model, self.tag, c.total_tokens)
+                self.ledger.record(model, self.tag, c.total_tokens, c.cached_tokens)
             return c
         raise RuntimeError(f"{model}: failed after {self.max_retries} attempts: {last_error}")
 

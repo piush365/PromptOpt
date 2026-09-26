@@ -399,10 +399,28 @@ def pace_for(tokens_per_call: float) -> float:
     return max(MIN_INTERVAL, 60 * tokens_per_call / (0.9 * TOKENS_PER_MINUTE))
 
 
+USAGE_FIELDS = ["model", "source_id", "prompt_tokens", "cached_tokens", "completion_tokens", "reasoning_tokens",
+                "system_prompt_chars", "user_message_chars", "context_chars_sent", "max_completion_tokens",
+                "reasoning_effort", "response_format", "finish_reason"]
+
+
+def usage_row(model: str, row: dict[str, Any], c: Any) -> dict[str, Any]:
+    """One call's token breakdown, next to the settings that drive it (for the cost investigation)."""
+    msgs = build_messages(row)
+    return {"model": model, "source_id": row["source_id"], "prompt_tokens": c.input_tokens,
+            "cached_tokens": c.cached_tokens, "completion_tokens": c.output_tokens,
+            "reasoning_tokens": c.reasoning_tokens, "system_prompt_chars": len(msgs[0]["content"]),
+            "user_message_chars": len(msgs[1]["content"]), "context_chars_sent": len(row["context"][:MAX_CONTEXT_CHARS]),
+            "max_completion_tokens": MAX_COMPLETION_TOKENS, "reasoning_effort": reasoning_for(model),
+            "response_format": "json_object", "finish_reason": c.finish_reason}
+
+
 def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: Budget,
              models: list[str] = GROQ_MODELS, max_calls: int | None = None,
-             log: Callable[[str], None] = print) -> dict[str, Any]:
-    """Generate the rows of `sample` not in the checkpoint, within the budget. Returns counters."""
+             log: Callable[[str], None] = print, usage_log: int = 0,
+             usage_path: Path | None = None) -> dict[str, Any]:
+    """Generate the rows of `sample` not in the checkpoint, within the budget. Returns counters. The first
+    `usage_log` successful calls are also written to `usage_path` (CSV) with their token breakdown."""
     from app.evaluation.llm import DailyLimitReached, JSONGenerationFailed, ModelUnavailable
 
     todo = [r for r in round_robin(sample) if r["source_id"] not in ckpt.done]
@@ -440,6 +458,15 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
                 stats["errors"] += 1
                 log(f"  {row['source_id']}: {str(e)[:200]}")
                 break
+            if stats["generated"] < usage_log and usage_path is not None:
+                u = usage_row(model, row, c)
+                new = not usage_path.exists()
+                with open(usage_path, "a", encoding="utf-8", newline="") as f:
+                    w = csv.DictWriter(f, fieldnames=USAGE_FIELDS)
+                    if new:
+                        w.writeheader()
+                    w.writerow(u)
+                log("  usage: " + ", ".join(f"{k}={u[k]}" for k in USAGE_FIELDS[2:6]))
             ckpt.add({"source_id": row["source_id"], "degraded_prompt": pair[0], "optimized_prompt": pair[1],
                       "model": c.model if c.model in models else model,
                       "tokens": c.total_tokens, "cached_tokens": c.cached_tokens})
@@ -706,6 +733,8 @@ def main(argv: list[str] | None = None) -> None:
     g = sub.add_parser("generate", help="generate pairs within the 24-hour budget (resumable)")
     g.add_argument("--max-calls", type=int, help="stop after this many generation calls")
     g.add_argument("--max-repair-calls", type=int, default=20, help="Groq calls for subject repairs after generation")
+    g.add_argument("--usage-log", type=int, default=10,
+                   help="write the token breakdown of the first N calls to usage_breakdown.csv")
     sub.add_parser("build", help="quality checks, repair, splits -> v1.2 files (works on a partial run)")
     args = ap.parse_args(argv)
 
@@ -722,7 +751,8 @@ def main(argv: list[str] | None = None) -> None:
         from app.evaluation.llm import GroqChat
 
         llm = GroqChat(min_interval=pace_for(ckpt.tokens_per_call()), ledger=ledger, tag="generation")
-        stats = generate(sample, ckpt, llm, budget, args.models, args.max_calls)
+        stats = generate(sample, ckpt, llm, budget, args.models, args.max_calls, usage_log=args.usage_log,
+                         usage_path=args.out / "usage_breakdown.csv")
         print(f"Generation: {stats['generated']} rows in {stats['calls']} calls "
               f"({dict(stats['by_model'])}); parse failures {stats['parse_failures']}, errors {stats['errors']}. "
               f"Stopped: {stats['stopped'] or 'all sampled rows generated'}")

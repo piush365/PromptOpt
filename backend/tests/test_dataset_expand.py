@@ -130,7 +130,7 @@ class FakeLLM:
         if self.ledger:
             self.ledger.record(model, "generation", 400)
         return SimpleNamespace(content=r, model=model, input_tokens=300, output_tokens=100, cached_tokens=200,
-                               total_tokens=400)
+                               total_tokens=400, reasoning_tokens=60, finish_reason="stop")
 
 
 def pair(d="deg", o="opt"):
@@ -185,6 +185,34 @@ def test_groq_json_failures_count_as_parse_failures(tmp_path):
     stats = x.generate([src(1), src(2), src(3)], ckpt, llm, budget, log=lambda s: None)
     assert stats["parse_failures"] == 4 and stats["generated"] == 2        # src(2) skipped after 3 failures
     assert set(ckpt.done) == {"dolly-1", "dolly-3"}
+
+
+def test_usage_breakdown_is_logged_for_the_first_calls(tmp_path):
+    import csv
+
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
+    budget = x.Budget(led, fraction=1.0, global_cap=1.0,
+                      limits={m: {"requests": 100, "tokens": 10**6} for m in x.GROQ_MODELS})
+    path = tmp_path / "usage.csv"
+    x.generate([src(i, context="c" * 3000) for i in range(4)], x.Checkpoint(tmp_path / "ck.jsonl"),
+               FakeLLM([pair()] * 4, led), budget, log=lambda s: None, usage_log=2, usage_path=path)
+    rows = list(csv.DictReader(open(path)))
+    assert len(rows) == 2
+    r = rows[0]
+    assert (r["prompt_tokens"], r["cached_tokens"], r["completion_tokens"], r["reasoning_tokens"]) == ("300", "200",
+                                                                                                         "100", "60")
+    assert r["context_chars_sent"] == "1000" and r["max_completion_tokens"] == "1024"
+    assert r["reasoning_effort"] == "low" and int(r["system_prompt_chars"]) == len(x.SYSTEM_PROMPT)
+
+
+def test_ledger_keeps_cached_tokens_separately(tmp_path, monkeypatch):
+    from app import groq_budget
+
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
+    led.record("m", "generation", 1000, cached=400)
+    assert led.used("m")["tokens"] == 1000                           # conservative default: cached counts
+    monkeypatch.setattr(groq_budget, "COUNT_CACHED", False)
+    assert led.used("m")["tokens"] == 600
 
 
 def test_generate_stops_at_the_budget(tmp_path):
