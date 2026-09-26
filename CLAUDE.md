@@ -61,7 +61,8 @@ no instruction shared across splits. The dataset is NOT stored in the database.
 - Phase 2 (only after the core works): image-generation prompts (Nano Banana, DALL-E) as a sixth category.
 
 ## Roadmap (strict order)
-Work only on the current step unless the user says otherwise.
+Work only on the current step unless the user says otherwise. Development evaluation uses Groq models as stand-ins for
+the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 
 | # | Step | Status |
 |---|------|--------|
@@ -69,8 +70,12 @@ Work only on the current step unless the user says otherwise.
 | 2 | Expand dataset to ~1,000 per category (frozen splits) | Not started |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Not started |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
-| 5 | Evaluation on val, per LLM | Not started (harness in `app/evaluation/` is built) |
+| 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Not started |
-| 7 | Ablation, then final test/benchmark evaluation (once) | Not started |
-| 8 | FastAPI + React app with Compare and history | Not started |
+| 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Not started |
+| 8 | FastAPI + React app with history | Not started |
 | 9 | Phase 2: image generation | Not started |
+
+### Later, needs API keys (after step 7)
+- Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).
+- Real-LLM evaluation: repeat the val/test/benchmark evaluation per target LLM.
