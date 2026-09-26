@@ -338,3 +338,103 @@ def test_result_is_saved_through_the_repository(db):
     db.commit()
     assert result.ir["category"] == "summarization" and result.ir["output_format"] == "Use bullet points."
     assert [t.rule.code for t in result.transformations] == out.rules_applied
+
+
+# ---------------------------------------------------------------- B09-B13 attachment modifier
+from app.stage_b.ir import Attachment  # noqa: E402
+
+ATTACHMENT_RULES = [("image", b.b09_attachment_image), ("pdf", b.b10_attachment_pdf), ("pptx", b.b11_attachment_pptx),
+                    ("docx", b.b12_attachment_docx), ("other", b.b13_attachment_other)]
+
+
+@pytest.mark.parametrize("kind, rule", ATTACHMENT_RULES)
+def test_attachment_rule_adds_its_requirements_first(kind, rule):
+    text = "summarize this"
+    ir = ir_of(text, "summarization", attachment=Attachment(type=kind, name="f.x"),
+               requirements=("Existing requirement.",), unresolved=("ambiguous reference: 'this'", "label set"))
+    out = rule(ir, feats(text, "summarization"))
+    expected = tuple(r.format(name=" (f.x)") for r in b.ATTACHMENT_REQUIREMENTS[kind])
+    assert out.requirements == (*expected, "Existing requirement.")
+    assert "f.x" in out.requirements[0]
+    assert out.unresolved == ("label set",)            # the attachment is what 'this' refers to
+
+
+@pytest.mark.parametrize("kind, rule", ATTACHMENT_RULES)
+def test_attachment_rule_ignores_other_types(kind, rule):
+    text = "summarize this"
+    for other in ("none", "image", "pdf", "pptx", "docx", "other"):
+        if other == kind:
+            continue
+        ir = ir_of(text, "summarization", attachment=Attachment(type=other))
+        assert rule(ir, feats(text, "summarization")) == ir
+
+
+def test_attachment_wording():
+    ir = ir_of("x", "summarization", attachment=Attachment(type="pdf"))
+    out = b.b10_attachment_pdf(ir, feats("x", "summarization"))
+    assert out.requirements[:2] == ("Use the attached PDF as the source.",
+                                    "Cite the page or section numbers for the information you use.")
+    ir = ir_of("x", "closed_qa", attachment=Attachment(type="image", name="shot.png"))
+    out = b.b09_attachment_image(ir, feats("x", "closed_qa"))
+    assert out.requirements[0] == "Use what is visible in the attached image (shot.png); describe the parts you rely on."
+
+
+def test_optimize_with_attachment_logs_the_rule_and_can_switch_it_off():
+    text = "summarize this"
+    f = feats(text, "summarization")
+    out = optimize(text, f, attachment=Attachment(type="pdf", name="r.pdf"))
+    assert "B10_ATTACHMENT_PDF" in out.rules_applied and out.ir.context_ref == "attachment"
+    assert "Use the attached PDF (r.pdf) as the source." in out.optimized_text
+    assert not any(u.startswith("ambiguous reference") for u in out.unresolved)
+    off = optimize(text, f, attachment=Attachment(type="pdf"), disabled={"B10_ATTACHMENT_PDF"})
+    assert "B10_ATTACHMENT_PDF" not in off.rules_applied and "PDF" not in off.optimized_text
+    assert off.ir.attachment.type == "pdf"             # still recorded in the IR for the renderers
+
+
+def test_attachment_counts_as_material_for_the_group_fallback():
+    text = "when was it finished"
+    f = feats(text, "closed_qa", 0.45)                  # no text attached: B08 cannot apply
+    assert "B08_GROUP_FALLBACK" not in optimize(text, f).rules_applied
+    assert "B08_GROUP_FALLBACK" in optimize(text, f, attachment=Attachment(type="docx")).rules_applied
+
+
+# ---------------------------------------------------------------- user-selected category
+def test_user_category_overrides_stage_a():
+    text = "tell me about the causes of the war"
+    f = feats(text, "closed_qa", 0.4)                   # Stage A unsure, and wrong
+    auto = optimize(text, f)
+    assert auto.ir.category == "closed_qa" and auto.ir.category_source == "stage_a"
+    assert "task category" in auto.unresolved and auto.needs_stage_c
+    user = optimize(text, f, category="summarization")
+    assert user.ir.category == "summarization" and user.ir.category_source == "user"
+    assert "task category" not in user.unresolved
+    assert user.ir.output_format == b.FORMAT_DEFAULTS["summarization"]
+    assert b.LENGTH_DEFAULTS["summarization"] in user.ir.constraints   # constraints re-derived for summarization
+    assert f.task_type == "closed_qa"                   # Stage A's features are not modified
+
+
+def test_user_category_is_logged(caplog):
+    import logging
+    text = "sort a list"
+    with caplog.at_level(logging.INFO, logger="app.stage_b.optimizer"):
+        optimize(text, feats(text, "closed_qa", 0.5), category="coding")
+    assert "category coding from user (Stage A said closed_qa)" in caplog.text
+
+
+def test_unknown_user_category_is_rejected():
+    with pytest.raises(ValueError, match="unknown category"):
+        optimize("x", feats("x", "closed_qa"), category="poetry")
+    with pytest.raises(ValueError):
+        optimize("x", feats("x", "closed_qa"), category="other")
+
+
+@pytest.mark.parametrize("context, separate, att, ref", [
+    (None, False, "none", "none"), ("a, b", False, "none", "inline"), (None, True, "none", "separate"),
+    ("a, b", True, "none", "separate"), (None, True, "pdf", "attachment")])
+def test_context_ref(context, separate, att, ref):
+    from app.stage_b.ir import context_ref_for
+    assert context_ref_for(context, separate, Attachment(type=att)) == ref
+
+
+def test_target_llm_is_recorded_in_the_ir():
+    assert optimize("sort a list", feats("sort a list", "coding"), target_llm="gemini").ir.target_llm == "gemini"

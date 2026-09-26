@@ -34,6 +34,17 @@ RULES = [
     ("B08_GROUP_FALLBACK", "Text-based group fallback", "B",
      "When no single category is certain but closed_qa/information_extraction/summarization together are and text "
      "is attached, ask for an answer grounded in the text and concise; no category-specific format."),
+    # Stage B: attachment modifier (one rule per attachment type, so the ablation can switch each off)
+    ("B09_ATTACHMENT_IMAGE", "Image attachment", "B",
+     "Use what is visible in the attached image; say so when something is not visible."),
+    ("B10_ATTACHMENT_PDF", "PDF attachment", "B",
+     "Use the attached PDF as the source and cite page or section numbers."),
+    ("B11_ATTACHMENT_PPTX", "Slide deck attachment", "B",
+     "Use the attached slides as the source and refer to slides by number."),
+    ("B12_ATTACHMENT_DOCX", "Word document attachment", "B",
+     "Use the attached document as the source and cite section headings."),
+    ("B13_ATTACHMENT_OTHER", "Other attachment", "B",
+     "Use the attached file as the source; say so if it cannot be read."),
 ]
 
 

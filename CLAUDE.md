@@ -6,7 +6,8 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
 ## Pipeline
 - **Stage A, feature detection:** task category, missing output format, missing constraints (length/tone/audience/language),
   filler/redundancy, ambiguous references. spaCy + regex + Sentence-Transformers. Output: PromptFeatures (Pydantic).
-- **Stage B, rule-based optimization:** deterministic, independently testable rules (codes B01-B08 in `backend/app/db/seed.py`).
+- **Stage B, rule-based optimization:** deterministic, independently testable rules (codes B01-B13 in `backend/app/db/seed.py`;
+  B09-B13 are the attachment modifier, one rule per attachment type).
   Category-specific rules (B03-B06) apply only when Stage A's category confidence is >= 0.6. Below that, B08 is the
   group-level fallback: if closed_qa + information_extraction + summarization together reach 0.6 and text is attached,
   it adds "Answer from the provided text in at most three sentences." (only the missing parts) and resolves the
@@ -17,8 +18,13 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   or an ambiguous reference (`STAGE_C_REASONS` in `backend/app/stage_b/optimizer.py`). A missing label set or format
   is recorded but does not route; the confidence score is stored, not used for routing. Stage C patches the
   unresolved fields, not the whole prompt.
-- **IR + rendering:** the result becomes a model-agnostic intermediate representation (task, context, constraints,
-  requirements, output_format), rendered differently per target LLM (e.g. XML tags for Claude, markdown for GPT).
+- **IR + rendering:** the result becomes a model-agnostic intermediate representation (`app/stage_b/ir.py`: task,
+  context, context_ref, constraints, requirements, output_format, attachment, target_llm, category_source, unresolved),
+  rendered per target LLM by `app/rendering.py` (Claude XML tags, GPT markdown sections, Gemini labelled sections;
+  tests parse every rendering back to check no field is lost). A user-selected category overrides Stage A
+  (`optimize(..., category=...)`). `app/pipeline.py` runs one request end to end and saves the renderings.
+- **Groq usage:** every Groq call records its rate-limited tokens (cached input excluded) in `data/groq_usage.json`;
+  dataset generation stays within `--budget-fraction` (0.7) of each model's daily limit.
 - **Evaluation:** net token change (input AND output), rubric quality score, task success on verifiable tasks, cost,
   latency, plus an ablation study. Target LLMs are treated as black boxes.
 
@@ -70,8 +76,8 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | # | Step | Status |
 |---|------|--------|
 | 1 | Dataset v1.1 repair, then send rater sheets | **CURRENT**: v1.1 repair done (2,256 rows); sheets generated for the team (3 x 150) and faculty (20), not sent yet |
-| 2 | Expand dataset to ~1,000 per category (frozen splits) | Not started |
-| 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Not started |
+| 2 | Expand dataset to ~1,000 per category (frozen splits) | **CURRENT**: `app/dataset_expand.py` built; generation running daily (resume the evaluation first, then `generate`), then `build` -> v1.2 |
+| 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Not started |
