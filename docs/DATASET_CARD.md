@@ -41,6 +41,15 @@ drops; new: 0 flags, 1 dropped item list, which the deterministic repair restore
 call cannot be swapped. The first 40 batched rows were matched by position before this was added; all 40 were
 checked (each output compared with every instruction in its call) and none was swapped.
 
+**Prompt revisions** (`prompt_rev` in the generation checkpoint): after the first 225 batched rows, their
+auto-check pass rate was compared with v1 per category. In closed_qa the optimized prompt often left out the
+question itself (76% pass vs 85% in v1; those rows fail the drift check and are dropped), and in classification it
+dropped the item list in 18 of 41 rows (restored by the repair). Revision 2 states both explicitly ("restate the
+full question or request"; classification ends with "Items: " and every item). On 20 unseen rows it passed 20/20
+with no dropped data. Rows from revision 1 stay in the dataset (after the checks and the repair). Outside
+classification, a trailing "Items:" line that only repeats the question or subject is removed at build
+(`dataset_repair.strip_redundant_items`; logged as `items_line_removed`).
+
 ## Pipeline (v1.2 rows)
 
 1. **Sources and cleaning** (as the notebook): 4 Dolly categories; no empty rows; no duplicate

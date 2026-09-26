@@ -315,16 +315,19 @@ provided text".
 
 "optimized_prompt": the best version of the instruction for an LLM.
 - Same task and intent; add no facts, answers or content from the text.
+- Self-contained: restate the full question or request, with its subject. Never write "Answer the question" \
+without the question itself.
 - State the task clearly, then an explicit output format and only the constraints that genuinely help.
 - Call the separate TEXT/INPUT "the provided text" or "the given input"; do not copy it in.
-- Keep the instruction's data verbatim, e.g. end with "Items: a, b, c" for items to classify.
+- Keep the instruction's data verbatim; for items to classify, end with "Items: a, b, c". No "Items:" line for \
+anything else (a question is restated in the task itself).
 - No filler or politeness; usually under 60 words plus the data.
 
 Per category (optimized_prompt):
 - closed_qa: answer only from the provided text; state the answer length.
 - information_extraction: exactly what to extract and the output structure (bulleted list, or JSON with named fields).
 - classification: list the allowed labels when the instruction implies them; ask for the label only (or label plus a \
-one-line reason).
+one-line reason); end with "Items: " and every item from the instruction, verbatim.
 - summarization: a length (sentences or bullet points) and what to focus on.
 - coding: name the language (keep the stated one; else the one implied by the input; else Python), the expected \
 behaviour, inputs and outputs; ask for the code in a single code block.
@@ -332,6 +335,10 @@ behaviour, inputs and outputs; ask for the code in a single code block.
 Return ONLY JSON: {"items": [{"id": "<the item's ID, copied exactly>", "degraded_prompt": "...", \
 "optimized_prompt": "..."}]}, one entry per item."""
 BATCH_SIZE = 5
+# Revision of SYSTEM_PROMPT, stored with every generated row. 1: first batched wording (in closed_qa it often left
+# out the question, in classification the items); 2: both stated explicitly, "Items:" only for items to classify
+# (2026-09-26).
+PROMPT_REV = 2
 MAX_COMPLETION_TOKENS_PER_ITEM = 400      # visible JSON ~90 tokens per item plus shared reasoning (~130-300)
 
 
@@ -558,7 +565,8 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
             if sid in got:
                 ckpt.add({"source_id": sid, "degraded_prompt": got[sid][0], "optimized_prompt": got[sid][1],
                           "model": c.model if "/" in c.model else model, "tokens": round(share),
-                          "cached_tokens": c.cached_tokens, "batch": len(rows), "matched_by": "source_id"})
+                          "cached_tokens": c.cached_tokens, "batch": len(rows), "matched_by": "source_id",
+                          "prompt_rev": PROMPT_REV})
                 stats["generated"] += 1
                 stats["by_model"][model] += 1
             else:
@@ -703,7 +711,16 @@ def build(v11: list[dict[str, str]], generated: list[dict[str, Any]], nlp: Any =
             res.flag_counts[(g["category"], name)] += hit
         if g["auto_pass"]:
             res.counts[(g["category"], "auto_pass")] += 1
-            passing.append(to_dataset_row(g))
+            row = to_dataset_row(g)
+            cleaned = repair.strip_redundant_items(row["optimized_prompt"], row["original_instruction"],
+                                                   row["category"])
+            if cleaned != row["optimized_prompt"]:
+                res.counts[(g["category"], "items_line_removed")] += 1
+                res.repair_log.append({"id": row["id"], "split": "", "category": row["category"],
+                                       "action": "items_line_removed", "field": "optimized_prompt",
+                                       "before": row["optimized_prompt"], "after": cleaned})
+                row = dict(row, optimized_prompt=cleaned, optimized_word_count=str(len(cleaned.split())))
+            passing.append(row)
     rep = repair.run(passing, nlp, regen_cache)
     for (c, k), n in rep.counts.items():
         if k != "total":
@@ -712,9 +729,10 @@ def build(v11: list[dict[str, str]], generated: list[dict[str, Any]], nlp: Any =
     assign_splits(v11, new)
     assign_ids(v11, new)
     final = {r["source_id"]: r for r in new}
-    for e in rep.log:
+    for e in [*res.repair_log, *rep.log]:
         r = final.get(e["id"])          # the log was written with the temporary id (= source_id)
-        res.repair_log.append(dict(e, id=r["id"] if r else e["id"], split=r["split"] if r else "removed"))
+        e.update(id=r["id"] if r else e["id"], split=r["split"] if r else "removed")
+    res.repair_log = res.repair_log + rep.log
     for r in new:
         res.counts[(r["category"], "added")] += 1
     res.new_rows = new
@@ -730,7 +748,8 @@ def write(res: BuildResult, out_dir: Path = V12_DIR) -> None:
 
 
 def report_text(res: BuildResult) -> str:
-    cols = ["generated", "auto_pass", "rows_repaired", "subject_dropped", "regenerated", "removed", "added"]
+    cols = ["generated", "auto_pass", "items_line_removed", "rows_repaired", "subject_dropped", "regenerated", "removed",
+            "added"]
     lines = ["# Dataset v1.2 build", "", "## New rows", "", "| category | " + " | ".join(cols) + " |",
              "|---" * (len(cols) + 1) + "|"]
     for c in CATEGORIES:

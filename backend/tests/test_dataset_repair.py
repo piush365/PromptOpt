@@ -202,3 +202,22 @@ def test_run_counts_and_applies_accepted_edits(tmp_path):
     assert json.loads(lines[0])["output"].endswith("Items: Sheker, Taishogoto")
     assert (tmp_path / "test.jsonl").read_text().count("\n") == 1
     assert (tmp_path / "promptopt_dataset_v1_1.csv").exists() and (tmp_path / "repair_log.csv").exists()
+
+
+@pytest.mark.parametrize("prompt, instruction, category, expected", [
+    ("Name the director of Lost in Translation. Answer in 20 words. Items: Lost in Translation",
+     "Who directed Lost in Translation?", "closed_qa", "Name the director of Lost in Translation. Answer in 20 words."),
+    ("From the provided text, answer: who is he? Items: Who is Mariano Sánchez?",
+     "Who is Mariano Sánchez?", "closed_qa", "From the provided text, answer: who is he?"),     # repeats the question
+    ("Summarize the text. Items: carbon, nitrogen",
+     "Summarize the text about carbon and nitrogen.", "summarization", "Summarize the text."),
+    # data found nowhere else stays
+    ("Explain the difference. Items: tomato, cucumber", "Explain the difference.", "closed_qa",
+     "Explain the difference. Items: tomato, cucumber"),
+    # classification keeps its item list
+    ("Classify each item. Items: apple, carrot", "Classify: apple, carrot", "classification",
+     "Classify each item. Items: apple, carrot"),
+    ("Write a function. Return code only.", "Write a function.", "coding", "Write a function. Return code only."),
+])
+def test_strip_redundant_items(prompt, instruction, category, expected):
+    assert r.strip_redundant_items(prompt, instruction, category) == expected

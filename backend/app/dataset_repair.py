@@ -208,6 +208,25 @@ def append_payload(prompt: str, payload: Payload, degraded: bool) -> str:
     return f"{prompt}\n\n{label}{payload.text}"
 
 
+_ITEMS_LINE = re.compile(r"\s*\bItems:\s*(?P<items>[^\n]*(?:\n(?!\s*$)[^\n]*)*)\s*$")
+
+
+def strip_redundant_items(prompt: str, instruction: str, category: str) -> str:
+    """Outside classification an "Items:" line is never wanted (the batched generator sometimes adds one with the
+    subject or the question). Remove a trailing one when all its content is already in the rest of the prompt, or
+    when it only repeats the original instruction; keep it when it carries data found nowhere else."""
+    if category == "classification":
+        return prompt
+    m = _ITEMS_LINE.search(prompt)
+    if not m:
+        return prompt
+    head, items = prompt[:m.start()].rstrip(), m.group("items")
+    need = content_words(items)
+    if not head or (need and not (need <= set(words(head)) or need <= content_words(instruction))):
+        return prompt
+    return head
+
+
 def missing_source_data(row: dict[str, str]) -> bool:
     """The instruction says the data follows, but neither the instruction nor the context contains it."""
     if (row.get("context") or "").strip():

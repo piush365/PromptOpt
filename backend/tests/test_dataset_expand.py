@@ -171,7 +171,7 @@ def test_system_prompt_keeps_every_rule():
                  "explicit output format", '"the provided text" or "the given input"', "copied verbatim",
                  "No filler", "under 60 words", "answer only from the provided text", "output structure",
                  "list the allowed labels", "a length (sentences or bullet points)", "name the language",
-                 "single code block"):
+                 "single code block", "restate the full question or request", 'end with "Items: "'):
         assert rule in p, rule
 
 
@@ -199,7 +199,8 @@ def test_a_reply_in_another_order_is_not_swapped(tmp_path):
     ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
     x.generate([src(i) for i in range(5)], ckpt, FakeLLM([lambda m: reply_all(m, reverse=True)], led),
                budget_for(led), log=lambda s: None, batch_size=5)
-    assert all(r["optimized_prompt"] == f"opt {sid}" and r["matched_by"] == "source_id" for sid, r in ckpt.done.items())
+    assert all(r["optimized_prompt"] == f"opt {sid}" and r["matched_by"] == "source_id" and r["prompt_rev"] == x.PROMPT_REV
+               for sid, r in ckpt.done.items())
 
 
 def test_router_sends_cerebras_models_to_cerebras():
@@ -376,6 +377,13 @@ def test_build_repairs_new_rows_and_keeps_v11(tmp_path):
     assert res.counts[("classification", "generated")] == 2 and res.counts[("classification", "auto_pass")] == 1
     assert res.counts[("classification", "added")] == 1
     assert res.repair_log and res.repair_log[0]["id"] == new["id"]
+
+    qa = gen_row(9, "closed_qa", instruction="Who directed Lost in Translation?", degraded="who directed it",
+                 optimized="Name the director of Lost in Translation from the provided text. Items: Lost in Translation")
+    res2 = x.build(v11, [qa])
+    assert res2.new_rows[0]["optimized_prompt"] == "Name the director of Lost in Translation from the provided text."
+    assert res2.counts[("closed_qa", "items_line_removed")] == 1
+    assert res2.repair_log[0]["action"] == "items_line_removed" and res2.repair_log[0]["id"].startswith("PO-CQA-")
 
     x.write(res, tmp_path)
     import csv
