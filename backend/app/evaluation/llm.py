@@ -5,6 +5,9 @@
 * Model not found / not allowed / decommissioned: raise ModelUnavailable.
 * Other API or connection errors: back off (3, 6, 12, ... s, capped at 30) and retry, at most `max_retries` times.
 * Calls are spaced at least `min_interval` seconds apart (about 27 requests/min, under the free-tier limit).
+* With a `ledger` (app.groq_budget.UsageLedger), every successful call's rate-limited tokens (input minus cached
+  input, plus output) are added to today's shared usage.
+* JSON mode, Groq's `json_validate_failed` (400): raise JSONGenerationFailed at once, no retries.
 * A model that rejects `reasoning_effort` is retried without it (remembered for the rest of the run).
 """
 import time
@@ -26,6 +29,11 @@ class ModelUnavailable(Exception):
     pass
 
 
+class JSONGenerationFailed(ValueError):
+    """JSON mode: Groq could not produce valid JSON (e.g. max tokens reached first). Not retried unchanged: the same
+    request fails the same way at temperature 0. Callers may retry with more tokens."""
+
+
 @dataclass
 class Completion:
     content: str
@@ -35,6 +43,12 @@ class Completion:
     reasoning_tokens: int | None    # part of output_tokens spent on reasoning, when the API reports it
     latency_ms: int                 # Groq's usage.total_time; wall clock only if the API does not report it
     finish_reason: str | None
+    cached_tokens: int = 0          # part of input_tokens served from Groq's prompt cache (not rate-limited)
+
+    @property
+    def rate_limited_tokens(self) -> int:
+        """Tokens that count toward Groq's rate limits: cached input tokens do not."""
+        return self.input_tokens - self.cached_tokens + self.output_tokens
 
 
 def _is_daily(e: Exception) -> bool:
@@ -49,7 +63,8 @@ def _unavailable(e: Exception) -> bool:
 
 class GroqChat:
     def __init__(self, client: Any = None, min_interval: float = SECONDS_BETWEEN_CALLS, max_retries: int = 5,
-                 sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic):
+                 sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic,
+                 ledger: Any = None, tag: str = "other"):
         if client is None:
             if not GROQ_API_KEY:
                 raise SystemExit("GROQ_API_KEY is not set. Add it to backend/.env (see .env.example).")
@@ -59,6 +74,7 @@ class GroqChat:
         self._last_call = None
         self.no_reasoning_param: set[str] = set()
         self.calls = 0
+        self.ledger, self.tag = ledger, tag     # app.groq_budget.UsageLedger: daily usage shared across tools
 
     def _pace(self) -> None:
         if self._last_call is not None:
@@ -108,23 +124,30 @@ class GroqChat:
                 last_error = e
                 continue
             except (groq.APIStatusError, groq.APIConnectionError) as e:
+                if "json_validate_failed" in str(e):
+                    raise JSONGenerationFailed(str(e)) from e
                 if _unavailable(e):
                     raise ModelUnavailable(str(e)) from e
                 self.sleep(min(30, 3 * 2 ** attempt))
                 last_error = e
                 continue
             wall_ms = int(1000 * (time.perf_counter() - start))
-            return _completion(resp, model, wall_ms)
+            c = _completion(resp, model, wall_ms)
+            if self.ledger is not None:
+                self.ledger.record(model, self.tag, c.rate_limited_tokens)
+            return c
         raise RuntimeError(f"{model}: failed after {self.max_retries} attempts: {last_error}")
 
 
 def _completion(resp: Any, model: str, wall_ms: int) -> Completion:
     usage = resp.usage
     details = getattr(usage, "completion_tokens_details", None)
+    prompt_details = getattr(usage, "prompt_tokens_details", None)
     total_time = getattr(usage, "total_time", None)
     choice = resp.choices[0]
     return Completion(content=choice.message.content or "", model=getattr(resp, "model", model),
                       input_tokens=usage.prompt_tokens, output_tokens=usage.completion_tokens,
                       reasoning_tokens=getattr(details, "reasoning_tokens", None),
                       latency_ms=int(round(1000 * total_time)) if total_time is not None else wall_ms,
-                      finish_reason=choice.finish_reason)
+                      finish_reason=choice.finish_reason,
+                      cached_tokens=getattr(prompt_details, "cached_tokens", None) or 0)

@@ -392,11 +392,11 @@ def subject_candidates(rows: list[dict[str, str]], nlp: Any) -> list[dict[str, A
     return sorted(out, key=lambda r: (order.get(r["split"], 9), r["id"]))
 
 
-def write(rep: Report, out_dir: Path = V11_DIR) -> None:
+def write(rep: Report, out_dir: Path = V11_DIR, csv_name: str = V11_CSV.name, columns: list[str] | None = None) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    fields = list(rep.rows[0].keys())
-    with open(out_dir / "promptopt_dataset_v1_1.csv", "w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=fields)
+    fields = columns or list(rep.rows[0].keys())
+    with open(out_dir / csv_name, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         w.writeheader()
         w.writerows(rep.rows)
     for split in SPLITS:
@@ -438,10 +438,11 @@ def main() -> None:
     cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
     if args.max_calls:
         from app.evaluation.llm import GroqChat
+        from app.groq_budget import UsageLedger
         cands = subject_candidates(rows, nlp)
         calls = 0
         try:
-            calls = regenerate(cands, GroqChat(), cache, args.max_calls)
+            calls = regenerate(cands, GroqChat(ledger=UsageLedger(), tag="repair"), cache, args.max_calls)
         finally:
             args.out.mkdir(parents=True, exist_ok=True)
             cache_path.write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")

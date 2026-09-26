@@ -26,7 +26,8 @@ from app.db import repository as repo
 from app.db.models import EvaluationRun
 from app.dataset_io import DEFAULT_CSV, load_rows
 from app.evaluation import judge
-from app.evaluation.llm import Completion, DailyLimitReached, GroqChat, ModelUnavailable
+from app.groq_budget import UsageLedger
+from app.evaluation.llm import Completion, DailyLimitReached, GroqChat, JSONGenerationFailed, ModelUnavailable
 from app.evaluation.success import task_success
 from app.evaluation.variants import VARIANTS, build_variants
 
@@ -79,10 +80,17 @@ class Cache:
 
 # ---------------------------------------------------------------- one item
 def _judge(llm: GroqChat, category: str, request: str, context: str, reference: str, response: str) -> judge.Judgment:
+    """Up to JUDGE_ATTEMPTS calls. When Groq could not finish the JSON (JSONGenerationFailed, usually the token
+    limit), the next attempt gets twice the tokens."""
     last: Exception | None = None
+    max_tokens = JUDGE_MAX_TOKENS
     for _ in range(JUDGE_ATTEMPTS):
-        c = llm.complete(JUDGE_MODEL, judge.messages(category, request, context, reference, response),
-                         max_tokens=JUDGE_MAX_TOKENS, temperature=0.0, reasoning_effort=JUDGE_REASONING, json_mode=True)
+        try:
+            c = llm.complete(JUDGE_MODEL, judge.messages(category, request, context, reference, response),
+                             max_tokens=max_tokens, temperature=0.0, reasoning_effort=JUDGE_REASONING, json_mode=True)
+        except JSONGenerationFailed as e:
+            last, max_tokens = e, max_tokens * 2
+            continue
         try:
             return judge.parse(c.content, category)
         except ValueError as e:
@@ -220,7 +228,8 @@ def main() -> None:
             all_rows = load_rows(args.dataset)
             rows = select_rows([r for r in all_rows if r["split"] == args.split], args.per_category)
             print(f"Run {run_name}: {len(rows)} prompts x {len(args.variants)} variants on {args.split}")
-            stats = run(db, rows, GroqChat(), FeatureDetector(), run_name, dataset_version(args.dataset, all_rows),
+            llm = GroqChat(ledger=UsageLedger(), tag="evaluation")
+            stats = run(db, rows, llm, FeatureDetector(), run_name, dataset_version(args.dataset, all_rows),
                         cache, tuple(args.variants), args.max_tokens)
             print("Stats:", stats)
         text = summary(db, run_name, cache)

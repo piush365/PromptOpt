@@ -54,6 +54,49 @@ def _chat(client, **kw):
 
 
 # ---------------------------------------------------------------- Groq client
+def test_json_generation_failure_is_not_retried_unchanged():
+    from app.evaluation.llm import JSONGenerationFailed
+
+    err = _http_error(groq.BadRequestError, 400, "Error code: 400 - {'error': {'code': 'json_validate_failed', "
+                                                  "'failed_generation': 'max completion tokens reached'}}")
+    client = FakeClient([err, _response("never used", "m")])
+    llm, _ = _chat(client)
+    with pytest.raises(JSONGenerationFailed):
+        llm.complete("m", [{"role": "user", "content": "q"}], max_tokens=50, json_mode=True)
+    assert len(client.requests) == 1
+
+
+def test_judge_retries_with_more_tokens_after_json_failure():
+    from app.evaluation import run as run_mod
+
+    err = _http_error(groq.BadRequestError, 400, "json_validate_failed: max completion tokens reached")
+    good = _response('{"score": 8, "answers_correctly": true, "reason": "ok"}', run_mod.JUDGE_MODEL)
+    client = FakeClient([err, good])
+    llm, _ = _chat(client)
+    j = run_mod._judge(llm, "closed_qa", "q", "", "ref", "resp")
+    assert j.score == 8
+    assert [r["max_completion_tokens"] for r in client.requests] == [run_mod.JUDGE_MAX_TOKENS,
+                                                                      2 * run_mod.JUDGE_MAX_TOKENS]
+
+
+def test_successful_calls_are_recorded_in_the_usage_ledger(tmp_path):
+    from app.groq_budget import UsageLedger
+
+    ledger = UsageLedger(tmp_path / "usage.json", clock=lambda: "2026-09-26")
+    client = FakeClient([_http_error(groq.RateLimitError, 429, "Rate limit reached (RPM)", {"retry-after": "1"}),
+                         _response("hi", "m", prompt_tokens=30, completion_tokens=12)])
+    llm, _ = _chat(client, ledger=ledger, tag="evaluation")
+    llm.complete("m", [{"role": "user", "content": "q"}], max_tokens=50)
+    assert ledger.used("m", "evaluation") == {"requests": 1, "tokens": 42}      # the failed attempt is not counted
+
+    cached = _response("hi", "m", prompt_tokens=30, completion_tokens=12)
+    cached.usage.prompt_tokens_details = SimpleNamespace(cached_tokens=25)
+    llm2, _ = _chat(FakeClient([cached]), ledger=ledger, tag="generation")
+    c = llm2.complete("m", [{"role": "user", "content": "q"}], max_tokens=50)
+    assert c.cached_tokens == 25 and c.rate_limited_tokens == 17
+    assert ledger.used("m", "generation") == {"requests": 1, "tokens": 17}      # cached input is not rate-limited
+
+
 def test_rate_limit_waits_retry_after_then_succeeds():
     client = FakeClient([_http_error(groq.RateLimitError, 429, "Rate limit reached (RPM)", {"retry-after": "3"}),
                          _response("hi", "m")])
