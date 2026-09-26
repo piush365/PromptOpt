@@ -71,6 +71,12 @@ nowhere, and fixes dropped subjects with cached Groq edits (`regenerated.json`);
   tokens, cost, latency, judge score. Plus a history of past prompts (30-day retention).
 - Phase 2 (only after the core works): image-generation prompts (Nano Banana, DALL-E) as a sixth category.
 
+## Freeze for the final numbers
+Git tag `frozen-for-test` (2026-09-27) is the code Monday's test and benchmark runs use. From that tag until those
+runs are done: no Stage A/B rule, threshold or judge change. If a bug turns up, report it; do not fix it. Only data
+steps are allowed (merging ratings, dropping rejected rows, retraining the Stage A classifier's index on the final
+train split); pass the final dataset with `--dataset`/`DATASET_DIR`, not by editing code.
+
 ## Roadmap (strict order)
 Work only on the current step unless the user says otherwise. Development evaluation uses Groq models as stand-ins for
 the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
