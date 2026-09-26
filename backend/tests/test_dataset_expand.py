@@ -1,5 +1,6 @@
 """Dataset v1.2 expansion: cleaning, sampling, budgeted/resumable generation, quality checks, frozen splits."""
 import json
+import re
 from collections import Counter
 from types import SimpleNamespace
 
@@ -135,11 +136,15 @@ class FakeLLM:
                                total_tokens=400, reasoning_tokens=60, finish_reason="stop")
 
 
-def reply_all(messages, skip=()):
-    """A well-formed reply for every item in the request (except the numbers in `skip`)."""
-    n = messages[1]["content"].count("ITEM ")
-    return json.dumps({"items": [{"id": str(i), "degraded_prompt": f"deg {i}", "optimized_prompt": f"opt {i}"}
-                                 for i in range(1, n + 1) if i not in skip]})
+def ids_in(messages):
+    return re.findall(r"^ITEM ID: (\S+)$", messages[1]["content"], re.M)
+
+
+def reply_all(messages, skip=(), reverse=False):
+    """A well-formed reply for every item in the request (except positions in `skip`, 1-based), echoing each id."""
+    ids = [sid for i, sid in enumerate(ids_in(messages), start=1) if i not in skip]
+    items = [{"id": sid, "degraded_prompt": f"deg {sid}", "optimized_prompt": f"opt {sid}"} for sid in ids]
+    return json.dumps({"items": items[::-1] if reverse else items})
 
 
 def budget_for(led, **kw):
@@ -153,7 +158,8 @@ def test_messages_number_the_items_carry_the_data_rule_and_truncate_context():
     assert "copied verbatim" in msgs[0]["content"] and "Items: a, b, c" in msgs[0]["content"]
     assert '"items"' in msgs[0]["content"]
     user = msgs[1]["content"]
-    assert user.index("ITEM 1") < user.index("ITEM 2") and "No text/input." in user
+    assert ids_in(msgs) == ["dolly-1", "dolly-2"] and "No text/input." in user
+    assert "copied exactly" in msgs[0]["content"]
     assert user.count("c" * 1000) == 1 and "c" * 1001 not in user
 
 
@@ -169,16 +175,31 @@ def test_system_prompt_keeps_every_rule():
         assert rule in p, rule
 
 
-def test_parse_items():
-    got = x.parse_items('<think>hm</think>{"items": [{"id": "2", "degraded_prompt": "d2", "optimized_prompt": "o2"},'
-                        '{"id": "1", "degraded_prompt": "d1", "optimized_prompt": "o1"},'
-                        '{"id": "9", "degraded_prompt": "d9", "optimized_prompt": "o9"},'
-                        '{"id": "3", "degraded_prompt": "", "optimized_prompt": "o3"}]}', 3)
-    assert got == {1: ("d1", "o1"), 2: ("d2", "o2")}                 # out-of-range and empty items dropped
-    assert x.parse_items('{"degraded_prompt": "d", "optimized_prompt": "o"}', 1) == {1: ("d", "o")}
-    for bad in ("no json", '{"items": []}'):
+def test_parse_items_matches_by_source_id_only():
+    ids = ["dolly-1", "dolly-2", "dolly-3", "dolly-4"]
+    got = x.parse_items('<think>hm</think>{"items": ['
+                        '{"id": "dolly-2", "degraded_prompt": "d2", "optimized_prompt": "o2"},'
+                        '{"id": "dolly-1", "degraded_prompt": "d1", "optimized_prompt": "o1"},'
+                        '{"id": "dolly-99", "degraded_prompt": "d9", "optimized_prompt": "o9"},'
+                        '{"id": "2", "degraded_prompt": "dx", "optimized_prompt": "ox"},'
+                        '{"id": "dolly-3", "degraded_prompt": "", "optimized_prompt": "o3"},'
+                        '{"id": "dolly-4", "degraded_prompt": "a", "optimized_prompt": "b"},'
+                        '{"id": "dolly-4", "degraded_prompt": "c", "optimized_prompt": "d"}]}', ids)
+    # order in the reply does not matter; unknown ids, positions, empty and duplicated ids are dropped
+    assert got == {"dolly-1": ("d1", "o1"), "dolly-2": ("d2", "o2")}
+    assert x.parse_items('{"id": "dolly-1", "degraded_prompt": "d", "optimized_prompt": "o"}', ["dolly-1"]) == \
+        {"dolly-1": ("d", "o")}
+    for bad in ("no json", '{"items": []}', '{"items": [{"id": "1", "degraded_prompt": "d", "optimized_prompt": "o"}]}'):
         with pytest.raises(ValueError):
-            x.parse_items(bad, 2)
+            x.parse_items(bad, ids)
+
+
+def test_a_reply_in_another_order_is_not_swapped(tmp_path):
+    led = UsageLedger(tmp_path / "u.json", clock=lambda: 1_000_000.0)
+    ckpt = x.Checkpoint(tmp_path / "ck.jsonl")
+    x.generate([src(i) for i in range(5)], ckpt, FakeLLM([lambda m: reply_all(m, reverse=True)], led),
+               budget_for(led), log=lambda s: None, batch_size=5)
+    assert all(r["optimized_prompt"] == f"opt {sid}" and r["matched_by"] == "source_id" for sid, r in ckpt.done.items())
 
 
 def test_router_sends_cerebras_models_to_cerebras():
@@ -202,7 +223,7 @@ def test_generate_batches_checkpoints_rotates_and_resumes(tmp_path):
     stats = x.generate(sample, ckpt, llm, budget, max_calls=4, log=lambda s: None, batch_size=5)
     assert [c[0] for c in llm.calls] == ["cerebras/gpt-oss-120b", "cerebras/gpt-oss-120b",
                                          "openai/gpt-oss-120b", "openai/gpt-oss-120b"]
-    assert [c[1][1]["content"].count("ITEM ") for c in llm.calls] == [5, 5, 5, 3]      # 2 left + 1 retried
+    assert [len(ids_in(c[1])) for c in llm.calls] == [5, 5, 5, 3]      # 2 left + 1 retried
     assert stats["generated"] == 9 and stats["parse_failures"] == 1 and stats["stopped"].startswith("--max-calls")
     assert llm.calls[0][2]["max_tokens"] == x.max_tokens_for(5) and llm.calls[0][2]["json_mode"]
     rec = next(iter(ckpt.done.values()))
@@ -272,6 +293,11 @@ def test_generate_stops_at_the_budget(tmp_path):
                        FakeLLM([reply_all] * 20, led), budget, log=lambda s: None, batch_size=1)
     assert stats["by_model"]["cerebras/gpt-oss-120b"] == 1 and stats["generated"] == 7    # 1 + 2 per Groq model
     assert stats["stopped"] == "budget reached for every model"
+
+
+def test_generation_version():
+    assert x.generation_version({"batch": 5}) == "v1.2-batch5"
+    assert x.generation_version({}) == "v1.2-single" and x.generation_version({"batch": 1}) == "v1.2-single"
 
 
 def test_tokens_per_row_switches_to_measured(tmp_path):
@@ -345,6 +371,8 @@ def test_build_repairs_new_rows_and_keeps_v11(tmp_path):
     assert [r["id"] for r in res.rows[:len(v11)]] == [r["id"] for r in v11]
     (new,) = res.new_rows
     assert new["optimized_prompt"].endswith("Items: apple, carrot") and new["id"].startswith("PO-CLS-")
+    assert new["generation_version"] == "v1.2-single"
+    assert {r["generation_version"] for r in res.rows[:len(v11)]} == {"v1"}
     assert res.counts[("classification", "generated")] == 2 and res.counts[("classification", "auto_pass")] == 1
     assert res.counts[("classification", "added")] == 1
     assert res.repair_log and res.repair_log[0]["id"] == new["id"]

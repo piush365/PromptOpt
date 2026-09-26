@@ -91,7 +91,17 @@ FINAL_COLUMNS = [
     "has_context", "has_format_spec", "optimized_has_format_spec", "complexity_bucket",
     "instruction_word_count", "degraded_word_count", "optimized_word_count", "context_word_count",
     "response_word_count", "sim_degraded_vs_original", "sim_optimized_vs_original", "human_validated", "model",
+    "generation_version",
 ]
+# How a row was generated (docs/DATASET_CARD.md):
+#   v1            the Colab notebook's prompt, one row per call, on Groq (all v1.1 rows)
+#   v1.2-single   the v1.2 prompt (with the data rule), one row per call, on Groq (2026-09-26 morning)
+#   v1.2-batch5   the v1.2 prompt worded compactly, 5 rows per call, matched by source_id (Cerebras first)
+GENERATION_VERSIONS = ("v1", "v1.2-single", "v1.2-batch5")
+
+
+def generation_version(rec: dict[str, Any]) -> str:
+    return "v1.2-batch5" if rec.get("batch", 1) > 1 else "v1.2-single"
 
 
 # ---------------------------------------------------------------- helpers (notebook Step "Helper functions")
@@ -319,17 +329,18 @@ one-line reason).
 - coding: name the language (keep the stated one; else the one implied by the input; else Python), the expected \
 behaviour, inputs and outputs; ask for the code in a single code block.
 
-Return ONLY JSON: {"items": [{"id": "1", "degraded_prompt": "...", "optimized_prompt": "..."}]}, one entry per item, \
-with the item's id."""
+Return ONLY JSON: {"items": [{"id": "<the item's ID, copied exactly>", "degraded_prompt": "...", \
+"optimized_prompt": "..."}]}, one entry per item."""
 BATCH_SIZE = 5
 MAX_COMPLETION_TOKENS_PER_ITEM = 400      # visible JSON ~90 tokens per item plus shared reasoning (~130-300)
 
 
 def build_messages(rows: list[dict[str, Any]]) -> list[dict[str, str]]:
-    """One user message with the items numbered 1..n."""
+    """One user message with every item labelled by its source_id, which the reply must echo back."""
     blocks = []
-    for i, row in enumerate(rows, start=1):
-        parts = [f"ITEM {i}", f"CATEGORY: {row['category']}", f"CLEAN INSTRUCTION: {row['instruction']}"]
+    for row in rows:
+        parts = [f"ITEM ID: {row['source_id']}", f"CATEGORY: {row['category']}",
+                 f"CLEAN INSTRUCTION: {row['instruction']}"]
         if row["context"]:
             parts.append("TEXT/INPUT (for understanding only, may be truncated):\n" + row["context"][:MAX_CONTEXT_CHARS])
         else:
@@ -342,8 +353,10 @@ def max_tokens_for(n: int) -> int:
     return max(MAX_COMPLETION_TOKENS, MAX_COMPLETION_TOKENS_PER_ITEM * n + 300)
 
 
-def parse_items(content: str, n: int) -> dict[int, tuple[str, str]]:
-    """{item number: (degraded, optimized)} for the items the reply got right; raises ValueError if it is not JSON."""
+def parse_items(content: str, ids: list[str]) -> dict[str, tuple[str, str]]:
+    """{source_id: (degraded, optimized)} for the items the reply got right, matched ONLY by the id the reply echoes
+    back, never by position, so two rows of one call cannot be swapped. Unknown or duplicated ids are dropped.
+    Raises ValueError if the reply is not JSON or has no usable item."""
     content = re.sub(r"<think>.*?</think>", "", content or "", flags=re.DOTALL).strip()
     match = re.search(r"\{.*\}", content, re.DOTALL)
     try:
@@ -352,19 +365,19 @@ def parse_items(content: str, n: int) -> dict[int, tuple[str, str]]:
         raise ValueError(f"not JSON: {e}") from e
     items = data.get("items") if isinstance(data, dict) else None
     if items is None and isinstance(data, dict) and "degraded_prompt" in data:
-        items = [dict(data, id="1")]                      # a one-item reply without the list
-    out = {}
+        items = [data]                                    # a one-item reply without the list
+    wanted, seen, out = set(ids), Counter(), {}
+    for it in items or []:
+        if isinstance(it, dict):
+            seen[str(it.get("id", "")).strip()] += 1
     for it in items or []:
         if not isinstance(it, dict):
             continue
-        try:
-            k = int(str(it.get("id", "")).strip())
-        except ValueError:
-            continue
+        sid = str(it.get("id", "")).strip()
         d = str(it.get("degraded_prompt", "")).strip().strip('"')
         o = str(it.get("optimized_prompt", "")).strip().strip('"')
-        if 1 <= k <= n and d and o:
-            out[k] = (d, o)
+        if sid in wanted and seen[sid] == 1 and d and o:
+            out[sid] = (d, o)
     if not out:
         raise ValueError("no usable items")
     return out
@@ -516,7 +529,7 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
         try:
             c = llm.complete(model, build_messages(rows), max_tokens=max_tokens_for(len(rows)),
                              temperature=TEMPERATURE, reasoning_effort=reasoning_for(model), json_mode=True)
-            got = parse_items(c.content, len(rows))
+            got = parse_items(c.content, [r["source_id"] for r in rows])
         except (ValueError, JSONGenerationFailed):   # unusable JSON, from the model or the provider's JSON mode
             c, got = None, {}
             stats["parse_failures"] += 1
@@ -540,11 +553,12 @@ def generate(sample: list[dict[str, Any]], ckpt: Checkpoint, llm: Any, budget: B
             log("  usage: " + ", ".join(f"{k}={u[k]}" for k in ("items", "prompt_tokens", "cached_tokens",
                                                                 "completion_tokens", "reasoning_tokens")))
         share = c.total_tokens / len(got) if c is not None and got else 0
-        for k, row in enumerate(rows, start=1):
-            if k in got:
-                ckpt.add({"source_id": row["source_id"], "degraded_prompt": got[k][0], "optimized_prompt": got[k][1],
+        for row in rows:
+            sid = row["source_id"]
+            if sid in got:
+                ckpt.add({"source_id": sid, "degraded_prompt": got[sid][0], "optimized_prompt": got[sid][1],
                           "model": c.model if "/" in c.model else model, "tokens": round(share),
-                          "cached_tokens": c.cached_tokens, "batch": len(rows)})
+                          "cached_tokens": c.cached_tokens, "batch": len(rows), "matched_by": "source_id"})
                 stats["generated"] += 1
                 stats["by_model"][model] += 1
             else:
@@ -600,7 +614,8 @@ def quality_flags(row: dict[str, Any], sim_deg: float, sim_opt: float) -> dict[s
 def generated_rows(sample: list[dict[str, Any]], ckpt: Checkpoint,
                    embed: Callable[[list[str]], Any]) -> list[dict[str, Any]]:
     """Sample rows that have a generated pair, with similarity scores and quality flags."""
-    rows = [dict(r, **{k: ckpt.done[r["source_id"]][k] for k in ("degraded_prompt", "optimized_prompt", "model")})
+    rows = [dict(r, **{k: ckpt.done[r["source_id"]][k] for k in ("degraded_prompt", "optimized_prompt", "model")},
+                 generation_version=generation_version(ckpt.done[r["source_id"]]))
             for r in sample if r["source_id"] in ckpt.done]
     if not rows:
         return []
@@ -627,7 +642,7 @@ def to_dataset_row(r: dict[str, Any]) -> dict[str, str]:
            "context_word_count": str(r["context_word_count"]), "response_word_count": str(r["response_word_count"]),
            "sim_degraded_vs_original": str(r["sim_degraded_vs_original"]),
            "sim_optimized_vs_original": str(r["sim_optimized_vs_original"]), "human_validated": "False",
-           "model": r["model"]}
+           "model": r["model"], "generation_version": r.get("generation_version", "v1.2-single")}
     return out
 
 
@@ -703,7 +718,8 @@ def build(v11: list[dict[str, str]], generated: list[dict[str, Any]], nlp: Any =
     for r in new:
         res.counts[(r["category"], "added")] += 1
     res.new_rows = new
-    res.rows = [dict(r) for r in v11] + sorted(new, key=lambda r: r["id"])
+    res.rows = [dict(r, generation_version=r.get("generation_version") or "v1") for r in v11] + \
+        sorted(new, key=lambda r: r["id"])
     return res
 
 
@@ -731,7 +747,9 @@ def report_text(res: BuildResult) -> str:
         n = Counter(r["split"] for r in res.rows if r["category"] == c)
         lines.append(f"| {c} | " + " | ".join(str(n[s]) for s in splits) + f" | {sum(n.values())} |")
     models = Counter(r["model"] for r in res.new_rows)
-    lines += ["", "New rows per generating model: " + ", ".join(f"{m} {n}" for m, n in models.most_common())]
+    versions = Counter(r["generation_version"] for r in res.rows)
+    lines += ["", "New rows per generating model: " + ", ".join(f"{m} {n}" for m, n in models.most_common()),
+              "All rows per generation_version: " + ", ".join(f"{v} {versions[v]}" for v in GENERATION_VERSIONS)]
     return "\n".join(lines) + "\n"
 
 
