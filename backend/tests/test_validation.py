@@ -244,10 +244,14 @@ def test_agreement_and_report(tmp_path):
     sheets[C][0] = answer(rows[0], "N")
     n, stats = v.agreement(sheets)
     assert n == len(rows)
-    kappa, raw = stats["Q1_degraded_same_task"]
-    assert raw == pytest.approx((len(rows) - 1) / len(rows))
+    st = stats["Q1_degraded_same_task"]
+    assert st["raw"] == pytest.approx((len(rows) - 1) / len(rows))
+    assert st["prevalence"] == pytest.approx(1 - 1 / (3 * len(rows)))
+    assert st["pabak"] == pytest.approx(2 * st["pairwise"] - 1)
+    assert st["ac1"] > st["kappa"]                                    # high prevalence: the kappa paradox
     text = v.report_text(sheets)
     assert "Fleiss" in text and f"Validated records: **{len(rows)}**" in text
+    assert "Gwet's AC1" in text and "PABAK" in text and "Kappa paradox" in text and "Acceptance rule" in text
 
 
 def test_invalid_answer_is_reported(tmp_path):
@@ -281,11 +285,12 @@ def test_faculty_agreement_against_team_majority():
 
     n, stats = v.faculty_agreement(sheets)
     assert n == 4
-    assert stats["Q1_degraded_same_task"][1] == 1.0
-    assert stats["Q2_degraded_realistic"] == (pytest.approx(1.0), 1.0)
-    k4, pa4 = stats["Q4_optimized_better"]
-    assert pa4 == 0.75 and k4 == pytest.approx(0.0)                     # team always Y: no better than chance
-    assert stats["accept"][1] == pytest.approx(0.75)                    # record 2: faculty reject, team accept
+    assert stats["Q1_degraded_same_task"]["raw"] == 1.0
+    assert (stats["Q2_degraded_realistic"]["kappa"], stats["Q2_degraded_realistic"]["raw"]) == (pytest.approx(1.0), 1.0)
+    q4 = stats["Q4_optimized_better"]
+    assert q4["raw"] == 0.75 and q4["kappa"] == pytest.approx(0.0)       # team always Y: no better than chance
+    assert q4["pabak"] == pytest.approx(0.5) and q4["prevalence"] == pytest.approx(7 / 8)
+    assert stats["accept"]["raw"] == pytest.approx(0.75)                # record 2: faculty reject, team accept
 
     text = v.report_text(sheets)
     assert "Faculty check" in text and "4 of 6 faculty records" in text and "Cohen's kappa" in text
@@ -318,3 +323,37 @@ def test_recent_v12_rows_are_dealt_per_category_and_kept_frozen(tmp_path):
 
 def test_no_recent_rows_without_generation_version():
     assert all(ids == [] for ids in v.assign(make_rows(100), TEAM, recent_per_rater=20).recent.values())
+
+
+def test_gwet_ac1_and_pabak_two_raters():
+    # 50 items, 20 YY, 15 disagreements, 15 NN: p_a 0.7, share of Y 0.55 -> p_e 0.495
+    table = [[2, 0]] * 20 + [[1, 1]] * 15 + [[0, 2]] * 15
+    assert v.gwet_ac1(table) == pytest.approx((0.7 - 0.495) / 0.505)
+    assert v.pabak(table) == pytest.approx(0.4)
+    assert math.isnan(v.gwet_ac1([])) and math.isnan(v.pabak([]))
+
+
+def test_ac1_stays_high_when_kappa_collapses():
+    table = [[3, 0]] * 29 + [[2, 1]]                                    # 3 raters, one dissent in 30 records
+    assert v.fleiss_kappa(table) < 0.05
+    assert v.gwet_ac1(table) > 0.95 and v.pabak(table) > 0.9
+    with pytest.raises(ValueError):
+        v.gwet_ac1([[2, 0], [1, 1, 1]])
+
+
+def test_merge_drops_rejected_and_auto_filtered_rows_separately(tmp_path):
+    rows = make_rows(1)                                                  # 5 records
+    ids = [r["source_id"] for r in rows]
+    final = {ids[0]: {"validation_accept": "True", "validated_by": A},
+             ids[1]: {"validation_accept": "False", "validated_by": B}}
+    kept, dropped = v.merge_rows(rows, final, drop_rejected=True, auto_filter={ids[2]: "leaks_answer: x"})
+    assert [r["source_id"] for r in kept] == [ids[0], ids[3], ids[4]]   # unrated rows stay
+    assert kept[0]["human_validated"] == "True" and kept[1]["human_validated"] == "False"
+    assert {d["source_id"]: d["dropped_by"] for d in dropped} == {
+        ids[1]: "human: rejected", ids[2]: "automatic LLM-assisted filter (not human)"}
+    kept, _ = v.merge_rows(rows, final, accepted_only=True)
+    assert [r["source_id"] for r in kept] == [ids[0]]
+
+    f = tmp_path / "filter.csv"
+    f.write_text("source_id,decision,reason_code,reason\na,remove,leaks_answer,states it\nb,keep,added_format,ok\n")
+    assert v.read_auto_filter(f) == {"a": "leaks_answer: states it"}

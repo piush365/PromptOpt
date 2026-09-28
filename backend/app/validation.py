@@ -10,6 +10,7 @@ of the dataset is not human-rated and relies on the automatic checks.
     python -m app.validation assign                                    # create / update the sheets
     python -m app.validation report                                    # progress, Fleiss' Kappa, faculty check
     python -m app.validation merge                                     # write the validated dataset
+    python -m app.validation merge --drop-rejected --auto-filter F     # ... without rejected / auto-filtered rows
 
 Everything is keyed on `source_id` (the row number in the original Dolly-15k / CodeAlpaca-20k download), which
 stays the same when the notebook rebuilds the dataset; the dataset's `id` column is renumbered on every rebuild and
@@ -403,8 +404,44 @@ def team_sheets(sheets: dict[str, list[dict[str, str]]]) -> dict[str, list[dict[
     return {name: rows for name, rows in sheets.items() if name != FACULTY_SHEET}
 
 
-def agreement(sheets: dict[str, list[dict[str, str]]]) -> tuple[int, dict[str, tuple[float, float]]]:
-    """Fleiss' Kappa and raw percent agreement per question, over records rated completely by the whole team."""
+def gwet_ac1(counts: list[list[int]]) -> float:
+    """Gwet's AC1 for two categories, any number (>= 2) of raters. counts[i] = [number of Y, number of N] for item i.
+
+    Chance agreement is 2 * pi * (1 - pi), pi = overall share of Y, so AC1 stays meaningful when almost every answer
+    is the same (where kappa collapses: the kappa paradox). NaN only for no items."""
+    if not counts:
+        return math.nan
+    n = sum(counts[0])
+    if n < 2 or any(sum(r) != n for r in counts):
+        raise ValueError("every item needs the same number (>= 2) of ratings")
+    p_a = sum((sum(c * c for c in r) - n) / (n * (n - 1)) for r in counts) / len(counts)
+    pi = sum(r[0] for r in counts) / (len(counts) * n)
+    p_e = 2 * pi * (1 - pi)
+    return (p_a - p_e) / (1 - p_e)
+
+
+def pabak(counts: list[list[int]]) -> float:
+    """Prevalence- and bias-adjusted kappa for two categories: 2 * p_a - 1, p_a = mean pairwise agreement."""
+    if not counts:
+        return math.nan
+    n = sum(counts[0])
+    return 2 * sum((sum(c * c for c in r) - n) / (n * (n - 1)) for r in counts) / len(counts) - 1
+
+
+def agreement_stats(table: list[list[int]]) -> dict[str, float]:
+    """Every agreement statistic for one question. table[i] = [number of Y, number of N] for item i."""
+    if not table:
+        return {k: math.nan for k in ("kappa", "ac1", "pabak", "raw", "pairwise", "prevalence")}
+    n = sum(table[0])
+    return {"kappa": fleiss_kappa(table), "ac1": gwet_ac1(table), "pabak": pabak(table),
+            "raw": sum(1 for y, no in table if y == 0 or no == 0) / len(table),
+            "pairwise": (pabak(table) + 1) / 2,
+            "prevalence": sum(y for y, _ in table) / (len(table) * n)}
+
+
+def agreement(sheets: dict[str, list[dict[str, str]]]) -> tuple[int, dict[str, dict[str, float]]]:
+    """Per question, over records rated completely by the whole team: Fleiss' Kappa, Gwet's AC1, PABAK, raw agreement
+    (share of records where every rater agrees), mean pairwise agreement and prevalence (share of Y answers)."""
     ratings = defaultdict(dict)
     team = team_sheets(sheets)
     for rater, rows in team.items():
@@ -418,14 +455,13 @@ def agreement(sheets: dict[str, list[dict[str, str]]]) -> tuple[int, dict[str, t
         for by in shared:
             vals = [_accept(r) if q == "accept" else r[q] for r in by.values()]
             table.append([vals.count("Y"), vals.count("N")])
-        agree = sum(1 for y, n in table if y == 0 or n == 0) / len(table) if table else math.nan
-        out[q] = (fleiss_kappa(table) if table else math.nan, agree)
+        out[q] = agreement_stats(table)
     return len(shared), out
 
 
-def faculty_agreement(sheets: dict[str, list[dict[str, str]]]) -> tuple[int, dict[str, tuple[float, float]]]:
-    """Faculty vs the team's majority vote, per question: (Cohen's Kappa, percent agreement), over the faculty
-    records that the faculty completed and the team resolved (see `resolve`)."""
+def faculty_agreement(sheets: dict[str, list[dict[str, str]]]) -> tuple[int, dict[str, dict[str, float]]]:
+    """Faculty vs the team's majority vote, per question: Cohen's Kappa, Gwet's AC1, PABAK, percent agreement and the
+    prevalence of Y (over both), over the faculty records that the faculty completed and the team resolved."""
     majority = resolve(team_sheets(sheets))
     faculty = [r for r in sheets.get(FACULTY_SHEET, []) if _complete(r) and r["source_id"] in majority]
     out = {}
@@ -435,8 +471,9 @@ def faculty_agreement(sheets: dict[str, list[dict[str, str]]]) -> tuple[int, dic
                      for r in faculty]
         else:
             pairs = [(r[q], majority[r["source_id"]][q]) for r in faculty]
-        agree = sum(a == b for a, b in pairs) / len(pairs) if pairs else math.nan
-        out[q] = (cohen_kappa(pairs), agree)
+        stats = agreement_stats([[(a == "Y") + (b == "Y"), (a == "N") + (b == "N")] for a, b in pairs])
+        stats["kappa"] = cohen_kappa(pairs)
+        out[q] = stats
     return len(faculty), out
 
 
@@ -501,6 +538,29 @@ def wanted_sheets(a: Assignment) -> list[str]:
     return [FACULTY_SHEET, *a.single]
 
 
+KAPPA_PARADOX_NOTE = (
+    "**Kappa paradox.** Kappa subtracts the agreement expected by chance, which is computed from how often each answer "
+    "is used. When almost every answer is Y (high prevalence), chance agreement is already close to 1, so kappa is "
+    "low or even negative although the raters agree on nearly every record, and it is undefined (n/a) when one side "
+    "only ever answers Y. Gwet's AC1 and PABAK (prevalence- and bias-adjusted kappa, 2 x agreement - 1) do not "
+    "collapse this way, so all of them are reported together with the raw agreement and the prevalence (% Y).")
+ACCEPTANCE_RULE = (
+    "Overlap records (rated by the whole team) are decided per question by majority vote (at least 2 of 3 matching "
+    "answers); a record is accepted only if the majority answer is Y on all five questions. Extra and v1.2 records "
+    "(one team member each) take that rater's answers: accepted only if all five are Y. The faculty sheet is an "
+    "independent check and never decides a record.")
+
+
+def _stats_table(stats: dict[str, dict[str, float]], kappa_name: str, raw_name: str) -> list[str]:
+    f = lambda x: "n/a" if math.isnan(x) else f"{x:.3f}"  # noqa: E731
+    lines = [f"| question | % Y (prevalence) | {raw_name} | {kappa_name} | interpretation | Gwet's AC1 | PABAK |",
+             "|---|---|---|---|---|---|---|"]
+    for q, st in stats.items():
+        lines.append(f"| {q} | {100 * st['prevalence']:.1f}% | {100 * st['raw']:.1f}% | {f(st['kappa'])} | "
+                     f"{interpret_kappa(st['kappa'])} | {f(st['ac1'])} | {f(st['pabak'])} |")
+    return lines
+
+
 def report_text(sheets: dict[str, list[dict[str, str]]]) -> str:
     lines = ["# Dataset validation report", "", "| sheet | rows | completed | accepted |", "|---|---|---|---|"]
     for name, rows in sheets.items():
@@ -510,14 +570,9 @@ def report_text(sheets: dict[str, list[dict[str, str]]]) -> str:
     n, stats = agreement(sheets)
     team_sets = [{r["source_id"] for r in rows} for rows in team_sheets(sheets).values()]
     n_overlap = len(set.intersection(*team_sets)) if len(team_sets) >= 2 else 0
-    lines += ["", f"## Inter-rater agreement (Fleiss' Kappa, {n} of {n_overlap} overlap records rated by the whole "
-                  f"team)", ""]
+    lines += ["", f"## Inter-rater agreement ({n} of {n_overlap} overlap records rated by the whole team)", ""]
     if n:
-        lines += ["| question | kappa | interpretation | raw agreement |", "|---|---|---|---|"]
-        for q, (k, pa) in stats.items():
-            lines.append(f"| {q} | {'n/a' if math.isnan(k) else f'{k:.3f}'} | {interpret_kappa(k)} | {100 * pa:.1f}% |")
-        lines += ["", "When almost every answer is Y, kappa can be low even with high raw agreement "
-                      "(the kappa paradox); report both."]
+        lines += _stats_table(stats, "Fleiss' kappa", "raw agreement (all agree)")
     else:
         lines.append("No overlap record has been completed by the whole team yet.")
     n_fac, fac = faculty_agreement(sheets)
@@ -525,12 +580,13 @@ def report_text(sheets: dict[str, list[dict[str, str]]]) -> str:
     lines += ["", f"## Faculty check (faculty vs the team's majority vote, {n_fac} of {n_fac_rows} faculty records "
                   f"compared)", ""]
     if n_fac:
-        lines += ["| question | percent agreement | Cohen's kappa | interpretation |", "|---|---|---|---|"]
-        for q, (k, pa) in fac.items():
-            lines.append(f"| {q} | {100 * pa:.1f}% | {'n/a' if math.isnan(k) else f'{k:.3f}'} | {interpret_kappa(k)} |")
+        lines += _stats_table(fac, "Cohen's kappa", "percent agreement")
         lines += ["", "An independent check on the team's ratings: the faculty answers do not change any record."]
     else:
         lines.append("No faculty record is both completed by the faculty and resolved by the team yet.")
+    if n or n_fac:
+        lines += ["", KAPPA_PARADOX_NOTE]
+    lines += ["", "## Acceptance rule", "", ACCEPTANCE_RULE]
     final = resolve(sheets)
     accepted = sum(v["validation_accept"] == "True" for v in final.values())
     lines += ["", "## Result", "", f"Validated records: **{len(final)}**, accepted: **{accepted}**. Records nobody rated rely on the "
@@ -551,22 +607,67 @@ def cmd_report(args) -> None:
     (args.sheets / "validation_report.md").write_text(text, encoding="utf-8")
 
 
-def cmd_merge(args) -> None:
-    final = resolve(load_all(args.sheets))
-    rows = load_rows(args.dataset)
-    cols = list(rows[0]) + QCOLS + ["validation_accept", "validated_by", "validator_notes"]
-    out_rows = []
+def read_auto_filter(path: Path) -> dict[str, str]:
+    """source_id -> reason for the rows an automatic filter removes (`decision == remove`). The file is written by the
+    LLM-assisted filter (data/validation/llm_rater/llm_filter.csv); rows with any other decision are kept."""
+    with open(path, encoding="utf-8", newline="") as f:
+        return {r["source_id"]: f"{r['reason_code']}: {r['reason']}" for r in csv.DictReader(f)
+                if r["decision"] == "remove"}
+
+
+def merge_rows(rows: list[dict[str, str]], final: dict[str, dict[str, str]], drop_rejected: bool = False,
+               accepted_only: bool = False, auto_filter: dict[str, str] | None = None
+               ) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    """The dataset with validation columns, and the rows left out with why.
+
+    drop_rejected: leave out rows the team rejected (rows nobody rated stay). accepted_only: keep only rows the team
+    accepted. auto_filter: source_id -> reason, rows removed by an automatic (not human) filter, applied after the
+    human decision and logged separately."""
+    auto_filter = auto_filter or {}
+    kept, dropped = [], []
     for r in rows:
         v = final.get(r["source_id"])
         r = dict(r, human_validated=str(v is not None), **(v or {}))
-        if not args.accepted_only or (v and v["validation_accept"] == "True"):
-            out_rows.append(r)
+        accepted = v is not None and v["validation_accept"] == "True"
+        if (drop_rejected and v is not None and not accepted) or (accepted_only and not accepted):
+            why = "human: rejected" if v is not None else "human: not rated (--accepted-only)"
+            dropped.append({"source_id": r["source_id"], "split": r["split"], "category": r["category"],
+                            "dropped_by": why, "reason": f"validated by {v['validated_by']}" if v else ""})
+        elif r["source_id"] in auto_filter:
+            dropped.append({"source_id": r["source_id"], "split": r["split"], "category": r["category"],
+                            "dropped_by": "automatic LLM-assisted filter (not human)",
+                            "reason": auto_filter[r["source_id"]]})
+        else:
+            kept.append(r)
+    return kept, dropped
+
+
+def cmd_merge(args) -> None:
+    final = resolve(load_all(args.sheets))
+    rows = load_rows(args.dataset)
+    auto = read_auto_filter(args.auto_filter) if args.auto_filter else {}
+    missing = sorted(set(auto) - {r["source_id"] for r in rows})
+    if missing:
+        raise SystemExit(f"auto-filter rows not in the dataset: {', '.join(missing)}")
+    out_rows, dropped = merge_rows(rows, final, args.drop_rejected, args.accepted_only, auto)
+    cols = list(rows[0]) + [c for c in ["human_validated"] + QCOLS + ["validation_accept", "validated_by",
+                                                                     "validator_notes"] if c not in rows[0]]
+    args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()
         w.writerows(out_rows)
+    log = args.out.with_name("merge_log.csv")
+    with open(log, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=["source_id", "split", "category", "dropped_by", "reason"])
+        w.writeheader()
+        w.writerows(dropped)
     print(f"Wrote {len(out_rows)} rows to {args.out} ({len(final)} validated, "
-          f"{sum(v['validation_accept'] == 'True' for v in final.values())} accepted)")
+          f"{sum(v['validation_accept'] == 'True' for v in final.values())} accepted); "
+          f"{len(dropped)} left out, listed in {log}")
+    counts = Counter((d["dropped_by"], d["split"], d["category"]) for d in dropped)
+    for (by, split, cat), k in sorted(counts.items()):
+        print(f"  {by:<45} {split:<10} {cat:<24} {k}")
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -589,7 +690,12 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("report", help="progress, Fleiss' Kappa and the faculty check").set_defaults(func=cmd_report)
     p = sub.add_parser("merge", help="write the dataset with validation columns")
     p.add_argument("--out", type=Path, default=DATASET_DIR / "promptopt_dataset_v1_1_validated.csv")
-    p.add_argument("--accepted-only", action="store_true")
+    p.add_argument("--accepted-only", action="store_true", help="keep only rows the team accepted")
+    p.add_argument("--drop-rejected", action="store_true",
+                   help="leave out rows the team rejected; rows nobody rated stay")
+    p.add_argument("--auto-filter", type=Path,
+                   help="CSV (source_id, decision, reason_code, reason) of an automatic, non-human filter; rows with "
+                        "decision 'remove' are left out and logged separately")
     p.set_defaults(func=cmd_merge)
     args = ap.parse_args(argv)
     args.func(args)

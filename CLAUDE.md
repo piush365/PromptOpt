@@ -83,13 +83,13 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 
 | # | Step | Status |
 |---|------|--------|
-| 1 | Dataset v1.1 repair, then send rater sheets | **CURRENT**: v1.1 repair done (2,256 rows); sheets generated for the team (3 x 150) and faculty (20), not sent yet |
-| 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. `DATASET_DIR` stays v1.1 until the ratings are merged |
+| 1 | Dataset v1.1 repair, then send rater sheets | Done: team 3 x 170 and faculty 20 rated; 295 of 330 accepted; v1.2 final = 5,184 rows (35 human-rejected + 9 LLM-assisted-filter rows left out); `evaluation/REVIEW_SUMMARY.md` |
+| 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. `DATASET_DIR` now points at `data/promptopt_dataset_v1_2_final/`; pass `--dataset .../promptopt_dataset_v1_2_final.csv` explicitly (dataset_io still expects the v1_1 file name) |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Not started |
-| 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Not started |
+| 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | **CURRENT**: Stage A retrained on final train; test split run once offline (Stage A 74.7%, macro-F1 0.746; Stage C 6.4%); benchmark LLM eval running (Cerebras target, Groq judge). Ablation not started |
 | 8 | FastAPI + React app with history | Not started |
 | 9 | Phase 2: image generation | Not started |
 

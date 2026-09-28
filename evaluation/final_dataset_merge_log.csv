@@ -1,0 +1,45 @@
+source_id,split,category,dropped_by,reason
+dolly-8124,test,classification,human: rejected,validated by Siddhi_Bolaikar
+dolly-5433,test,classification,human: rejected,validated by Siddhi_Bolaikar
+dolly-1485,benchmark,classification,human: rejected,validated by Piush_Gogi
+dolly-612,benchmark,classification,human: rejected,validated by Nirzara_Manade
+dolly-3291,train,closed_qa,automatic LLM-assisted filter (not human),"impossible_constraint: ""no more than three words"" cannot hold the answer (green or reddish leaves; white, yellow or red stalks)"
+dolly-4384,train,closed_qa,automatic LLM-assisted filter (not human),"impossible_constraint: ""a single number"" cannot express the text's ""more than 60"""
+dolly-1950,val,closed_qa,human: rejected,validated by Nirzara_Manade+Piush_Gogi+Siddhi_Bolaikar
+dolly-13771,test,closed_qa,human: rejected,validated by Nirzara_Manade+Piush_Gogi+Siddhi_Bolaikar
+codealpaca-532,test,coding,human: rejected,validated by Siddhi_Bolaikar
+codealpaca-19294,test,coding,human: rejected,validated by Siddhi_Bolaikar
+dolly-4755,test,information_extraction,human: rejected,validated by Nirzara_Manade
+dolly-5652,test,information_extraction,human: rejected,validated by Nirzara_Manade
+dolly-14769,test,information_extraction,human: rejected,validated by Siddhi_Bolaikar
+dolly-6903,test,information_extraction,human: rejected,validated by Siddhi_Bolaikar
+dolly-12914,test,information_extraction,automatic LLM-assisted filter (not human),"changes_task: ""What is Colour the World"" asks about a song; the prompt asks for ""the colour mentioned"" instead"
+dolly-9245,train,summarization,automatic LLM-assisted filter (not human),changes_task: asks for the counts of regions/provinces/prefectures; the question and reference list the regions
+dolly-3986,train,summarization,automatic LLM-assisted filter (not human),"leaks_answer: lists the answer's content in the prompt (quarterly review, ranking criteria, selection limits)"
+dolly-8748,train,summarization,automatic LLM-assisted filter (not human),"adds_facts: asserts a shift ""from children to broader demographics""; the text and reference say the target stayed children"
+dolly-257,train,summarization,automatic LLM-assisted filter (not human),"leaks_answer: states the answer in the prompt (""the lack of a permanent cure"", ""genetic factors"")"
+dolly-7569,train,summarization,automatic LLM-assisted filter (not human),"leaks_answer: states the answer in the prompt (restricts water flow, supports other species)"
+dolly-6284,test,summarization,human: rejected,validated by Piush_Gogi
+dolly-10268,test,summarization,human: rejected,validated by Siddhi_Bolaikar
+dolly-4537,test,summarization,human: rejected,validated by Nirzara_Manade
+dolly-11318,test,summarization,human: rejected,validated by Piush_Gogi
+dolly-4205,test,summarization,automatic LLM-assisted filter (not human),"adds_facts: requires ""historical relevance"", which the text does not cover, and dictates the answer's points (geology, visual impact)"
+dolly-11960,test,summarization,human: rejected,validated by Nirzara_Manade
+dolly-6232,test,summarization,human: rejected,validated by Siddhi_Bolaikar
+dolly-6138,benchmark,summarization,human: rejected,validated by Nirzara_Manade
+dolly-12619,benchmark,summarization,human: rejected,validated by Piush_Gogi
+dolly-14781,benchmark,summarization,human: rejected,validated by Piush_Gogi
+dolly-9860,benchmark,summarization,human: rejected,validated by Nirzara_Manade
+dolly-14869,train,classification,human: rejected,validated by Nirzara_Manade
+dolly-9555,train,classification,human: rejected,validated by Nirzara_Manade
+codealpaca-10120,train,coding,human: rejected,validated by Siddhi_Bolaikar
+codealpaca-1422,train,coding,human: rejected,validated by Siddhi_Bolaikar
+codealpaca-16431,train,coding,human: rejected,validated by Nirzara_Manade
+codealpaca-3486,train,coding,human: rejected,validated by Nirzara_Manade
+dolly-10764,train,information_extraction,human: rejected,validated by Piush_Gogi
+dolly-6412,train,information_extraction,human: rejected,validated by Nirzara_Manade
+dolly-3075,test,information_extraction,human: rejected,validated by Piush_Gogi
+dolly-9718,test,information_extraction,human: rejected,validated by Siddhi_Bolaikar
+dolly-4462,train,summarization,human: rejected,validated by Piush_Gogi
+dolly-6348,train,summarization,human: rejected,validated by Siddhi_Bolaikar
+dolly-9850,train,summarization,human: rejected,validated by Nirzara_Manade

@@ -14,6 +14,11 @@ The dataset lives on Google Drive and in `data/` (git-ignored); it is never stor
 | v1 | 2,265 | first build: sampling, generation, automatic checks, splits | Colab notebook `PromptOpt_Dataset_Preparation_v2.ipynb` |
 | v1.1 | 2,256 | data dropped from the instruction put back (349 optimized + 20 degraded prompts repaired, 75 dropped subjects restored, 9 rows without source data removed); see `docs/dataset_v1_1_repair_log.csv` | `backend/app/dataset_repair.py` |
 | v1.2 | 5,228 (1,009-1,093 per category) | v1.1 unchanged, plus 2,972 new rows from never-used source rows | `backend/app/dataset_expand.py` |
+| **v1.2 final** | **5,184** | v1.2 minus 35 rows the team rejected and 9 rows removed by an automatic LLM-assisted filter (not human); adds the validation columns. The dataset used for the final numbers | `python -m app.validation merge --drop-rejected --auto-filter ...` |
+
+The final dataset is `data/promptopt_dataset_v1_2_final/promptopt_dataset_v1_2_final.csv` (every left-out row with
+its reason: `merge_log.csv` next to it). `DATASET_DIR` points at that folder, but `app.dataset_io` still looks for a
+file named `promptopt_dataset_v1_1.csv` there, so every command is given `--dataset <that csv>` explicitly.
 
 ## How the rows were generated (`generation_version`)
 
@@ -73,6 +78,20 @@ no instruction appears in two splits (summarization has 101 test rows because a 
 copy). In information_extraction 6 of the 49 test rows before the enlargement came from the leakage guard (new rows
 repeating a v1.1 test instruction).
 
+**Splits (v1.2 final)**, after the human rejections and the LLM-assisted filter
+
+| category | train | val | test | benchmark | total |
+|---|---|---|---|---|---|
+| closed_qa | 951 | 29 | 99 | 10 | 1,089 |
+| information_extraction | 867 | 30 | 93 | 10 | 1,000 |
+| classification | 906 | 30 | 98 | 8 | 1,042 |
+| summarization | 920 | 30 | 94 | 6 | 1,050 |
+| coding | 865 | 30 | 98 | 10 | 1,003 |
+| **all** | 4,509 | 149 | 482 | 44 | 5,184 |
+
+The benchmark lost 6 rows to human rejections (summarization is down to 6, classification to 8); the per-category
+benchmark numbers for those two rest on fewer items.
+
 ## Pipeline (v1.2 rows)
 
 1. **Sources and cleaning** (as the notebook): 4 Dolly categories; no empty rows; no duplicate
@@ -104,15 +123,38 @@ repeating a v1.1 test instruction).
 
 ## Human validation
 
-Three team members rate 90 shared rows (18 per category, Fleiss' Kappa) plus 60 rows each; the faculty rate 20 of
-the shared rows as an independent check (percent agreement and Cohen's kappa against the team's majority).
-See `docs/validation_guide.md`.
+Three team members rated 90 shared rows (18 per category) plus 60 extra and 20 v1.2 rows each (330 distinct rows);
+the faculty rated 20 of the shared rows as an independent check. See `docs/validation_guide.md` and
+`evaluation/REVIEW_SUMMARY.md` for the agreement statistics (Fleiss' Kappa, Gwet's AC1, PABAK, raw agreement,
+prevalence).
+
+Decision rule: shared rows by majority vote per question (2 of 3), accepted only if the majority says Y on all five
+questions; the other rows by their single rater (all five Y). The faculty never decide a row. Result: 330 rows
+validated, 295 accepted, 35 rejected and left out. Rows nobody rated (4,898) stay and rely on the automatic checks;
+`human_validated` says which is which.
+
+## LLM-assisted filter (automatic, not human)
+
+After the team finished, an LLM rater (Claude, `claude-opus-5-5`) rated the 90 shared rows with the same five
+questions, strictly, without seeing the human answers (prompt, inputs and outputs in
+`data/validation/llm_rater/`). It never counts in the agreement statistics and never overrides a human answer. Of
+the 26 shared rows where it answered N on Q3 (optimized prompt keeps the task), only those where the optimized
+prompt adds facts, leaks the answer, sets an impossible constraint or changes the task were removed; an added
+output format or length was not a reason. 10 rows were flagged (`llm_filter.csv`), 1 of them (dolly-1950) was
+already rejected by the team, so the filter removed **9 rows** (7 train, 2 test). Its Q2 and Q5 disagreements
+removed nothing; they are listed as limitations below.
 
 ## Known limitations
 
 - Two prompt generations (v1 and v1.2) and three generation setups; compare results by `generation_version` where
   it matters.
-- Dolly's category labels are noisy (many summarization / information_extraction rows are plain questions).
+- Dolly's category labels are noisy (many summarization / information_extraction rows are plain questions). The
+  LLM rater called the label debatable on 23 of the 90 shared rows (the team accepted all of them); nothing was
+  removed for this.
+- Many Dolly degraded prompts are near-verbatim copies of the original question (the question was already short and
+  vague). The LLM rater flagged 19 of the 90 shared rows on Q2 for this (the team accepted them); nothing was removed.
+- The LLM-assisted filter looked only at the 90 shared rows; the same kinds of Q3 problems (answer leaked into the
+  prompt, impossible length limits) are likely present at a similar rate in rows nobody rated.
 - Some CodeAlpaca reference answers are wrong (e.g. `codealpaca-16240`: the "equal-sum" split it prints sums to 10
   and 18); task success on coding must not trust the reference blindly.
 - Summarization is close to its source limit: v1.2 uses every unused Dolly summarization row.
