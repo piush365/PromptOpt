@@ -40,9 +40,11 @@ closed_qa, information_extraction, classification, summarization (from Dolly-15k
 PromptOpt Dataset v1 is built in Colab (`PromptOpt_Dataset_Preparation_v2.ipynb`) and saved to Google Drive
 (`MyDrive/PromptOpt/promptopt_dataset_v1`): degraded_prompt -> optimized_prompt pairs, splits train/val/test/benchmark,
 no instruction shared across splits. The dataset is NOT stored in the database.
-v1.1 (`data/promptopt_dataset_v1_1/`, the default `DATASET_DIR`) is v1 with dropped instruction data put back:
+v1.1 (`data/promptopt_dataset_v1_1/`) is v1 with dropped instruction data put back:
 `python -m app.dataset_repair --write` appends lost items/code deterministically, removes rows whose data exists
 nowhere, and fixes dropped subjects with cached Groq edits (`regenerated.json`); every change is in `repair_log.csv`.
+v1.2 final (`data/promptopt_dataset_v1_2_final/`, the default `DATASET_DIR`; `DATASET_CSV` = `<folder>/<folder>.csv`) is
+v1.2 minus human-rejected and LLM-assisted-filter rows (`docs/DATASET_CARD.md`).
 
 ## Backend (`backend/`)
 - Python + FastAPI (to be built), SQLAlchemy 2.0 ORM.
@@ -53,6 +55,8 @@ nowhere, and fixes dropped subjects with cached Groq edits (`regenerated.json`);
   (RETENTION_DAYS, default 30); `python -m app.init_db --purge` deletes expired prompts with cascade.
 - Commands (run inside `backend/` with `.venv` active):
   - `python -m app.init_db`: create tables and seed rules (safe to re-run)
+  - `python -m app.demo --examples [--target claude]`: offline demo (Stage A features, Stage B rules before/after,
+    Stage C routing); `docs/MILESTONE_REVIEW.md` has the review checklist
   - `python -m pytest -q`: tests on SQLite; set `TEST_POSTGRES_URL` to also test PostgreSQL
   - `TEST_POSTGRES_URL` must point at the `promptopt_test` database only: the tests drop all tables.
 
@@ -84,7 +88,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | # | Step | Status |
 |---|------|--------|
 | 1 | Dataset v1.1 repair, then send rater sheets | Done: team 3 x 170 and faculty 20 rated; 295 of 330 accepted; v1.2 final = 5,184 rows (35 human-rejected + 9 LLM-assisted-filter rows left out); `evaluation/REVIEW_SUMMARY.md` |
-| 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. `DATASET_DIR` now points at `data/promptopt_dataset_v1_2_final/`; pass `--dataset .../promptopt_dataset_v1_2_final.csv` explicitly (dataset_io still expects the v1_1 file name) |
+| 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. The default dataset is now v1.2 final (`config.DATASET_DIR` / `DATASET_CSV`), so no command needs `--dataset` |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |

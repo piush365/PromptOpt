@@ -17,8 +17,8 @@ The dataset lives on Google Drive and in `data/` (git-ignored); it is never stor
 | **v1.2 final** | **5,184** | v1.2 minus 35 rows the team rejected and 9 rows removed by an automatic LLM-assisted filter (not human); adds the validation columns. The dataset used for the final numbers | `python -m app.validation merge --drop-rejected --auto-filter ...` |
 
 The final dataset is `data/promptopt_dataset_v1_2_final/promptopt_dataset_v1_2_final.csv` (every left-out row with
-its reason: `merge_log.csv` next to it). `DATASET_DIR` points at that folder, but `app.dataset_io` still looks for a
-file named `promptopt_dataset_v1_1.csv` there, so every command is given `--dataset <that csv>` explicitly.
+its reason: `merge_log.csv` next to it). It is the default dataset (`config.DATASET_DIR`, and `DATASET_CSV` =
+`<folder>/<folder>.csv`), so no command needs `--dataset`; set `DATASET_DIR` to use another version.
 
 ## How the rows were generated (`generation_version`)
 
