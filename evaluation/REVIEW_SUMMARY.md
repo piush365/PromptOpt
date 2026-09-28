@@ -164,8 +164,31 @@ routed: missing label set 27, missing output format 24.
 
 ## 7. Benchmark results (final, LLM)
 
-**Running** (started 2026-09-28 20:24): `final-benchmark`, all 44 benchmark rows x 3 variants (degraded, stage_b,
-dataset_target), target `cerebras/gpt-oss-120b`, judge Groq `qwen/qwen3.8-27b`, dataset v1.2 final. It retries
-automatically until complete (`data/evaluation/final-benchmark-retry.sh`, log `final-benchmark.retry.log`); the
-existing exclusion rules apply (wrong references in `evaluation/wrong_references.csv` and items the judge could not
-score are left out for all variants, and the headline is shown with and without them). Results will be added here.
+`final-benchmark`, run 2026-09-28 20:24-21:20 (one pass; a second pass found nothing left to do): all 44 benchmark
+rows of v1.2 final x 3 variants, target `cerebras/gpt-oss-120b` (temperature 0, max 2,048 tokens, reasoning low),
+judge Groq `qwen/qwen3.8-27b`, blind to the variant. 132 of 132 items recorded, 0 judge failures, **no exclusions**
+(no benchmark row is in `wrong_references.csv`). Full table: `evaluation/final_benchmark_summary.md`.
+
+| variant | n | quality (0-10) | task success | input tok | output tok | total tok | latency ms |
+|---|---|---|---|---|---|---|---|
+| degraded | 44 | 8.2 | 67% (27) | 221 | 673 | 894 | 1,215 |
+| **stage_b** | 44 | **9.0** | **85% (27)** | 235 | 151 | **386** | **773** |
+| dataset_target | 44 | 9.0 | 81% (27) | 242 | 129 | 371 | 1,189 |
+
+Stage B against the degraded prompt: quality +0.8, task success +18 points (on the 27 checkable items), total tokens
+-57% (input +14, output -522), latency -36%. It matches the dataset's LLM-written optimized prompts on quality and
+task success at almost the same token count.
+
+Per category (quality; task success where checkable):
+
+| category | n | degraded | stage_b | dataset_target |
+|---|---|---|---|---|
+| classification | 8 | 7.5; 43% | 10.0; 86% | 8.6; 57% |
+| closed_qa | 10 | 8.6; 90% | 9.0; 90% | 8.8; 90% |
+| coding | 10 | 8.0; 60% | 7.8; 80% | 8.9; 90% |
+| information_extraction | 10 | 8.1 | 8.9 | 8.9 |
+| summarization | 6 | 9.0 | 10.0 | 10.0 |
+
+Caveats: 44 items, so per-category numbers (6-10 items each) are indicative only. In coding Stage B raises task
+success (60% -> 80%) but its judge quality is slightly lower than the degraded prompt's (7.8 vs 8.0) and below the
+dataset target's (8.9). One stand-in target model and one judge model; real GPT/Gemini/Claude runs come later.

@@ -89,7 +89,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Not started |
-| 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | **CURRENT**: Stage A retrained on final train; test split run once offline (Stage A 74.7%, macro-F1 0.746; Stage C 6.4%); benchmark LLM eval running (Cerebras target, Groq judge). Ablation not started |
+| 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | **CURRENT**: Stage A retrained on final train; test split run once offline (Stage A 74.7%, macro-F1 0.746; Stage C 6.4%); benchmark LLM eval done (stage_b vs degraded: quality 9.0 vs 8.2, task success 85% vs 67%, total tokens -57%). Ablation not started |
 | 8 | FastAPI + React app with history | Not started |
 | 9 | Phase 2: image generation | Not started |
 
