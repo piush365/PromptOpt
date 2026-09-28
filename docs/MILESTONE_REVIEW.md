@@ -19,6 +19,29 @@ Full write-up: `evaluation/REVIEW_SUMMARY.md`.
 | 11 | Stage C (LoRA), FastAPI + React app | Not started (planned) | - | `CLAUDE.md` roadmap |
 | 12 | Tests | Passing | 416 tests (`python -m pytest -q`) | `backend/tests/` |
 
+## Freeze proof
+
+Tag `frozen-for-test` = `f4db6cb` (2026-09-27); checked against `cfb6a6b` on 2026-09-28. Stage A, Stage B (rules,
+optimizer, IR), the rule seed and the whole evaluation harness (judge, success checks, variants, runner):
+
+```console
+$ git diff --stat frozen-for-test..cfb6a6b -- backend/app/stage_a backend/app/stage_b backend/app/evaluation backend/app/db/seed.py
+$                                   # empty: no change
+```
+
+Everything that did change under `backend/app/` since the tag (none of it is a rule, threshold or judge):
+
+```console
+$ git diff --stat frozen-for-test..cfb6a6b -- backend/app
+ backend/app/config.py     |   6 +-      default DATASET_DIR -> v1.2 final, new DATASET_CSV
+ backend/app/dataset_io.py |   8 +--     reads DATASET_CSV
+ backend/app/demo.py       | 102 +++++   new offline demo
+ backend/app/validation.py | 162 +++---   rating merge and agreement report
+ 4 files changed, 244 insertions(+), 34 deletions(-)
+```
+
+Re-run: `git diff --stat frozen-for-test..HEAD -- backend/app/stage_a backend/app/stage_b backend/app/evaluation backend/app/db/seed.py`.
+
 ## Live demo (offline: no API call, no database)
 
 ```bash
