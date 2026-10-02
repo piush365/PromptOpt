@@ -114,7 +114,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c_eval.md` |
 | 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Done: final test run once on 2026-10-02, tag `final-for-test`; `evaluation/FINAL_RESULTS.md` (Stage A 74.7%; Stage B format 3.1% -> 95.0%, 6.4% routed; Stage C ablation: helps on routed prompts only; benchmark: quality 8.2 -> 9.0, task success 67% -> 85%, tokens -57%) |
-| 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`, plain HTML/JS in `app/static/`, Compare disabled until API keys |
+| 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`, plain HTML/JS in `app/static/`; Compare: finish phase 6 |
 | 9 | Phase 2: image generation | Done as finish phase 5: separate, explicitly selected image mode (`app/image/`); `evaluation/image_mode.md` |
 
 ### Finish phase (started 2026-10-02; due Sunday 2026-10-04, buffer to Thursday 2026-10-08)
@@ -129,6 +129,14 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 | 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; trained locally (`.venv-gpu`, RTX 3050, micro-batch 1 x 16, bf16, 51 min); adapter in `backend/artifacts/stage_c_adapter` (git-ignored); Colab not needed |
 | 2 | Renderers per target + token counts, category override with disagreement shown, attachment types (image, pdf, pptx, docx, spreadsheet, code file) with a 30-prompt hand-made test set, category templates | Done: attachments 30/30 correct; Stage B on test byte-identical to frozen-for-test (482 prompts) |
 | 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | Done: LoRA passes validation 98.3% vs zero-shot 3.4%; routed prompts: format stated 10% -> 90%, task intent 0.911 -> 0.885; forced routing lowers task intent (0.855 -> 0.773), so Stage C stays routed-only; GPU 0.72 s median, CPU 5.0 s; `evaluation/stage_c_eval.md`. Final test run done: `evaluation/FINAL_RESULTS.md`, tag `final-for-test` |
+| 4 | Coding test cases (Cerebras-generated asserts validated on the CodeAlpaca reference) + bwrap sandbox runner; pass@1 degraded vs Stage B | Done: test pass@1 strict 20.7% -> 34.5%, lenient 37.9% -> 41.4% (n=29, Python only; JS skipped); `evaluation/coding_tests.md`, `docs/CODING_TESTS.md` |
+| 5 | Image-generation mode (separate, explicitly selected): v1 rules + renderers, then v2 (user's words first, suggestions instead of default keywords); SD 1.5 + CLIP on dev and a held-out set | Done: held-out CLIP vs original: original 33.08, v1 30.78 (p=0.043), v2 32.77 (no sig. diff, style kept 12/12); `evaluation/image_mode.md` |
+| 6 | Compare: original vs optimized prompt on a real model (Groq, Cerebras now; Gemini if `GEMINI_API_KEY`; GPT/Claude disabled until keys), tokens / latency / sandbox tests / optional blind judge, honest provider labels | **CURRENT** |
+| 7 | `evaluation/FINAL_RESULTS.md` updated with phases 4-6; README "how to run the app" | Next |
+
+Waiting on others (not blocking): the team's blind sets (`evaluation/attachments/blind_test.csv` 15 rows,
+`evaluation/image/blind_test.csv` 10 rows), reported separately once filled in; API keys for GPT/Claude (Compare and
+the real-LLM evaluation).
 
 - **Coding tests (phase 4):** `python -m app.coding.testgen` (items + validated tests, Cerebras, cached in
   `data/coding/`), `python -m app.coding.evaluate --out ../evaluation/coding_tests.md` (pass@1 degraded vs Stage B).
@@ -147,5 +155,5 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
   `python -m app.image.generate --set dev|heldout` in `.venv-gpu`.
 
 ### Later, needs API keys (after step 7)
-- Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).
+- Compare on GPT and Claude (Groq/Cerebras/Gemini are wired in finish phase 6).
 - Real-LLM evaluation: repeat the val/test/benchmark evaluation per target LLM.
