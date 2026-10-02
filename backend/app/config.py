@@ -49,3 +49,10 @@ DATASET_CSV = Path(os.getenv("DATASET_CSV", DATASET_DIR / f"{DATASET_DIR.name}.c
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # Resumable cache of LLM calls per evaluation run (git-ignored, under data/)
 EVAL_DIR = Path(os.getenv("EVAL_DIR", BACKEND_DIR.parent / "data" / "evaluation"))
+
+# ---- Stage C (LoRA fallback; docs/STAGE_C_PLAN.md)
+STAGE_C_BASE_MODEL = os.getenv("STAGE_C_BASE_MODEL", "Qwen/Qwen2.5-0.5B-Instruct")
+# Trained adapter folder (git-ignored, like the category index). Missing -> the app runs without Stage C.
+STAGE_C_ADAPTER = Path(os.getenv("STAGE_C_ADAPTER", BACKEND_DIR / "artifacts" / "stage_c_adapter"))
+# "auto" = cuda if available, else cpu
+STAGE_C_DEVICE = os.getenv("STAGE_C_DEVICE", "auto")

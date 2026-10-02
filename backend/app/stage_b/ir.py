@@ -43,7 +43,7 @@ class PromptIR(BaseModel):
     output_format: str | None = None
     attachment: Attachment = Attachment()
     target_llm: TargetLLM | None = None         # chosen by the user; None = plain text only
-    category_source: Literal["stage_a", "user"] = "stage_a"
+    category_source: Literal["stage_a", "user", "stage_c"] = "stage_a"
     category_group: str | None = None           # set by B08 when only the category group is known, not the category
     unresolved: tuple[str, ...] = ()            # what Stage B could not fix; Stage C (or the user) has to
 

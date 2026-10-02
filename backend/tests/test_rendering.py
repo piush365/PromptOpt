@@ -254,3 +254,27 @@ def test_pipeline_keeps_stage_a_and_flags_a_user_category_that_disagrees(db, cat
     assert out.category_disagreement is disagree
     assert repo.get_prompt_history(db, out.prompt_id)["features"]["task_type"] == "summarization"
     assert set(out.token_counts) == set(TARGETS) and all(c["tokens"] > 0 for c in out.token_counts.values())
+
+
+def test_pipeline_with_stage_c_saves_a_stage_c_step(db):
+    import json as _json
+    answer = _json.dumps({"output_format": "Use bullet points.", "constraints": ["Keep it short."],
+                          "category": "summarization"})
+    text = "describe what is happening in the picture"
+    out = process_prompt(db, text, DET, attachment=Attachment(type="image"), stage_c=lambda messages: answer)
+    db.commit()
+    (res,) = repo.get_prompt_history(db, out.prompt_id)["results"]
+    assert out.optimization.needs_stage_c                  # keyword classifier: category unresolved -> routed
+    assert out.stage_c.accepted and res["used_lora"]
+    assert res["steps"][-1]["stage"] == "C" and "Use bullet points." in res["renderings"]["gpt"]
+    assert out.category == "summarization" and res["ir"]["category_source"] == "stage_c"
+    assert {u["target_llm"] for u in res["token_usage"]} == set(TARGETS)
+
+
+def test_pipeline_rejected_stage_c_keeps_stage_b(db):
+    text = "describe what is happening in the picture"
+    out = process_prompt(db, text, DET, attachment=Attachment(type="image"), stage_c=lambda messages: "nope")
+    db.commit()
+    assert out.ir == out.optimization.ir
+    assert out.optimization.needs_stage_c
+    assert out.stage_c.fallback and not repo.get_prompt_history(db, out.prompt_id)["results"][0]["used_lora"]

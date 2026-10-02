@@ -40,11 +40,11 @@ from app.dataset_io import DEFAULT_CSV, load_rows
 from app.stage_a.build_index import DEFAULT_DOLLY, dolly_other, train_head
 from app.stage_a.classifier import EmbeddingClassifier, LinearHead, sentence_encoder
 from app.stage_a.detector import FeatureDetector
-from app.stage_b.optimizer import STAGE_C_REASONS, optimize
+from app.stage_b.optimizer import optimize
+from app.stage_c.contract import FIELDS, SYSTEM_PROMPT, model_input, natural_unresolved, to_messages
 from app.stage_c.parse import is_format, parse_optimized, states_format
 
 OUT_DIR = BACKEND_DIR.parent / "data" / "stage_c"
-FIELDS = ("task", "output_format", "constraints")
 FOLDS = 5
 SEED = 13
 DATA_VERSION = "stage_c_data_v1"
@@ -63,15 +63,6 @@ TRAIN_CONFIG = {
     "train": {"epochs": 3, "batch_size": 4, "grad_accum": 4, "eval_batch_size": 8, "lr": 2e-4, "weight_decay": 0.0,
               "warmup_ratio": 0.03, "max_grad_norm": 1.0, "eval_every": 50, "patience": 3},
 }
-
-SYSTEM_PROMPT = (
-    "You are Stage C of PromptOpt. You get a user's prompt and the structured version a rule-based optimizer made of "
-    "it. Fields set to null and listed in \"unresolved\" could not be filled by the rules. Return a JSON object with "
-    "exactly the unresolved keys and nothing else. \"task\": the instruction, clear and self-contained. "
-    "\"output_format\": how the answer should be laid out, or null if no format is needed. \"constraints\": a list of "
-    "short rules (length, language, tone, audience, use only the provided text), possibly empty. \"category\": one of "
-    "closed_qa, information_extraction, classification, summarization, coding. Keep the user's intent; add no facts.")
-
 
 def _fold(row: dict[str, str]) -> int:
     key = (row["original_instruction"] or row["degraded_prompt"]).strip().lower()
@@ -127,43 +118,10 @@ def crossfit_features(train: list[dict[str, str]], index_path: Path = CATEGORY_I
     return feats
 
 
-def natural_unresolved(out) -> list[str]:
-    """Fields Stage B left for Stage C, from its `unresolved` list."""
-    fields = []
-    for u in out.unresolved:
-        if u == "task category":
-            fields += ["output_format", "constraints", "category"]
-        elif u.startswith("ambiguous reference"):
-            fields.append("task")
-        elif u == "output format":
-            fields.append("output_format")
-    return [f for f in ("task", "output_format", "constraints", "category") if f in fields]
-
-
-def model_input(row: dict[str, str], f, out, unresolved: list[str]) -> dict:
-    ir = out.ir
-    shown = {"task": ir.task, "output_format": ir.output_format, "constraints": list(ir.constraints),
-             "requirements": list(ir.requirements), "category": ir.category}
-    for k in unresolved:
-        shown[k] = None
-    return {"prompt": row["degraded_prompt"],
-            "category": {"value": f.task_type, "source": ir.category_source, "confidence": round(f.confidence, 2)},
-            "has_context": f.has_context, "attachment": ir.attachment.type,
-            "ir": shown, "unresolved": unresolved}
-
-
 def target(parsed, category: str, unresolved: list[str]) -> dict:
     values = {"task": parsed.task, "output_format": parsed.output_format, "constraints": parsed.constraints,
               "category": category}
     return {k: values[k] for k in unresolved}
-
-
-def to_messages(inp: dict, tgt: dict | None = None) -> list[dict[str, str]]:
-    msgs = [{"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": json.dumps(inp, ensure_ascii=False)}]
-    if tgt is not None:
-        msgs.append({"role": "assistant", "content": json.dumps(tgt, ensure_ascii=False)})
-    return msgs
 
 
 def clean(parsed, unresolved: list[str]) -> bool:
@@ -186,7 +144,7 @@ def build(rows: list[dict[str, str]], feats: list, split: str, rng: random.Rando
         if split != "train":
             variants.append(("forced_all", list(FIELDS)))
         for kind, unresolved in variants:
-            inp = model_input(r, f, out, unresolved)
+            inp = model_input(r["degraded_prompt"], f, out.ir, unresolved)
             tgt = target(parsed, r["category"], unresolved)
             out_rows.append({"id": r["id"], "split": split, "category": r["category"], "kind": kind,
                              "stage_a_category": f.task_type, "stage_a_confidence": round(f.confidence, 4),

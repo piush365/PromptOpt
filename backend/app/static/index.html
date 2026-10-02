@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PromptOpt</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>PromptOpt</h1>
+  <p>Rewrites a vague prompt into a clear, structured prompt for the LLM you use. Runs offline.</p>
+</header>
+
+<main>
+  <section class="panel" id="input">
+    <form id="form">
+      <label for="prompt">Your prompt</label>
+      <textarea id="prompt" rows="4" required placeholder="e.g. hey can you summarize this report for me"></textarea>
+
+      <details>
+        <summary>Paste text the prompt works on (optional)</summary>
+        <textarea id="context" rows="4" placeholder="A passage, an email, code ..."></textarea>
+      </details>
+
+      <div class="row">
+        <fieldset>
+          <legend>Target LLM</legend>
+          <label><input type="radio" name="target" value="gpt" checked> GPT</label>
+          <label><input type="radio" name="target" value="gemini"> Gemini</label>
+          <label><input type="radio" name="target" value="claude"> Claude</label>
+        </fieldset>
+        <div>
+          <label for="category">Category</label>
+          <select id="category"></select>
+        </div>
+        <div>
+          <label for="attachment">Attachment</label>
+          <select id="attachment"></select>
+          <input id="attachment_name" placeholder="file name (optional)" maxlength="255" hidden>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="go">Optimize</button>
+        <button type="button" id="compare" disabled
+                title="Compare runs the original and optimized prompt on the real LLM; it needs API keys and is not set up yet">
+          Compare (needs API keys)</button>
+        <span id="status" role="status"></span>
+      </div>
+    </form>
+  </section>
+
+  <section id="result" hidden>
+    <div class="panel">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <pre id="rendered" tabindex="0"></pre>
+      <div class="meta">
+        <span id="tokens"></span>
+        <button type="button" id="copy">Copy</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Stage A: what was detected</h2>
+        <p id="category_line"></p>
+        <p id="disagreement" class="warn" hidden></p>
+        <h3>Issues</h3>
+        <ul id="issues"></ul>
+      </div>
+      <div class="panel">
+        <h2>Stage B: rules applied</h2>
+        <ol id="rules"></ol>
+        <p id="unresolved" class="muted"></p>
+      </div>
+      <div class="panel">
+        <h2>Stage C: model fallback</h2>
+        <p id="stage_c"></p>
+        <pre id="stage_c_raw" class="small" hidden></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="history_panel">
+    <h2>History <span class="muted" id="retention"></span></h2>
+    <ul id="history"></ul>
+  </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

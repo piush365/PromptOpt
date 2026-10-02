@@ -20,3 +20,13 @@ groq>=0.30
 
 # Rendering: exact GPT input token counts (o200k_base; downloaded once, then cached)
 tiktoken>=0.8
+
+# API + web UI (app/api.py; uvicorn app.api:app)
+fastapi>=0.115
+uvicorn>=0.30
+httpx>=0.27          # FastAPI TestClient in the tests
+
+# Stage C inference (app/stage_c/runtime.py); optional: without them the app runs Stage A + B only.
+# Training uses backend/.venv-gpu (CUDA torch), see docs/STAGE_C_PLAN.md
+# transformers>=4.46
+# peft>=0.13
