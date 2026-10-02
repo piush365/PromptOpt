@@ -29,7 +29,7 @@ from app.stage_b.ir import Attachment, render_plain
 from app.stage_b.optimizer import RULE_CODES, optimize
 from app.stage_c.contract import FIELDS, apply_stage_c, c_only_input, parse_json, validate
 from app.stage_c.data import OUT_DIR
-from app.stage_c.parse import is_format
+from app.stage_c.parse import is_format, parse_optimized
 from app.stage_c.runtime import StageCModel
 
 NAMED = BACKEND_DIR.parent / "evaluation" / "stage_c" / "named_cases.json"
@@ -141,10 +141,11 @@ def ablation(model: StageCModel, rows: list[dict], feats: list, targets: dict, s
                        "C-only": apply_stage_c(r["degraded_prompt"], f, bare, model.generate, fields=list(FIELDS),
                                                inp=c_only_input(r["degraded_prompt"], f, bare.ir))}
             for name, c in systems.items():
-                text = out.optimized_text if c is None else (c.optimized_text if c.accepted else
-                                                             (out.optimized_text if name == "A+B+C" else
-                                                              render_plain(bare.ir)))
-                item = {"id": r["id"], "text": text, "intent": sim(text, r["original_instruction"]),
+                ir = out.ir if c is None else c.ir          # a rejected answer leaves Stage B's (or the bare) IR
+                text = render_plain(ir)
+                item = {"id": r["id"], "text": text, "task": ir.task,
+                        "task_intent": sim(ir.task, r["original_instruction"]),
+                        "intent": sim(text, r["original_instruction"]),
                         "format": bool(detect.detect_format_spec(text)) or is_format(text),
                         "category_gold": r["category"], "stage_a": f.task_type}
                 if c is not None:
@@ -158,10 +159,12 @@ def ablation(model: StageCModel, rows: list[dict], feats: list, targets: dict, s
                         item["category_c"] = c.ir.category if "category" in c.fields else None
                 res[s][name].append(item)
         res["reference"]["dataset optimized"].append(
-            {"intent": sim(r["optimized_prompt"], r["original_instruction"]),
+            {"task_intent": sim(parse_optimized(r["optimized_prompt"]).task, r["original_instruction"]),
+             "intent": sim(r["optimized_prompt"], r["original_instruction"]),
              "format": bool(detect.detect_format_spec(r["optimized_prompt"]))})
         res["reference"]["degraded"].append(
-            {"intent": sim(r["degraded_prompt"], r["original_instruction"]),
+            {"task_intent": sim(r["degraded_prompt"], r["original_instruction"]),
+             "intent": sim(r["degraded_prompt"], r["original_instruction"]),
              "format": bool(detect.detect_format_spec(r["degraded_prompt"]))})
 
     table = []
@@ -173,7 +176,8 @@ def ablation(model: StageCModel, rows: list[dict], feats: list, targets: dict, s
             c_items = [i for i in items if "used" in i]
             fs = summarize([i["fields"] for i in c_items if "fields" in i])
             secs = [i["seconds"] for i in c_items if i["used"]]
-            table.append([s, name, len(items), f"{_mean([i['intent'] for i in items]):.3f}",
+            table.append([s, name, len(items), f"**{_mean([i['task_intent'] for i in items]):.3f}**",
+                          f"{_mean([i['intent'] for i in items]):.3f}",
                           _pct(_mean([float(i['format']) for i in items])),
                           _pct(_mean([float(i["json_valid"]) for i in c_items])) if c_items else "-",
                           _pct(_mean([float(i["fallback"]) for i in c_items])) if c_items else "-",
@@ -182,10 +186,11 @@ def ablation(model: StageCModel, rows: list[dict], feats: list, targets: dict, s
                           _pct(fs.get("output_format_presence")) if fs else "-",
                           f"{statistics.median(secs):.2f}" if secs else "-"])
     for name, items in res["reference"].items():
-        table.append(["reference", name, len(items), f"{_mean([i['intent'] for i in items]):.3f}",
+        table.append(["reference", name, len(items), f"{_mean([i['task_intent'] for i in items]):.3f}",
+                      f"{_mean([i['intent'] for i in items]):.3f}",
                       _pct(_mean([float(i['format']) for i in items])), "-", "-", "-", "-", "-", "-"])
-    ab = _table(["set", "system", "n", "intent sim.", "format stated", "JSON valid", "fallback", "category acc.",
-                 "task sim.", "format null/non-null agree", "median s (GPU)"], table)
+    ab = _table(["set", "system", "n", "task intent sim. (main)", "full-prompt sim. (reference)", "format stated", "JSON valid", "fallback", "category acc.",
+                 "task sim.", "format null/non-null agree", "median s"], table)
 
     routed_c = [i for i in res["routed"]["A+B+C"] if i.get("category_c")]
     routed_all = res["routed"]["A+B+C"]
@@ -283,10 +288,22 @@ def main() -> None:
         "`routed` = val prompts Stage B actually sends to Stage C (too few on their own); `forced` = every val prompt "
         "with task, output_format and constraints requested. A+B = current pipeline; A+B+C = Stage C fills the "
         "requested fields, Stage B's other fields locked, rejected answers fall back to Stage B; C-only = Stage C "
-        "fills all three fields with no Stage B rules (rejected -> the raw prompt). Intent sim. = final prompt vs "
-        "the dataset's original instruction; format stated = A02 (or the parser's layouts) finds a format.\n",
+        "fills all three fields with no Stage B rules (rejected -> the raw prompt). Format stated = A02 (or the "
+        "parser's layouts) finds a format.\n",
+        "**Intent preservation (main number): task intent sim.** = cosine similarity between the final IR's `task` "
+        "field only and the dataset's original instruction, so added format and constraint sentences do not count "
+        "against it. Reference rows: `degraded` = the degraded prompt itself; `dataset optimized` = the task parsed "
+        "from the dataset's optimized prompt. The degraded prompt usually keeps the original instruction's own "
+        "words, so it is close to the ceiling here; what matters is how much each system loses from it.\n",
+        "Full-prompt sim. (reference only) compares the whole final prompt (task + requirements + constraints + "
+        "format) with the original instruction. It falls as a prompt gains the format and constraint sentences the "
+        "optimizer is meant to add, so it is not an intent measure: the bare degraded prompts score higher on it "
+        "than the dataset's own optimized prompts.\n",
         ab, "", "### Category on routed prompts: Stage C vs Stage A (against the dataset label)\n", cat, "",
-        "## Named cases\n", named, "",
+        "## Named cases (illustrative, not evidence)\n",
+        "Hand-picked prompts reported by name (`evaluation/stage_c/named_cases.json`). Their expected categories "
+        "were set or confirmed after a smoke run of Stage C had been seen, so they illustrate behaviour and are not "
+        "part of the evidence; the val numbers above are.\n", named, "",
         "## (c) Latency per prompt (Stage C call only, batch 1, greedy)\n",
         _table(["device", "n", "median s", "p95 s", "max s"], lat_rows), "",
         f"Requirement: under 3 s per prompt on the laptop GPU (median): **"

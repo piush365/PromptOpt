@@ -26,6 +26,9 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   cross-fitted) -> `data/stage_c/` + `data/stage_c_data_v1.zip` (git-ignored; manifest committed as
   `docs/stage_c_data_manifest.json`). Training: `app/stage_c/train.py`, locally in `backend/.venv-gpu` (CUDA torch;
   `.venv` stays CPU-only) or Colab `notebooks/train_stage_c.ipynb` (zip from `MyDrive/PromptOpt/stage_c/`).
+  Runtime + contract: `app/stage_c/runtime.py`, `app/stage_c/contract.py`; the app uses Stage C when the adapter is in
+  `backend/artifacts/stage_c_adapter` and peft/transformers are installed (run the app from `.venv-gpu` for that).
+  Evaluation: `python -m app.stage_c.evaluate --adapter artifacts/stage_c_adapter --out ../evaluation/stage_c_eval.md`.
 - **IR + rendering:** the result becomes a model-agnostic intermediate representation (`app/stage_b/ir.py`: task,
   context, context_ref, constraints, requirements, output_format, attachment, target_llm, category_source, unresolved),
   rendered per target LLM by `app/rendering.py` with four sections, same content everywhere (Claude: XML tags, context
@@ -107,9 +110,9 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
-| 6 | Validation results -> retrain classifier -> train Stage C LoRA | Finish phase 1 (see below): data + notebook + plan done; training pending |
+| 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c_eval.md` |
 | 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | In progress, continued by the finish phase below: Stage A retrained on final train; test split run once offline (Stage A 74.7%, macro-F1 0.746; Stage C 6.4%); benchmark LLM eval done (stage_b vs degraded: quality 9.0 vs 8.2, task success 85% vs 67%, total tokens -57%). Ablation not started |
-| 8 | FastAPI + web app with history | Not started; finish phase 3 builds it as plain HTML/JS served by FastAPI (no React) |
+| 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`, plain HTML/JS in `app/static/`, Compare disabled until API keys |
 | 9 | Phase 2: image generation | Not started |
 
 ### Finish phase (started 2026-10-02; due Sunday 2026-10-04, buffer to Thursday 2026-10-08)
@@ -121,9 +124,9 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 
 | Phase | Work | Status |
 |---|---|---|
-| 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; training runs locally (`.venv-gpu`, RTX 3050, micro-batch 1 x 16, bf16, ~1 h); Colab not needed |
+| 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; trained locally (`.venv-gpu`, RTX 3050, micro-batch 1 x 16, bf16, 51 min); adapter in `backend/artifacts/stage_c_adapter` (git-ignored); Colab not needed |
 | 2 | Renderers per target + token counts, category override with disagreement shown, attachment types (image, pdf, pptx, docx, spreadsheet, code file) with a 30-prompt hand-made test set, category templates | Done: attachments 30/30 correct; Stage B on test byte-identical to frozen-for-test (482 prompts) |
-| 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | **CURRENT** once the adapter exists |
+| 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | Done: LoRA passes validation 98.3% vs zero-shot 3.4%; routed prompts: format stated 10% -> 90%, task intent 0.911 -> 0.885; forced routing lowers task intent (0.855 -> 0.773), so Stage C stays routed-only; GPU 0.72 s median, CPU 5.0 s; `evaluation/stage_c_eval.md`. Next: final test run once, then tag `final-for-test` |
 
 ### Later, needs API keys (after step 7)
 - Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).
