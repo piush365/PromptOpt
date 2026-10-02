@@ -60,8 +60,8 @@ function render(r) {
 
   $("uncertain").hidden = !c.uncertain;
   if (c.uncertain) {
-    $("uncertain_text").textContent = `The category is uncertain: Stage A was unsure (${a.category}, ` +
-      `${a.confidence.toFixed(2)}) and Stage C's guess (${LABELS[c.guess] || c.guess}) is not among Stage A's top two.`;
+    $("uncertain_text").textContent = `The category is uncertain: Stage A was unsure (${LABELS[a.category] || a.category}, ` +
+      `${a.confidence.toFixed(2)}). Stage C suggests ${LABELS[c.guess] || c.guess}; please confirm or pick another.`;
     $("pick").value = c.guess;
   }
 
@@ -77,7 +77,7 @@ function render(r) {
   if (!s.routed) text = "Not needed: Stage B resolved everything Stage C could fix.";
   else if (!s.available) text = `Needed (${s.reasons.join("; ")}), but Stage C is not installed; Stage B's result is shown.`;
   else if (s.accepted) text = `Used: filled ${s.fields.join(", ")} in ${s.seconds}s.` +
-    (s.category_status === "uncertain" ? " Its category guess was not accepted; please pick the category above." : "");
+    (s.category_status === "uncertain" ? " Its category is only a suggestion; please confirm it above." : "");
   else text = `Tried, but its answer was rejected (${s.errors.join("; ")}); Stage B's result is shown.`;
   $("stage_c").textContent = text;
   $("stage_c_raw").hidden = !s.raw;

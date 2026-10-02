@@ -28,17 +28,17 @@ Full-prompt sim. (reference only) compares the whole final prompt (task + requir
 | set | system | n | task intent sim. (main) | full-prompt sim. (reference) | format stated | JSON valid | fallback | category acc. | task sim. | format null/non-null agree | median s |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | routed | A+B | 10 | **0.911** | 0.901 | 10.0% | - | - | - | - | - | - |
-| routed | A+B+C | 10 | **0.885** | 0.773 | 90.0% | 100.0% | 0.0% | 33.3% | 0.884 | 44.4% | 0.51 |
-| routed | C-only | 10 | **0.766** | 0.700 | 90.0% | 100.0% | 10.0% | - | 0.751 | 40.0% | 0.69 |
+| routed | A+B+C | 10 | **0.885** | 0.773 | 90.0% | 100.0% | 0.0% | 33.3% | 0.884 | 44.4% | 0.50 |
+| routed | C-only | 10 | **0.766** | 0.700 | 90.0% | 100.0% | 10.0% | - | 0.751 | 40.0% | 0.67 |
 | forced | A+B | 149 | **0.855** | 0.774 | 94.0% | - | - | - | - | - | - |
-| forced | A+B+C | 149 | **0.773** | 0.703 | 92.6% | 100.0% | 2.0% | - | 0.820 | 73.2% | 0.68 |
-| forced | C-only | 149 | **0.769** | 0.682 | 91.9% | 100.0% | 2.0% | - | 0.820 | 73.2% | 0.68 |
+| forced | A+B+C | 149 | **0.773** | 0.703 | 92.6% | 100.0% | 2.0% | - | 0.820 | 73.2% | 0.67 |
+| forced | C-only | 149 | **0.769** | 0.682 | 91.9% | 100.0% | 2.0% | - | 0.820 | 73.2% | 0.67 |
 | reference | dataset optimized | 149 | 0.799 | 0.748 | 86.6% | - | - | - | - | - | - |
 | reference | degraded | 149 | 0.872 | 0.872 | 4.7% | - | - | - | - | - | - |
 
 ### Category: Stage C vs Stage A, and the category policy
 
-Policy (contract.category_decision): Stage C's category is used only if it is one of Stage A's top-2 categories or Stage A's confidence is below 0.3; otherwise the category is marked uncertain and the UI asks the user, pre-selecting Stage C's guess. Right = equals the dataset label.
+Policy (contract.category_decision, chosen on val): Stage C's category is never used on its own; when a prompt is routed for the category it is marked uncertain and the UI asks the user, pre-selecting Stage C's guess. So every valid guess lands in the `uncertain` row; the tables compare Stage C's guess with Stage A's prediction. Right = equals the dataset label.
 
 Prompts routed for the task category:
 
@@ -46,8 +46,8 @@ Prompts routed for the task category:
 |---|---|---|---|
 | all prompts in this set | 10 | 3/10 (30.0%) | - |
 | with a valid Stage C category | 9 | 2/9 (22.2%) | 3/9 (33.3%) |
-| policy: accepted (Stage C's category used) | 3 | 0/3 (0.0%) | 0/3 (0.0%) |
-| policy: uncertain (user asked, guess pre-selected) | 6 | 2/6 (33.3%) | 3/6 (50.0%) |
+| policy: accepted (Stage C's category used) | 0 | 0/0 | 0/0 |
+| policy: uncertain (user asked, guess pre-selected) | 9 | 2/9 (22.2%) | 3/9 (33.3%) |
 
 Forced: every prompt asked for its category the way a routed prompt is (the routed set alone is small).
 
@@ -57,8 +57,8 @@ All prompts:
 |---|---|---|---|
 | all prompts in this set | 149 | 113/149 (75.8%) | - |
 | with a valid Stage C category | 148 | 112/148 (75.7%) | 83/148 (56.1%) |
-| policy: accepted (Stage C's category used) | 114 | 92/114 (80.7%) | 77/114 (67.5%) |
-| policy: uncertain (user asked, guess pre-selected) | 34 | 20/34 (58.8%) | 6/34 (17.6%) |
+| policy: accepted (Stage C's category used) | 0 | 0/0 | 0/0 |
+| policy: uncertain (user asked, guess pre-selected) | 148 | 112/148 (75.7%) | 83/148 (56.1%) |
 
 Only prompts with Stage A confidence < 0.6 (the range where the category is routed):
 
@@ -66,8 +66,8 @@ Only prompts with Stage A confidence < 0.6 (the range where the category is rout
 |---|---|---|---|
 | all prompts in this set | 50 | 20/50 (40.0%) | - |
 | with a valid Stage C category | 50 | 20/50 (40.0%) | 15/50 (30.0%) |
-| policy: accepted (Stage C's category used) | 33 | 13/33 (39.4%) | 10/33 (30.3%) |
-| policy: uncertain (user asked, guess pre-selected) | 17 | 7/17 (41.2%) | 5/17 (29.4%) |
+| policy: accepted (Stage C's category used) | 0 | 0/0 | 0/0 |
+| policy: uncertain (user asked, guess pre-selected) | 50 | 20/50 (40.0%) | 15/50 (30.0%) |
 
 ## Named cases (illustrative, not evidence)
 
@@ -75,14 +75,14 @@ Hand-picked prompts reported by name (`evaluation/stage_c/named_cases.json`). Th
 
 | case | prompt | Stage A | Stage C guess | expected | guess | policy | Stage C output |
 |---|---|---|---|---|---|---|---|
-| named-image-describe | `describe what is happening in the picture` | coding (0.37) | summarization | summarization | **right** | accepted | `{"output_format": "Output as a single sentence describing each part.", "constraints": [], "category": "summarization"}` |
+| named-image-describe | `describe what is happening in the picture` | coding (0.37) | summarization | summarization | **right** | uncertain | `{"output_format": "Output as a single sentence describing each part.", "constraints": [], "category": "summarization"}` |
 
 ## (c) Latency per prompt (Stage C call only, batch 1, greedy)
 
 | device | n | median s | p95 s | max s |
 |---|---|---|---|---|
-| GPU | 40 | 0.72 | 1.14 | 1.28 |
-| CPU | 20 | 4.57 | 7.47 | 7.47 |
-| zero-shot base (cuda) | 20 | 1.48 | 3.44 | 3.44 |
+| GPU | 40 | 0.71 | 1.15 | 1.28 |
+| CPU | 20 | 4.63 | 7.61 | 7.61 |
+| zero-shot base (cuda) | 20 | 1.37 | 3.25 | 3.25 |
 
-Requirement: under 3 s per prompt on the laptop GPU (median): **met** (0.72 s).
+Requirement: under 3 s per prompt on the laptop GPU (median): **met** (0.71 s).

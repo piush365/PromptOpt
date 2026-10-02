@@ -26,6 +26,8 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   cross-fitted) -> `data/stage_c/` + `data/stage_c_data_v1.zip` (git-ignored; manifest committed as
   `docs/stage_c_data_manifest.json`). Training: `app/stage_c/train.py`, locally in `backend/.venv-gpu` (CUDA torch;
   `.venv` stays CPU-only) or Colab `notebooks/train_stage_c.ipynb` (zip from `MyDrive/PromptOpt/stage_c/`).
+  Category policy: when routed for the task category, Stage C's category is only a suggestion (the UI asks the user,
+  pre-selecting it); its format/constraints are applied (`contract.category_decision`; plan section 6).
   Runtime + contract: `app/stage_c/runtime.py`, `app/stage_c/contract.py`; the app uses Stage C when the adapter is in
   `backend/artifacts/stage_c_adapter` and peft/transformers are installed (run the app from `.venv-gpu` for that).
   Evaluation: `python -m app.stage_c.evaluate --adapter artifacts/stage_c_adapter --out ../evaluation/stage_c_eval.md`.

@@ -332,9 +332,10 @@ def main() -> None:
         "optimizer is meant to add, so it is not an intent measure: the bare degraded prompts score higher on it "
         "than the dataset's own optimized prompts.\n",
         ab, "", "### Category: Stage C vs Stage A, and the category policy\n",
-        "Policy (contract.category_decision): Stage C's category is used only if it is one of Stage A's top-2 "
-        "categories or Stage A's confidence is below 0.3; otherwise the category is marked uncertain and the UI asks "
-        "the user, pre-selecting Stage C's guess. Right = equals the dataset label.\n",
+        "Policy (contract.category_decision, chosen on val): Stage C's category is never used on its own; when a "
+        "prompt is routed for the category it is marked uncertain and the UI asks the user, pre-selecting Stage C's "
+        "guess. So every valid guess lands in the `uncertain` row; the tables compare Stage C's guess with Stage A's "
+        "prediction. Right = equals the dataset label.\n",
         "Prompts routed for the task category:\n", cat, "",
         "Forced: every prompt asked for its category the way a routed prompt is (the routed set alone is small).\n",
         forced_cat, "",

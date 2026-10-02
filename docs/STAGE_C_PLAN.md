@@ -176,3 +176,21 @@ Stage C's output is accepted only if all hold; otherwise the prompt keeps Stage 
 3. `output_format`, if non-null, is accepted by A02 (`detect_format_spec`); `constraints` is a list of strings;
 4. `category`, if requested, is one of the five categories;
 5. locked fields are never taken from Stage C's output.
+
+## 6. Category policy (decided on val, 2026-10-02, before the test run)
+
+When a prompt is routed for the task category, Stage C's category is **never used on its own**: the category stays
+unresolved ("uncertain"), the UI asks the user and pre-selects Stage C's guess, and Stage C's other validated fields
+(format, constraints) are applied. A first policy (accept Stage C's category if it is in Stage A's top-2, or if Stage
+A's confidence is < 0.3) was checked on val and dropped:
+
+| val, Stage A confidence < 0.6 (where prompts are routed) | n | Stage A right | Stage C guess right |
+|---|---|---|---|
+| all | 50 | 40.0% | 30.0% |
+| first policy: accepted | 33 | 39.4% | 30.3% |
+| first policy: uncertain | 17 | 41.2% | 29.4% |
+
+On the 10 naturally routed val prompts the first policy accepted 3 guesses, all wrong. Stage C's guess is worse than
+Stage A's in this range, and the rule did not pick out better guesses, so asking the user is the only part worth
+keeping. Implemented in `contract.category_decision`; reported in `evaluation/stage_c_eval.md` and
+`evaluation/FINAL_RESULTS.md`.

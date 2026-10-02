@@ -39,8 +39,10 @@ def test_accepted_answer_fills_only_the_requested_fields():
                 "constraints": [], "category": "classification"})
     res = apply_stage_c("p", f, out, gen)
     assert res.used and res.accepted and not res.fallback
-    assert res.ir.output_format.startswith("Output each item") and res.ir.category == "classification"
-    assert res.ir.category_source == "stage_c" and "task category" not in res.ir.unresolved
+    assert res.ir.output_format.startswith("Output each item")
+    # the category is only a suggestion: it stays unresolved for the user to confirm
+    assert res.category_guess == "classification" and res.category_status == "uncertain"
+    assert res.ir.category_source == "stage_a" and "task category" in res.ir.unresolved
     assert res.ir.task == out.ir.task                             # locked
     assert json.loads(gen.calls[0][1]["content"])["unresolved"] == ["output_format", "constraints", "category"]
 
@@ -117,15 +119,13 @@ def scored(text, scores):
     return f.model_copy(update={"category_scores": scores, "confidence": max(scores.values())})
 
 
-@pytest.mark.parametrize("scores, guess, status", [
-    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "summarization", "accepted"),   # Stage A's 2nd
-    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "coding", "accepted"),          # Stage A's 1st
-    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "closed_qa", "uncertain"),      # 3rd, conf >= 0.3
-    ({"coding": 0.28, "summarization": 0.27, "closed_qa": 0.25, "classification": 0.2}, "classification",
-     "accepted"),                                                                                 # conf < 0.3
+@pytest.mark.parametrize("scores, guess", [
+    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "coding"),          # even Stage A's own top-1
+    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "closed_qa"),
+    ({"coding": 0.28, "summarization": 0.27, "closed_qa": 0.25, "classification": 0.2}, "classification"),
 ])
-def test_category_decision(scores, guess, status):
-    assert category_decision(guess, scored("x", scores)) == status
+def test_category_decision_always_asks_the_user(scores, guess):
+    assert category_decision(guess, scored("x", scores)) == "uncertain"
 
 
 def test_uncertain_category_stays_unresolved_but_other_fields_apply():
@@ -138,12 +138,3 @@ def test_uncertain_category_stays_unresolved_but_other_fields_apply():
     assert res.accepted and res.category_status == "uncertain" and res.category_guess == "classification"
     assert "task category" in res.ir.unresolved and res.ir.category == out.ir.category
     assert res.ir.category_source == "stage_a" and res.ir.output_format == "Output one label per line."
-
-
-def test_accepted_category_resolves_it():
-    text = "which season goes with flowers, snowflakes"
-    f = scored(text, {"coding": 0.45, "classification": 0.35, "closed_qa": 0.2})
-    res = apply_stage_c(text, f, optimize(text, f), fake({"output_format": None, "constraints": [],
-                                                          "category": "classification"}))
-    assert res.category_status == "accepted" and res.ir.category == "classification"
-    assert "task category" not in res.ir.unresolved
