@@ -1,4 +1,4 @@
-"""Stage B rules (B01-B13). Each rule is a separate, pure function `(ir, features) -> PromptIR`.
+"""Stage B rules (B01-B15). Each rule is a separate, pure function `(ir, features) -> PromptIR`.
 
 A rule returns the IR unchanged when it does not apply, so the optimizer can tell which rules fired. Rules only add
 content for the five known categories, and only when Stage A is confident about the category
@@ -299,7 +299,7 @@ def b03_add_output_format(ir: PromptIR, f: PromptFeatures) -> PromptIR:
     return ir.model_copy(update={"output_format": fmt})
 
 
-# ---------------------------------------------------------------- B09-B13: attachment modifier
+# ---------------------------------------------------------------- B09-B15: attachment modifier
 # The attachment is a modifier, not a category: these rules add how to use the attached file, whatever the task. One
 # rule per type, so the ablation can switch each off. An attachment is also what a vague "this"/"that file" points
 # at, so the rule resolves Stage A's ambiguous-reference finding.
@@ -315,6 +315,13 @@ ATTACHMENT_REQUIREMENTS = {
     "docx": ("Use the attached Word document{name} as the source.",
              "Cite the section headings for the information you use.",
              "If the document does not contain the answer, say so."),
+    # B14/B15 (added 2026-10-02, after frozen-for-test): fire only when this attachment type is given
+    "spreadsheet": ("Use the attached spreadsheet{name} as the source.",
+                    "Refer to sheets, columns and rows by their names.",
+                    "If the spreadsheet does not contain the data, say so."),
+    "code": ("Use the attached code file{name} as the code to work on.",
+             "Refer to functions and line numbers when you point to code.",
+             "If you cannot open or read the file, say so instead of guessing."),
     "other": ("Use the attached file{name} as the source.",
               "If you cannot open or read the file, say so instead of guessing."),
 }
@@ -340,6 +347,8 @@ b10_attachment_pdf = _attachment_rule("pdf")
 b11_attachment_pptx = _attachment_rule("pptx")
 b12_attachment_docx = _attachment_rule("docx")
 b13_attachment_other = _attachment_rule("other")
+b14_attachment_spreadsheet = _attachment_rule("spreadsheet")
+b15_attachment_code = _attachment_rule("code")
 
 
 # ---------------------------------------------------------------- registry
@@ -354,6 +363,8 @@ RULES = [
     ("B11_ATTACHMENT_PPTX", b11_attachment_pptx),
     ("B12_ATTACHMENT_DOCX", b12_attachment_docx),
     ("B13_ATTACHMENT_OTHER", b13_attachment_other),
+    ("B14_ATTACHMENT_SPREADSHEET", b14_attachment_spreadsheet),
+    ("B15_ATTACHMENT_CODE", b15_attachment_code),
     ("B08_GROUP_FALLBACK", b08_group_fallback),
     ("B06_ADD_LABELS", b06_add_labels),
     ("B05_ADD_LANGUAGE", b05_add_language),

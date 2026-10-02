@@ -352,11 +352,12 @@ def test_result_is_saved_through_the_repository(db):
     assert [t.rule.code for t in result.transformations] == out.rules_applied
 
 
-# ---------------------------------------------------------------- B09-B13 attachment modifier
+# ---------------------------------------------------------------- B09-B15 attachment modifier
 from app.stage_b.ir import Attachment  # noqa: E402
 
 ATTACHMENT_RULES = [("image", b.b09_attachment_image), ("pdf", b.b10_attachment_pdf), ("pptx", b.b11_attachment_pptx),
-                    ("docx", b.b12_attachment_docx), ("other", b.b13_attachment_other)]
+                    ("docx", b.b12_attachment_docx), ("other", b.b13_attachment_other),
+                    ("spreadsheet", b.b14_attachment_spreadsheet), ("code", b.b15_attachment_code)]
 
 
 @pytest.mark.parametrize("kind, rule", ATTACHMENT_RULES)
@@ -374,7 +375,7 @@ def test_attachment_rule_adds_its_requirements_first(kind, rule):
 @pytest.mark.parametrize("kind, rule", ATTACHMENT_RULES)
 def test_attachment_rule_ignores_other_types(kind, rule):
     text = "summarize this"
-    for other in ("none", "image", "pdf", "pptx", "docx", "other"):
+    for other in ("none", "image", "pdf", "pptx", "docx", "spreadsheet", "code", "other"):
         if other == kind:
             continue
         ir = ir_of(text, "summarization", attachment=Attachment(type=other))
@@ -401,6 +402,18 @@ def test_optimize_with_attachment_logs_the_rule_and_can_switch_it_off():
     off = optimize(text, f, attachment=Attachment(type="pdf"), disabled={"B10_ATTACHMENT_PDF"})
     assert "B10_ATTACHMENT_PDF" not in off.rules_applied and "PDF" not in off.optimized_text
     assert off.ir.attachment.type == "pdf"             # still recorded in the IR for the renderers
+
+
+@pytest.mark.parametrize("text, category", [
+    ("summarize this", "summarization"), ("write a function that reverses a string", "coding"),
+    ("which is a fruit: apple or leek", "classification"), ("hey can you pls tell me when it opened", "closed_qa")])
+def test_new_attachment_rules_never_fire_without_an_attachment(text, category):
+    """B14/B15 were added after frozen-for-test: without an attachment Stage B's output must not change at all."""
+    f = feats(text, category)
+    with_new = optimize(text, f)
+    without_new = optimize(text, f, disabled={"B14_ATTACHMENT_SPREADSHEET", "B15_ATTACHMENT_CODE"})
+    assert with_new == without_new
+    assert not {"B14_ATTACHMENT_SPREADSHEET", "B15_ATTACHMENT_CODE"} & set(with_new.rules_applied)
 
 
 def test_attachment_counts_as_material_for_the_group_fallback():

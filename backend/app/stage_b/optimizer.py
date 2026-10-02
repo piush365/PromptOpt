@@ -12,7 +12,7 @@ and the `transformations` table. Rules can be switched off with `disabled` for t
 
 Category choice: `category="auto"` uses Stage A's classifier; one of the five categories overrides it (the user knows
 what they asked). Which one was used is logged and stored in `ir.category_source`. An attachment (image, PDF, ...) is a
-modifier handled by rules B09-B13, not a category. `target_llm` is recorded in the IR for app.rendering.
+modifier handled by rules B09-B15, not a category. `target_llm` is recorded in the IR for app.rendering.
 
 A prompt goes to Stage C only when something is still unresolved that Stage C can fix: the task category (after
 the single-category gate and the B08 group fallback) or an ambiguous reference. A missing label set or output

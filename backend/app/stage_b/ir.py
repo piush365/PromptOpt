@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict
 
 from app.stage_a.schema import Category
 
-AttachmentType = Literal["none", "image", "pdf", "pptx", "docx", "other"]
+AttachmentType = Literal["none", "image", "pdf", "pptx", "docx", "spreadsheet", "code", "other"]
 TargetLLM = Literal["gpt", "gemini", "claude"]
 # Where the material the task works on is:
 #   none        there is none

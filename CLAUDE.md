@@ -6,8 +6,9 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
 ## Pipeline
 - **Stage A, feature detection:** task category, missing output format, missing constraints (length/tone/audience/language),
   filler/redundancy, ambiguous references. spaCy + regex + Sentence-Transformers. Output: PromptFeatures (Pydantic).
-- **Stage B, rule-based optimization:** deterministic, independently testable rules (codes B01-B13 in `backend/app/db/seed.py`;
-  B09-B13 are the attachment modifier, one rule per attachment type).
+- **Stage B, rule-based optimization:** deterministic, independently testable rules (codes B01-B15 in `backend/app/db/seed.py`;
+  B09-B15 are the attachment modifier, one rule per attachment type: image, pdf, pptx, docx, other, spreadsheet, code;
+  B14/B15 were added after the freeze and fire only when that attachment type is given).
   Category-specific rules (B03-B06) apply only when Stage A's category confidence is >= 0.6. Below that, B08 is the
   group-level fallback: if closed_qa + information_extraction + summarization together reach 0.6 and text is attached,
   it adds "Answer from the provided text in at most three sentences." (only the missing parts) and resolves the
@@ -24,9 +25,14 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   `.venv` stays CPU-only) or Colab `notebooks/train_stage_c.ipynb` (zip from `MyDrive/PromptOpt/stage_c/`).
 - **IR + rendering:** the result becomes a model-agnostic intermediate representation (`app/stage_b/ir.py`: task,
   context, context_ref, constraints, requirements, output_format, attachment, target_llm, category_source, unresolved),
-  rendered per target LLM by `app/rendering.py` (Claude XML tags, GPT markdown sections, Gemini labelled sections;
-  tests parse every rendering back to check no field is lost). A user-selected category overrides Stage A
-  (`optimize(..., category=...)`). `app/pipeline.py` runs one request end to end and saves the renderings.
+  rendered per target LLM by `app/rendering.py` with four sections, same content everywhere (Claude: XML tags, context
+  first; GPT: `### Task / Context / Constraints / Output format`; Gemini: plain labels, instruction first, context
+  last; requirements are listed first under constraints); tests parse every rendering back to check no field is lost.
+  `token_counts` gives input tokens per target (GPT exact with tiktoken o200k_base, Claude/Gemini approx. chars/4,
+  labelled). A user-selected category overrides Stage A (`optimize(..., category=...)`); `app/pipeline.py` runs one
+  request end to end, saves the renderings and returns Stage A's own category and `category_disagreement`.
+  Per-category templates: `docs/CATEGORY_TEMPLATES.md` (`python -m app.templates_doc`). Attachment rules on 30
+  hand-made prompts: `evaluation/attachment_test.md` (`python -m app.attachment_eval`).
 - **Groq usage:** every Groq call records its tokens and cached tokens (failed JSON calls estimated) in
   `data/groq_usage.json`, over a rolling 24 hours like Groq's own limit; dataset generation stays within
   `--budget-fraction` (0.7) of each model's limit. Whether Groq counts cached tokens is not verified yet
@@ -110,9 +116,9 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 
 | Phase | Work | Status |
 |---|---|---|
-| 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; training pending (local GPU or Colab) |
-| 2 | Renderers per target + token counts, category override with disagreement shown, attachment types (image, pdf, pptx, docx, spreadsheet, code file) with a 30-prompt hand-made test set, category templates | **CURRENT** (parallel to training) |
-| 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | After the adapter exists |
+| 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; training runs locally (`.venv-gpu`, RTX 3050, micro-batch 1 x 16, bf16, ~1 h); Colab not needed |
+| 2 | Renderers per target + token counts, category override with disagreement shown, attachment types (image, pdf, pptx, docx, spreadsheet, code file) with a 30-prompt hand-made test set, category templates | Done: attachments 30/30 correct; Stage B on test byte-identical to frozen-for-test (482 prompts) |
+| 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | **CURRENT** once the adapter exists |
 
 ### Later, needs API keys (after step 7)
 - Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).

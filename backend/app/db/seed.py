@@ -45,6 +45,10 @@ RULES = [
      "Use the attached document as the source and cite section headings."),
     ("B13_ATTACHMENT_OTHER", "Other attachment", "B",
      "Use the attached file as the source; say so if it cannot be read."),
+    ("B14_ATTACHMENT_SPREADSHEET", "Spreadsheet attachment", "B",
+     "Use the attached spreadsheet as the source and refer to sheets, columns and rows by name."),
+    ("B15_ATTACHMENT_CODE", "Code file attachment", "B",
+     "Use the attached code file as the code to work on and point to functions and line numbers."),
 ]
 
 

@@ -4,6 +4,7 @@ in Colab (notebooks/train_stage_c.ipynb ships it inside stage_c_data_v1.zip).
     python train.py --data DIR --out DIR                 # verify sha256, train, save the best adapter
     python train.py --data DIR --zero-shot 60            # base model only, no training
     python train.py --data DIR --estimate                # time 20 steps and print the full-run estimate
+    python train.py --data DIR --batch-size 1            # 4 GB GPU: micro-batch 1 x 16 accumulation (same batch 16)
 
 DIR holds train.jsonl, val.jsonl, config.json and manifest.json (written by app.stage_c.data). Settings come from
 config.json. Loss is computed on the assistant tokens only; evaluation decodes greedily.
@@ -267,10 +268,19 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=Path("stage_c_out"))
     ap.add_argument("--max-steps", type=int)
     ap.add_argument("--estimate", action="store_true", help="time 20 optimizer steps and stop")
+    ap.add_argument("--batch-size", type=int, help="micro-batch size for small GPUs; gradient accumulation is "
+                                                   "scaled so the effective batch stays the same")
     ap.add_argument("--zero-shot", type=int, metavar="N", help="evaluate the base model on N val examples")
     args = ap.parse_args()
     verify(args.data)
     cfg = json.loads((args.data / "config.json").read_text(encoding="utf-8"))
+    if args.batch_size:
+        t = cfg["train"]
+        effective = t["batch_size"] * t["grad_accum"]
+        if effective % args.batch_size:
+            raise SystemExit(f"--batch-size must divide the effective batch {effective}")
+        t["batch_size"], t["grad_accum"] = args.batch_size, effective // args.batch_size
+        t["eval_batch_size"] = min(t["eval_batch_size"], 2 * args.batch_size)     # val logits are as large
     if args.zero_shot:
         tok, model = load_base(cfg, precision())
         rows = eval_rows(args.data, args.zero_shot, cfg["seed"])

@@ -17,3 +17,6 @@ openpyxl>=3.1
 
 # Evaluation harness (target LLM and judge on Groq)
 groq>=0.30
+
+# Rendering: exact GPT input token counts (o200k_base; downloaded once, then cached)
+tiktoken>=0.8

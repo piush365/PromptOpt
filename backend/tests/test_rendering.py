@@ -10,7 +10,7 @@ import pytest
 
 from app.db import repository as repo
 from app.pipeline import process_prompt
-from app.rendering import RENDERERS, TARGETS, attachment_note, fence, render, render_all
+from app.rendering import RENDERERS, TARGETS, attachment_note, count_tokens, fence, render, render_all, token_counts
 from app.stage_a.classifier import KeywordClassifier
 from app.stage_a.detector import FeatureDetector
 from app.stage_b.ir import Attachment, PromptIR
@@ -50,36 +50,43 @@ def _items(body: str) -> tuple[str, ...]:
     return tuple(x[2:] for x in lines)
 
 
+def _sections(text: str, labels: tuple[str, ...]) -> dict[str, str]:
+    """{label: body} for lines starting with 'label:' outside fenced blocks ('Task: x' keeps x on the first line)."""
+    sec = {}
+    for head, body in _split_outside_fences("\0\n" + text, lambda x: x == "\0" or x.startswith(labels)):
+        label, _, rest = head.partition(":")
+        sec[label] = "\n".join(([rest.strip()] if rest.strip() else []) + body).strip("\n")
+    sec.pop("\0", None)
+    return sec
+
+
+def _plain_context(body: str | None) -> dict:
+    sec = _sections(body or "", ("Document:", "Input:", "Attachment:"))
+    return {"context": _unfence(sec["Input"]) if "Input" in sec else None,
+            "context_text": _unfence(sec["Document"]) if "Document" in sec else None,
+            "attachment": sec.get("Attachment")}
+
+
 def parse_claude(text: str) -> dict:
-    tags = dict(re.findall(r"<(\w+)>\n(.*?)\n</\1>", text, re.S))
-    return {"task": tags.get("task"), "context": tags.get("input"), "context_text": tags.get("document"),
-            "attachment": tags.get("attachment"), "requirements": _items(tags.get("requirements", "")),
-            "constraints": _items(tags.get("constraints", "")), "output_format": tags.get("output_format")}
+    top = dict(re.findall(r"^<(context|task|constraints|output_format)>\n(.*?)\n</\1>$", text, re.S | re.M))
+    inner = dict(re.findall(r"<(document|input|attachment)>\n(.*?)\n</\1>", top.get("context", ""), re.S))
+    return {"task": top.get("task"), "context": inner.get("input"), "context_text": inner.get("document"),
+            "attachment": inner.get("attachment"), "constraints": _items(top.get("constraints", "")),
+            "output_format": top.get("output_format")}
 
 
 def parse_gpt(text: str) -> dict:
-    sec = {h[2:]: "\n".join(b).strip("\n") for h, b in _split_outside_fences(text, lambda x: x.startswith("# "))}
-    sub = {}
-    if "Instructions" in sec:
-        sub = {h[3:]: "\n".join(b).strip("\n")
-               for h, b in _split_outside_fences("## _\n" + sec["Instructions"], lambda x: x.startswith("## "))}
-    return {"task": sec.get("Task"), "context": _unfence(sec["Input"]) if "Input" in sec else None,
-            "context_text": _unfence(sec["Context"]) if "Context" in sec else None,
-            "attachment": sec.get("Attachment"), "requirements": _items(sub.get("Requirements", "")),
-            "constraints": _items(sub.get("Constraints", "")), "output_format": sec.get("Output Format")}
+    sec = {h[4:]: "\n".join(b).strip("\n") for h, b in _split_outside_fences(text, lambda x: x.startswith("### "))}
+    return {"task": sec.get("Task"), **_plain_context(sec.get("Context")),
+            "constraints": _items(sec.get("Constraints", "")), "output_format": sec.get("Output format")}
 
 
-GEMINI_LABELS = ("Context:", "Input:", "Attachment:", "Task:", "Requirements:", "Constraints:", "Output format:")
+GEMINI_LABELS = ("Task:", "Constraints:", "Output format:", "Context:")
 
 
 def parse_gemini(text: str) -> dict:
-    sec = {}
-    for head, body in _split_outside_fences(text, lambda x: x.startswith(GEMINI_LABELS)):
-        label, _, rest = head.partition(":")
-        sec[label] = "\n".join([rest.strip()] + body).strip("\n") if rest.strip() else "\n".join(body).strip("\n")
-    return {"task": sec.get("Task"), "context": _unfence(sec["Input"]) if "Input" in sec else None,
-            "context_text": _unfence(sec["Context"]) if "Context" in sec else None,
-            "attachment": sec.get("Attachment"), "requirements": _items(sec.get("Requirements", "")),
+    sec = _sections(text, GEMINI_LABELS)
+    return {"task": sec.get("Task"), **_plain_context(sec.get("Context")),
             "constraints": _items(sec.get("Constraints", "")), "output_format": sec.get("Output format")}
 
 
@@ -88,7 +95,7 @@ PARSERS = {"claude": parse_claude, "gpt": parse_gpt, "gemini": parse_gemini}
 
 def expected(ir: PromptIR, context_text: str | None) -> dict:
     return {"task": ir.task, "context": ir.context, "context_text": context_text, "attachment": attachment_note(ir),
-            "requirements": ir.requirements, "constraints": ir.constraints, "output_format": ir.output_format}
+            "constraints": (*ir.requirements, *ir.constraints), "output_format": ir.output_format}
 
 
 # ---------------------------------------------------------------- IRs to test with
@@ -156,23 +163,45 @@ def test_same_meaning_in_every_format():
 
 
 # ---------------------------------------------------------------- format details
-def test_claude_uses_xml_tags_with_the_document_first():
+def test_claude_uses_xml_tags_with_the_context_first():
     out = render(FULL, "claude", "A passage.")
-    assert out.startswith("<document>\nA passage.\n</document>")
-    assert out.index("<document>") < out.index("<task>") < out.index("<output_format>")
+    assert out.startswith("<context>\n<document>\nA passage.\n</document>\n<input>")
+    tags = re.findall(r"^<(\w+)>$", out, re.M)
+    assert tags == ["context", "document", "input", "attachment", "task", "constraints", "output_format"]
 
 
 def test_gpt_uses_markdown_sections():
     out = render(FULL, "gpt", "A passage.")
     heads = [x for x in out.split("\n") if x.startswith("#")]
-    assert heads == ["# Task", "# Instructions", "## Requirements", "## Constraints", "# Output Format",
-                     "# Attachment", "# Input", "# Context"]
+    assert heads == ["### Task", "### Context", "### Constraints", "### Output format"]
 
 
-def test_gemini_puts_context_first_and_the_task_after_it():
+def test_gemini_puts_the_instruction_first_and_the_context_after_it():
     out = render(FULL, "gemini", "A passage.")
-    assert out.startswith("Context:\n```\nA passage.\n```")
-    assert out.index("Context:") < out.index("Input:") < out.index("Task:") < out.index("Output format:")
+    assert out.startswith("Task: Classify each instrument")
+    assert out.index("Task:") < out.index("Constraints:") < out.index("Output format:") < out.index("Context:")
+    assert "<" not in out and "#" not in out                     # plain text, no tags or markdown headings
+
+
+def test_requirements_come_before_constraints():
+    for t in TARGETS:
+        out = render(FULL, t)
+        assert out.index("Use the attached PDF") < out.index("Use only these labels") < out.index("at most two")
+
+
+def test_token_counts_gpt_exact_others_labelled_approximate(monkeypatch):
+    rendered = render_all(FULL, "A passage.")
+    counts = token_counts(rendered)
+    assert set(counts) == set(TARGETS)
+    for t in ("claude", "gemini"):
+        assert counts[t] == {"tokens": round(len(rendered[t]) / 4), "method": "approx. (characters / 4)",
+                             "exact": False}
+    assert counts["gpt"]["tokens"] > 0
+    if counts["gpt"]["exact"]:
+        assert counts["gpt"]["method"] == "tiktoken o200k_base"
+    import app.rendering as r
+    monkeypatch.setattr(r, "_gpt_encoding", lambda: None)            # tiktoken unavailable: approximate, labelled
+    assert count_tokens("abcdefgh", "gpt") == {"tokens": 2, "method": "approx. (characters / 4)", "exact": False}
 
 
 def test_fence_is_longer_than_any_backtick_run():
@@ -213,3 +242,15 @@ def test_pipeline_saves_features_ir_steps_and_renderings(db, category, att, targ
     if att:
         assert "B10_ATTACHMENT_PDF" in [s["rule"] for s in res["steps"]]
         assert "r.pdf" in res["renderings"]["claude"]
+
+
+@pytest.mark.parametrize("category, disagree", [("auto", False), ("summarization", False), ("coding", True)])
+def test_pipeline_keeps_stage_a_and_flags_a_user_category_that_disagrees(db, category, disagree):
+    out = process_prompt(db, "summarize this article in a few bullet points", DET, category=category,
+                         context="The article text.")
+    db.commit()
+    assert out.stage_a_category == "summarization"                     # keyword classifier, stable
+    assert out.category == (out.stage_a_category if category == "auto" else category)
+    assert out.category_disagreement is disagree
+    assert repo.get_prompt_history(db, out.prompt_id)["features"]["task_type"] == "summarization"
+    assert set(out.token_counts) == set(TARGETS) and all(c["tokens"] > 0 for c in out.token_counts.values())
