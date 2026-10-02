@@ -45,7 +45,7 @@ def test_ui_and_options(client):
     assert client.get("/static/app.js").status_code == 200
     opt = client.get("/api/options").json()
     assert opt["targets"] == ["claude", "gpt", "gemini"] and "spreadsheet" in opt["attachment_types"]
-    assert opt["compare_enabled"] is False
+    assert isinstance(opt["compare_enabled"], bool)             # True when any Compare model has a key
 
 
 def test_optimize_returns_everything_the_ui_shows(client):
@@ -88,7 +88,7 @@ def test_history_and_compare(client):
     item = client.get(f"/api/history/{pid}").json()
     assert item["original_text"] == "list the dates mentioned" and item["results"][0]["renderings"]
     assert client.get("/api/history/999999").status_code == 404
-    assert client.post("/api/compare").status_code == 501
+    assert client.post("/api/compare", json={"prompt": "x", "model": "nope"}).status_code == 422
 
 
 def test_validation_errors(client):

@@ -41,9 +41,12 @@
 
       <div class="actions">
         <button type="submit" id="go">Optimize</button>
-        <button type="button" id="compare" disabled
-                title="Compare runs the original and optimized prompt on the real LLM; it needs API keys and is not set up yet">
-          Compare (needs API keys)</button>
+        <span id="compare_controls">
+          <label for="compare_model" class="inline">Run on</label>
+          <select id="compare_model"></select>
+          <label class="inline"><input type="checkbox" id="compare_judge"> blind judge</label>
+          <button type="button" id="compare">Compare</button>
+        </span>
         <span id="status" role="status"></span>
       </div>
     </form>
@@ -127,10 +130,20 @@
     <pre id="coding_tests" hidden></pre>
     <div class="actions">
       <button type="button" id="gen_tests" hidden>Generate tests (Cerebras)</button>
-      <button type="button" id="run_tests" disabled
-              title="Running the tests on the LLM's answer needs the Compare feature (API keys for the target LLM)">
-        Run tests on the LLM's answer (needs API keys)</button>
+      <span class="muted">Compare (above) runs validated tests on both answers.</span>
     </div>
+  </section>
+
+  <section class="panel" id="compare_result" hidden>
+    <h2>Compare</h2>
+    <p id="compare_label"></p>
+    <p id="compare_summary"></p>
+    <div class="grid">
+      <div><h3>Original prompt</h3><pre id="cmp_original_answer" tabindex="0"></pre><p class="muted" id="cmp_original_meta"></p></div>
+      <div><h3>Optimized prompt</h3><pre id="cmp_optimized_answer" tabindex="0"></pre><p class="muted" id="cmp_optimized_meta"></p></div>
+    </div>
+    <p id="compare_tests"></p>
+    <p id="compare_judge_line"></p>
   </section>
 
   <section class="panel" id="history_panel">

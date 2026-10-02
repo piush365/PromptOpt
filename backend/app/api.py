@@ -10,7 +10,9 @@ Endpoints
     GET  /api/history           recent prompts (kept RETENTION_DAYS, then purged)
     GET  /api/history/{id}      one prompt with everything the system did to it
     POST /api/coding-tests      unvalidated tests for a coding prompt (Cerebras; 503 without CEREBRAS_API_KEY)
-    POST /api/compare           501 until API keys for the real target LLMs are configured
+    GET  /api/compare/models    models Compare can run on, with availability ("add GEMINI_API_KEY", ...)
+    POST /api/compare           original vs optimized prompt on one model: answers, tokens, latency, sandbox tests
+                                for dataset coding items, optional blind judge (app.compare)
 
 Everything runs offline. Stage C is used when its adapter is installed (config.STAGE_C_ADAPTER) and
 STAGE_C_ENABLED is not "0"; otherwise the UI says Stage C is unavailable and Stage B's result is shown.
@@ -31,6 +33,9 @@ from app.config import RETENTION_DAYS
 from app.db import repository as repo
 from app.db.base import get_db
 from app.coding import app_tests
+from app.compare import providers
+from app.compare import service as compare_service
+from app.evaluation.llm import DailyLimitReached, ModelUnavailable
 from app.image.attributes import ATTRIBUTES as IMAGE_ATTRIBUTES
 from app.image.optimizer import IMAGE_TARGETS, RULES as IMAGE_RULES
 from app.image.v2 import RULE_DOCS_V2, optimize_image_v2, parse_accepted, render_all_v2
@@ -93,7 +98,7 @@ def options():
             "attachment_types": ATTACHMENTS,
             "stage_c": {"available": model is not None, "model": model.name if model else None,
                         "device": model.device if model else None},
-            "retention_days": RETENTION_DAYS, "compare_enabled": False}
+            "retention_days": RETENTION_DAYS, "compare_enabled": any(m.available for m in providers.MODELS)}
 
 
 def issues(f) -> list[dict]:
@@ -220,6 +225,41 @@ def history_item(prompt_id: int, db: Session = Depends(get_db)):
     return item
 
 
-@app.post("/api/compare", status_code=501)
-def compare():
-    raise HTTPException(501, "Compare needs API keys for the real target LLMs; not configured yet.")
+class CompareRequest(OptimizeRequest):
+    model: str = Field(description="a model id from /api/compare/models")
+    judge: bool = False
+
+
+@app.get("/api/compare/models")
+def compare_models():
+    return {"default": next((m.id for m in providers.MODELS if m.available and m.provider == "groq"),
+                            next((m.id for m in providers.MODELS if m.available), None)),
+            "models": [{"id": m.id, "label": m.label, "provider": m.provider, "family": m.family,
+                        "available": m.available, "reason": m.reason} for m in providers.MODELS]}
+
+
+@app.post("/api/compare")
+def compare(req: CompareRequest, db: Session = Depends(get_db)):
+    if req.category == "image_generation":
+        raise HTTPException(422, "Compare runs text prompts; image models are not wired up for Compare.")
+    info = providers.BY_ID.get(req.model)
+    if info is None:
+        raise HTTPException(422, f"unknown model {req.model!r}")
+    if not info.available:
+        raise HTTPException(503, info.reason)
+    optimized = optimize_prompt(OptimizeRequest(**req.model_dump(exclude={"model", "judge"})), db)
+    try:
+        result = compare_service.compare(req.prompt, optimized["renderings"][req.target], req.model, req.target,
+                                         context=req.context, category=optimized["category"]["used"],
+                                         judge_answers=req.judge)
+    except DailyLimitReached as e:
+        raise HTTPException(429, str(e))
+    except ModelUnavailable as e:
+        raise HTTPException(503, str(e))
+    history = repo.get_prompt_history(db, optimized["prompt_id"])
+    result_id = history["results"][-1]["result_id"]
+    repo.save_token_usage(db, result_id, req.target, f"compare:{req.model}", result["original"]["input_tokens"],
+                          result["optimized"]["input_tokens"], result["original"]["output_tokens"],
+                          result["optimized"]["output_tokens"])
+    db.commit()
+    return {"prompt_id": optimized["prompt_id"], "category": optimized["category"], **result}

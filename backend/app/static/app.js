@@ -17,6 +17,39 @@ let accepted = new Set();                        // image mode: suggestions the 
 let shownImage = "dalle";
 const isImageMode = () => $("category").value === "image_generation";
 
+function fmtTokens(v) {
+  return `in ${v.input_tokens}, out ${v.output_tokens}` + (v.reasoning_tokens ? ` (reasoning ${v.reasoning_tokens})` : "") +
+    `, total ${v.total_tokens}; ${(v.latency_ms / 1000).toFixed(1)} s` + (v.cached ? " (cached)" : "") +
+    (v.finish_reason === "length" ? "; cut off at the token limit" : "");
+}
+
+function pct(x) { return x === null || x === undefined ? "-" : (x > 0 ? "+" : "") + x + "%"; }
+
+function testLine(t) {
+  if (!t) return "";
+  if (!t.validated) return t.note;
+  const r = (v) => `${v.outcome} (${v.passed}/${v.total})`;
+  return `Sandbox tests (dataset item ${t.item}, validated on the reference): original ${r(t.original)}, ` +
+    `optimized ${r(t.optimized)}.`;
+}
+
+function renderCompare(c) {
+  $("compare_result").hidden = false;
+  $("compare_label").textContent = c.label + `. Same model, temperature ${c.settings.temperature}, max ${c.settings.max_tokens} tokens` +
+    (c.settings.reasoning_effort ? `, reasoning ${c.settings.reasoning_effort}` : "") + ".";
+  $("compare_summary").textContent = `Optimized vs original: input tokens ${pct(c.change_pct.input_tokens)}, ` +
+    `output ${pct(c.change_pct.output_tokens)}, total ${pct(c.change_pct.total_tokens)}, latency ${pct(c.latency_change_pct)}.`;
+  for (const v of ["original", "optimized"]) {
+    $(`cmp_${v}_answer`).textContent = c[v].answer || "(empty answer)";
+    $(`cmp_${v}_meta`).textContent = fmtTokens(c[v]);
+  }
+  $("compare_tests").textContent = testLine(c.tests);
+  const j = c.judge;
+  $("compare_judge_line").textContent = j ? `Blind judge (${j.model}, never told which prompt produced which answer): ` +
+    `original ${j.original?.score ?? "-"}/10 (${j.original?.reason ?? ""}); optimized ${j.optimized?.score ?? "-"}/10 ` +
+    `(${j.optimized?.reason ?? ""}).` : "";
+}
+
 function setTargets() {
   const image = isImageMode();
   const targets = image ? OPTIONS.image_targets : ["gpt", "gemini", "claude"];
@@ -29,6 +62,7 @@ function setTargets() {
   }));
   $("attachment_box").hidden = image;
   $("context_box").hidden = image;
+  $("compare_controls").hidden = image;
 }
 let last = null;
 let shown = "gpt";
@@ -51,6 +85,15 @@ async function init() {
   fill($("pick"), opt.categories.filter((c) => c !== "auto" && c !== "image_generation"));
   setTargets();
   $("category").addEventListener("change", setTargets);
+  const cm = await (await fetch("/api/compare/models")).json();
+  $("compare_model").replaceChildren(...cm.models.map((m) => {
+    const o = el("option", m.label + (m.available ? "" : " (needs API key)")); o.value = m.id;
+    o.disabled = !m.available; o.title = m.reason || ""; o.selected = m.id === cm.default;
+    return o;
+  }));
+  $("compare").disabled = !cm.default;
+  $("compare").title = cm.default ? "Run the original and the optimized prompt on the chosen model" :
+    "No model available: add an API key to backend/.env";
   fill($("attachment"), opt.attachment_types);
   $("retention").textContent = `(kept ${opt.retention_days} days)`;
   $("attachment").addEventListener("change", () => { $("attachment_name").hidden = $("attachment").value === "none"; });
@@ -254,6 +297,36 @@ $("repick").addEventListener("click", () => {
 });
 
 $("prompt").addEventListener("input", () => { accepted = new Set(); });   // a new request starts clean
+
+$("compare").addEventListener("click", async () => {
+  if (isImageMode()) { $("status").textContent = "Compare runs text prompts only."; return; }
+  if (!$("prompt").value.trim()) { $("status").textContent = "Enter a prompt first."; return; }
+  $("compare").disabled = true;
+  $("status").textContent = "Comparing (two calls; Cerebras paces calls about 25 s apart)...";
+  const body = {
+    prompt: $("prompt").value,
+    target: document.querySelector("input[name=target]:checked").value,
+    category: $("category").value,
+    attachment_type: $("attachment").value,
+    attachment_name: $("attachment_name").value || null,
+    context: $("context").value || null,
+    model: $("compare_model").value,
+    judge: $("compare_judge").checked,
+  };
+  try {
+    const resp = await fetch("/api/compare", { method: "POST", headers: { "Content-Type": "application/json" },
+                                               body: JSON.stringify(body) });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(typeof data.detail === "string" ? data.detail : resp.statusText);
+    renderCompare(data);
+    $("status").textContent = "";
+    loadHistory();
+  } catch (e) {
+    $("status").textContent = "Compare: " + e.message;
+  } finally {
+    $("compare").disabled = false;
+  }
+});
 
 $("image_copy").addEventListener("click", async () => {
   const r = last.renderings[shownImage];

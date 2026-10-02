@@ -1,0 +1,15 @@
+{
+ "coding": {
+  "original": {"content": "Here is one way:\n```python\ndef sq(n):\n    return n * n\n\nprint(sq(4))\n```\nThis prints 16.", "input_tokens": 82, "output_tokens": 310, "reasoning_tokens": 120, "latency_ms": 980, "finish_reason": "stop"},
+  "optimized": {"content": "```python\ndef square(n):\n    return n * n\n```", "input_tokens": 104, "output_tokens": 95, "reasoning_tokens": 60, "latency_ms": 610, "finish_reason": "stop"}
+ },
+ "closed_qa": {
+  "original": {"content": "The Eiffel Tower opened in 1889. It was built as the entrance arch to the 1889 World's Fair and, at the time, was the tallest man-made structure in the world. Here are some more facts about it...", "input_tokens": 48, "output_tokens": 420, "reasoning_tokens": 90, "latency_ms": 1500, "finish_reason": "stop"},
+  "optimized": {"content": "1889.", "input_tokens": 71, "output_tokens": 40, "reasoning_tokens": 30, "latency_ms": 420, "finish_reason": "stop"}
+ },
+ "judge": {"content": "{\"score\": 8, \"reason\": \"Correct and complete.\"}"},
+ "gemini_response": {
+  "candidates": [{"content": {"role": "model", "parts": [{"text": "Thinking about the year...", "thought": true}, {"text": "1889."}]}, "finishReason": "STOP"}],
+  "usageMetadata": {"promptTokenCount": 70, "candidatesTokenCount": 3, "thoughtsTokenCount": 25, "totalTokenCount": 98}
+ }
+}

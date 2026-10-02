@@ -52,4 +52,8 @@ button.link { border: none; background: none; padding: 0; color: var(--accent); 
 .chip { border-radius: 999px; padding: 3px 10px; margin: 2px 4px 2px 0; font-size: 13px; }
 .chip.accepted { border-color: var(--accent); color: var(--accent); }
 .suggest-row { margin: 6px 0; }
+label.inline { display: inline; font-weight: normal; margin: 0 4px 0 8px; }
+#compare_model { width: auto; display: inline-block; padding: 6px; }
+#compare_result .grid { margin-top: 8px; }
+#compare_result pre { max-height: 420px; overflow-y: auto; }
 .suggest-row .label { color: var(--muted); margin-right: 6px; font-size: 13px; }
