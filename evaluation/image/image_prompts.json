@@ -1,162 +1,202 @@
 [
  {
   "id": "img-01",
-  "prompt": "a dog"
+  "prompt": "a dog",
+  "style": null
  },
  {
   "id": "img-02",
-  "prompt": "cat"
+  "prompt": "cat",
+  "style": null
  },
  {
   "id": "img-03",
-  "prompt": "a sunset"
+  "prompt": "a sunset",
+  "style": null
  },
  {
   "id": "img-04",
-  "prompt": "mountains"
+  "prompt": "mountains",
+  "style": null
  },
  {
   "id": "img-05",
-  "prompt": "a red car"
+  "prompt": "a red car",
+  "style": null
  },
  {
   "id": "img-06",
-  "prompt": "can you make me a picture of a cat on a windowsill, no text"
+  "prompt": "can you make me a picture of a cat on a windowsill, no text",
+  "style": null
  },
  {
   "id": "img-07",
-  "prompt": "pls draw a dragon"
+  "prompt": "pls draw a dragon",
+  "style": "drawing"
  },
  {
   "id": "img-08",
-  "prompt": "a cozy coffee shop"
+  "prompt": "a cozy coffee shop",
+  "style": null
  },
  {
   "id": "img-09",
-  "prompt": "give me an image of a robot"
+  "prompt": "give me an image of a robot",
+  "style": null
  },
  {
   "id": "img-10",
-  "prompt": "a bowl of ramen"
+  "prompt": "a bowl of ramen",
+  "style": null
  },
  {
   "id": "img-11",
-  "prompt": "an old lighthouse"
+  "prompt": "an old lighthouse",
+  "style": null
  },
  {
   "id": "img-12",
-  "prompt": "a girl reading a book"
+  "prompt": "a girl reading a book",
+  "style": null
  },
  {
   "id": "img-13",
-  "prompt": "a futuristic city without cars and people for my phone wallpaper"
+  "prompt": "a futuristic city without cars and people for my phone wallpaper",
+  "style": null
  },
  {
   "id": "img-14",
-  "prompt": "watercolor painting of a fox in a forest"
+  "prompt": "watercolor painting of a fox in a forest",
+  "style": "watercolor painting"
  },
  {
   "id": "img-15",
-  "prompt": "a birthday cake"
+  "prompt": "a birthday cake",
+  "style": null
  },
  {
   "id": "img-16",
-  "prompt": "an astronaut on the moon"
+  "prompt": "an astronaut on the moon",
+  "style": null
  },
  {
   "id": "img-17",
-  "prompt": "a logo for a bakery called Sunrise"
+  "prompt": "a logo for a bakery called Sunrise",
+  "style": "logo"
  },
  {
   "id": "img-18",
-  "prompt": "a medieval castle"
+  "prompt": "a medieval castle",
+  "style": null
  },
  {
   "id": "img-19",
-  "prompt": "a pair of running shoes for an ad"
+  "prompt": "a pair of running shoes for an ad",
+  "style": null
  },
  {
   "id": "img-20",
-  "prompt": "two kids playing in the rain"
+  "prompt": "two kids playing in the rain",
+  "style": null
  },
  {
   "id": "img-21",
-  "prompt": "an underwater coral reef"
+  "prompt": "an underwater coral reef",
+  "style": null
  },
  {
   "id": "img-22",
-  "prompt": "a tree in autumn"
+  "prompt": "a tree in autumn",
+  "style": null
  },
  {
   "id": "img-23",
-  "prompt": "a portrait of an old fisherman"
+  "prompt": "a portrait of an old fisherman",
+  "style": null
  },
  {
   "id": "img-24",
-  "prompt": "a spaceship"
+  "prompt": "a spaceship",
+  "style": null
  },
  {
   "id": "img-25",
-  "prompt": "a wedding invitation background"
+  "prompt": "a wedding invitation background",
+  "style": null
  },
  {
   "id": "img-26",
-  "prompt": "hey could you please create an image of a lion"
+  "prompt": "hey could you please create an image of a lion",
+  "style": null
  },
  {
   "id": "img-27",
-  "prompt": "a pixel art knight"
+  "prompt": "a pixel art knight",
+  "style": "pixel art"
  },
  {
   "id": "img-28",
-  "prompt": "a cup of tea on a table"
+  "prompt": "a cup of tea on a table",
+  "style": null
  },
  {
   "id": "img-29",
-  "prompt": "a mountain lake at sunrise, 16:9"
+  "prompt": "a mountain lake at sunrise, 16:9",
+  "style": null
  },
  {
   "id": "img-30",
-  "prompt": "a black and white photo of a jazz club"
+  "prompt": "a black and white photo of a jazz club",
+  "style": null
  },
  {
   "id": "img-31",
-  "prompt": "a dinosaur"
+  "prompt": "a dinosaur",
+  "style": null
  },
  {
   "id": "img-32",
-  "prompt": "an icon of a cloud for an app"
+  "prompt": "an icon of a cloud for an app",
+  "style": "icon"
  },
  {
   "id": "img-33",
-  "prompt": "a beach with no people and a blue sky"
+  "prompt": "a beach with no people and a blue sky",
+  "style": null
  },
  {
   "id": "img-34",
-  "prompt": "a magical library"
+  "prompt": "a magical library",
+  "style": null
  },
  {
   "id": "img-35",
-  "prompt": "a busy street market in Morocco"
+  "prompt": "a busy street market in Morocco",
+  "style": null
  },
  {
   "id": "img-36",
-  "prompt": "a minimalist poster of a whale"
+  "prompt": "a minimalist poster of a whale",
+  "style": "minimalist poster"
  },
  {
   "id": "img-37",
-  "prompt": "a snowy village at night"
+  "prompt": "a snowy village at night",
+  "style": null
  },
  {
   "id": "img-38",
-  "prompt": "a bicycle"
+  "prompt": "a bicycle",
+  "style": null
  },
  {
   "id": "img-39",
-  "prompt": "a close-up of a honeybee on a flower"
+  "prompt": "a close-up of a honeybee on a flower",
+  "style": null
  },
  {
   "id": "img-40",
-  "prompt": "a happy family having dinner"
+  "prompt": "a happy family having dinner",
+  "style": null
  }
 ]
