@@ -72,6 +72,8 @@ function render(r) {
   }) : [el("li", "No rule changed the prompt.", "muted")]));
   $("unresolved").textContent = r.unresolved_after_b.length ? "Left for Stage C / you: " + r.unresolved_after_b.join("; ") : "";
 
+  renderCodingTests(r.coding_tests, null);
+
   const s = r.stage_c;
   let text;
   if (!s.routed) text = "Not needed: Stage B resolved everything Stage C could fix.";
@@ -83,6 +85,41 @@ function render(r) {
   $("stage_c_raw").hidden = !s.raw;
   $("stage_c_raw").textContent = s.raw || "";
 }
+
+function renderCodingTests(ct, generated) {
+  $("coding_panel").hidden = !ct;
+  if (!ct) return;
+  const t = generated || ct.tests;
+  $("coding_tests").hidden = !t;
+  $("gen_tests").hidden = !!t || !ct.can_generate;
+  if (t) {
+    const lines = t.mode === "stdout"
+      ? ["# The program's output must equal the reference output:", ...(t.expected_stdout || "").split("\n")]
+      : [t.signature ? `# expected: ${t.signature}` : `# function under test: ${t.function}`, ...t.tests];
+    $("coding_tests").textContent = lines.join("\n");
+    $("coding_note").textContent = (t.validated ? "VALIDATED. " : "") + t.note;
+  } else {
+    $("coding_note").textContent = ct.can_generate
+      ? "No validated tests for this prompt (it is not a dataset item). You can generate unvalidated tests."
+      : "No validated tests for this prompt, and generating tests needs CEREBRAS_API_KEY.";
+  }
+}
+
+$("gen_tests").addEventListener("click", async () => {
+  $("gen_tests").disabled = true;
+  $("status").textContent = "Generating tests...";
+  try {
+    const resp = await fetch("/api/coding-tests", { method: "POST", headers: { "Content-Type": "application/json" },
+                                                    body: JSON.stringify({ optimized_prompt: last.optimized_plain }) });
+    if (!resp.ok) throw new Error((await resp.json()).detail || resp.statusText);
+    renderCodingTests(last.coding_tests, await resp.json());
+    $("status").textContent = "";
+  } catch (e) {
+    $("status").textContent = "Error: " + e.message;
+  } finally {
+    $("gen_tests").disabled = false;
+  }
+});
 
 async function loadHistory() {
   const items = await (await fetch("/api/history?limit=15")).json();

@@ -128,3 +128,35 @@ def test_uncertain_category_is_reported_for_the_ui(monkeypatch):
     assert r["category"]["uncertain"] and r["category"]["guess"] == "classification"
     assert r["category"]["used"] == "coding" and "task category" in r["unresolved"]
     assert r["stage_c"]["category_status"] == "uncertain"
+
+
+def test_coding_prompt_shows_dataset_tests_or_offers_generation(client, monkeypatch):
+    from app.coding import app_tests
+    item = {"degraded_prompt": "write fn to add two numbers", "tests": ["assert add(1, 2) == 3"], "entry": "add",
+            "source_id": "codealpaca-1", "mode": "function"}
+    monkeypatch.setattr(app_tests, "_items", lambda: {"write fn to add two numbers": item})
+    monkeypatch.setattr(app_tests, "can_generate", lambda: False)
+    r = client.post("/api/optimize", json={"prompt": "Write fn to add  two numbers", "category": "coding"}).json()
+    assert r["coding_tests"]["tests"]["validated"] and r["coding_tests"]["tests"]["tests"] == item["tests"]
+    r = client.post("/api/optimize", json={"prompt": "write a function that reverses a list",
+                                           "category": "coding"}).json()
+    assert r["coding_tests"] == {"tests": None, "can_generate": False}
+    assert client.post("/api/coding-tests", json={"optimized_prompt": "x"}).status_code == 503
+    r = client.post("/api/optimize", json={"prompt": "summarize this article", "category": "summarization",
+                                           "context": "Text."}).json()
+    assert r["coding_tests"] is None
+
+
+def test_generated_tests_are_marked_unvalidated(tmp_path, monkeypatch):
+    from app.coding import app_tests
+
+    class LLM:
+        def complete(self, *a, **k):
+            from app.evaluation.llm import Completion
+            return Completion('{"function": "rev", "signature": "def rev(xs):", "tests": '
+                              '["assert rev([1, 2]) == [2, 1]", "print(1)"]}', "m", 1, 1, None, 1, "stop")
+    monkeypatch.setattr(app_tests, "OUT_DIR", tmp_path)
+    out = app_tests.generate("Write a function that reverses a list.", llm=LLM())
+    assert out["validated"] is False and out["tests"] == ["assert rev([1, 2]) == [2, 1]"]
+    assert "UNVALIDATED" in out["note"]
+    assert app_tests.generate("Write a function that reverses a list.", llm=None)["tests"] == out["tests"]  # cached

@@ -88,6 +88,18 @@
     </div>
   </section>
 
+  <section class="panel" id="coding_panel" hidden>
+    <h2>Tests for this coding prompt</h2>
+    <p id="coding_note" class="muted"></p>
+    <pre id="coding_tests" hidden></pre>
+    <div class="actions">
+      <button type="button" id="gen_tests" hidden>Generate tests (Cerebras)</button>
+      <button type="button" id="run_tests" disabled
+              title="Running the tests on the LLM's answer needs the Compare feature (API keys for the target LLM)">
+        Run tests on the LLM's answer (needs API keys)</button>
+    </div>
+  </section>
+
   <section class="panel" id="history_panel">
     <h2>History <span class="muted" id="retention"></span></h2>
     <ul id="history"></ul>

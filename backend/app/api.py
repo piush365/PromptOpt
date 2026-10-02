@@ -8,6 +8,7 @@ Endpoints
     POST /api/optimize          prompt -> Stage A result, issues, rules fired, Stage C, renderings + input tokens
     GET  /api/history           recent prompts (kept RETENTION_DAYS, then purged)
     GET  /api/history/{id}      one prompt with everything the system did to it
+    POST /api/coding-tests      unvalidated tests for a coding prompt (Cerebras; 503 without CEREBRAS_API_KEY)
     POST /api/compare           501 until API keys for the real target LLMs are configured
 
 Everything runs offline. Stage C is used when its adapter is installed (config.STAGE_C_ADAPTER) and
@@ -28,6 +29,7 @@ from sqlalchemy.orm import Session
 from app.config import RETENTION_DAYS
 from app.db import repository as repo
 from app.db.base import get_db
+from app.coding import app_tests
 from app.db.models import Prompt
 from app.pipeline import process_prompt
 from app.rendering import TARGETS
@@ -131,7 +133,20 @@ def optimize_prompt(req: OptimizeRequest, db: Session = Depends(get_db)):
         "renderings": res.renderings,
         "tokens": res.token_counts,
         "target": req.target,
+        "coding_tests": {"tests": app_tests.lookup(req.prompt), "can_generate": app_tests.can_generate()}
+        if "coding" in (res.category, f.task_type, (c.category_guess if c else None)) else None,
     }
+
+
+class CodingTestsRequest(BaseModel):
+    optimized_prompt: str = Field(min_length=1, max_length=20000)
+
+
+@app.post("/api/coding-tests")
+def coding_tests(req: CodingTestsRequest):
+    if not app_tests.can_generate():
+        raise HTTPException(503, "Generating tests needs CEREBRAS_API_KEY in backend/.env.")
+    return app_tests.generate(req.optimized_prompt)
 
 
 @app.get("/api/history")

@@ -110,7 +110,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 1 | Dataset v1.1 repair, then send rater sheets | Done: team 3 x 170 and faculty 20 rated; 295 of 330 accepted; v1.2 final = 5,184 rows (35 human-rejected + 9 LLM-assisted-filter rows left out); `evaluation/REVIEW_SUMMARY.md` |
 | 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. The default dataset is now v1.2 final (`config.DATASET_DIR` / `DATASET_CSV`), so no command needs `--dataset` |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
-| 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started; **NEXT** (finish phase 4) |
+| 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Finish phase 4: `app/coding/` (bwrap sandbox, Cerebras-generated asserts validated on the reference, naming discovery); method `docs/CODING_TESTS.md`, results `evaluation/coding_tests.md` |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c_eval.md` |
 | 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Done: final test run once on 2026-10-02, tag `final-for-test`; `evaluation/FINAL_RESULTS.md` (Stage A 74.7%; Stage B format 3.1% -> 95.0%, 6.4% routed; Stage C ablation: helps on routed prompts only; benchmark: quality 8.2 -> 9.0, task success 67% -> 85%, tokens -57%) |
@@ -129,6 +129,11 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 | 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; trained locally (`.venv-gpu`, RTX 3050, micro-batch 1 x 16, bf16, 51 min); adapter in `backend/artifacts/stage_c_adapter` (git-ignored); Colab not needed |
 | 2 | Renderers per target + token counts, category override with disagreement shown, attachment types (image, pdf, pptx, docx, spreadsheet, code file) with a 30-prompt hand-made test set, category templates | Done: attachments 30/30 correct; Stage B on test byte-identical to frozen-for-test (482 prompts) |
 | 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | Done: LoRA passes validation 98.3% vs zero-shot 3.4%; routed prompts: format stated 10% -> 90%, task intent 0.911 -> 0.885; forced routing lowers task intent (0.855 -> 0.773), so Stage C stays routed-only; GPU 0.72 s median, CPU 5.0 s; `evaluation/stage_c_eval.md`. Final test run done: `evaluation/FINAL_RESULTS.md`, tag `final-for-test` |
+
+- **Coding tests (phase 4):** `python -m app.coding.testgen` (items + validated tests, Cerebras, cached in
+  `data/coding/`), `python -m app.coding.evaluate --out ../evaluation/coding_tests.md` (pass@1 degraded vs Stage B).
+  Code only ever runs through `app.coding.sandbox.run_python` (bwrap: no network, read-only system; refuses to run
+  without bwrap unless `SANDBOX_REQUIRE_BWRAP=0`).
 
 ### Later, needs API keys (after step 7)
 - Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).
