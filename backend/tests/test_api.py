@@ -64,7 +64,7 @@ def test_user_category_disagreement_is_reported(client):
     r = client.post("/api/optimize", json={"prompt": "summarize this article in bullet points",
                                            "category": "coding", "context": "Some article."}).json()
     assert r["category"] == {"used": "coding", "source": "user", "requested": "coding", "stage_a": "summarization",
-                             "disagreement": True}
+                             "disagreement": True, "uncertain": False, "guess": None}
 
 
 def test_stage_c_routing_is_reported(client):
@@ -73,8 +73,11 @@ def test_stage_c_routing_is_reported(client):
     s = r["stage_c"]
     assert s["routed"]
     if s["available"]:
-        assert s["used"] and s["accepted"] and r["category"]["source"] == "stage_c"
-        assert "Use bullet points." in r["renderings"]["gemini"]
+        # keyword classifier: "other" with confidence 1.0, so Stage C's guess is outside Stage A's top two and the
+        # category is left for the user; Stage C's format is still applied
+        assert s["used"] and s["accepted"] and s["category_status"] == "uncertain"
+        assert r["category"]["uncertain"] and r["category"]["guess"] == "summarization"
+        assert r["category"]["source"] == "stage_a" and "Use bullet points." in r["renderings"]["gemini"]
     else:
         assert not s["used"] and r["category"]["source"] == "stage_a"
 
@@ -92,3 +95,36 @@ def test_validation_errors(client):
     assert client.post("/api/optimize", json={"prompt": ""}).status_code == 422
     assert client.post("/api/optimize", json={"prompt": "x", "target": "llama"}).status_code == 422
     assert client.post("/api/optimize", json={"prompt": "x", "attachment_type": "zip"}).status_code == 422
+
+
+def test_uncertain_category_is_reported_for_the_ui(monkeypatch):
+    class Guess(FakeStageC):
+        def generate(self, messages):
+            return json.dumps({"output_format": "Output one label per line.", "constraints": [],
+                               "category": "classification"})
+    from app.stage_a.schema import PromptFeatures
+
+    class Det:                                  # Stage A unsure, and classification not in its top two
+        def detect(self, prompt, context=None):
+            return PromptFeatures(task_type="coding", confidence=0.45, classifier="test", has_format_spec=False,
+                                  has_context=False, word_count=len(prompt.split()),
+                                  category_scores={"coding": 0.45, "summarization": 0.35, "classification": 0.2})
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+    with Session() as s:
+        seed_rules(s)
+
+    def session():
+        with Session() as s:
+            yield s
+    api.app.dependency_overrides[get_db] = session
+    monkeypatch.setattr(api, "detector", lambda: Det())
+    monkeypatch.setattr(api, "stage_c_model", lambda: Guess())
+    try:
+        r = TestClient(api.app).post("/api/optimize", json={"prompt": "which season goes with snow"}).json()
+    finally:
+        api.app.dependency_overrides.clear()
+    assert r["category"]["uncertain"] and r["category"]["guess"] == "classification"
+    assert r["category"]["used"] == "coding" and "task category" in r["unresolved"]
+    assert r["stage_c"]["category_status"] == "uncertain"

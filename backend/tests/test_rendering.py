@@ -267,7 +267,9 @@ def test_pipeline_with_stage_c_saves_a_stage_c_step(db):
     assert out.optimization.needs_stage_c                  # keyword classifier: category unresolved -> routed
     assert out.stage_c.accepted and res["used_lora"]
     assert res["steps"][-1]["stage"] == "C" and "Use bullet points." in res["renderings"]["gpt"]
-    assert out.category == "summarization" and res["ir"]["category_source"] == "stage_c"
+    # Stage A ("other", 1.0) has no room for Stage C's guess: the category stays for the user to pick
+    assert out.stage_c.category_status == "uncertain" and out.stage_c.category_guess == "summarization"
+    assert res["ir"]["category_source"] == "stage_a" and "task category" in res["ir"]["unresolved"]
     assert {u["target_llm"] for u in res["token_usage"]} == set(TARGETS)
 
 

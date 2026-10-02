@@ -24,6 +24,7 @@ function fill(select, values) {
 async function init() {
   const opt = await (await fetch("/api/options")).json();
   fill($("category"), opt.categories);
+  fill($("pick"), opt.categories.filter((c) => c !== "auto"));
   fill($("attachment"), opt.attachment_types);
   $("retention").textContent = `(kept ${opt.retention_days} days)`;
   $("attachment").addEventListener("change", () => { $("attachment_name").hidden = $("attachment").value === "none"; });
@@ -57,6 +58,13 @@ function render(r) {
   $("disagreement").textContent = c.disagreement
     ? `You chose ${LABELS[c.used]}, but Stage A predicted ${LABELS[c.stage_a] || c.stage_a}. Your choice was used.` : "";
 
+  $("uncertain").hidden = !c.uncertain;
+  if (c.uncertain) {
+    $("uncertain_text").textContent = `The category is uncertain: Stage A was unsure (${a.category}, ` +
+      `${a.confidence.toFixed(2)}) and Stage C's guess (${LABELS[c.guess] || c.guess}) is not among Stage A's top two.`;
+    $("pick").value = c.guess;
+  }
+
   $("issues").replaceChildren(...(r.issues.length ? r.issues.map((i) => el("li", `${i.code}: ${i.issue}`))
                                                   : [el("li", "No issues found.", "muted")]));
   $("rules").replaceChildren(...(r.rules.length ? r.rules.map((x) => {
@@ -68,7 +76,8 @@ function render(r) {
   let text;
   if (!s.routed) text = "Not needed: Stage B resolved everything Stage C could fix.";
   else if (!s.available) text = `Needed (${s.reasons.join("; ")}), but Stage C is not installed; Stage B's result is shown.`;
-  else if (s.accepted) text = `Used: filled ${s.fields.join(", ")} in ${s.seconds}s.`;
+  else if (s.accepted) text = `Used: filled ${s.fields.join(", ")} in ${s.seconds}s.` +
+    (s.category_status === "uncertain" ? " Its category guess was not accepted; please pick the category above." : "");
   else text = `Tried, but its answer was rejected (${s.errors.join("; ")}); Stage B's result is shown.`;
   $("stage_c").textContent = text;
   $("stage_c_raw").hidden = !s.raw;
@@ -117,6 +126,11 @@ $("form").addEventListener("submit", async (ev) => {
   } finally {
     $("go").disabled = false;
   }
+});
+
+$("repick").addEventListener("click", () => {
+  $("category").value = $("pick").value;          // the user's choice overrides Stage A
+  $("form").requestSubmit();
 });
 
 $("copy").addEventListener("click", async () => {

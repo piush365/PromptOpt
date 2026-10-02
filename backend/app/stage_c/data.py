@@ -2,6 +2,7 @@
 
     python -m app.stage_c.data                  # writes data/stage_c/{train,val}.jsonl + stats.json, then packages
     python -m app.stage_c.data --package        # only package: config.json, manifest.json, stage_c_data_v1.zip
+    python -m app.stage_c.data --test           # final evaluation only: data/stage_c/test.jsonl (run once)
 
 The zip (data/stage_c_data_v1.zip) is what the Colab notebook reads from Drive: train/val JSONL, config.json, the
 training script and manifest.json (sha256 + row counts). The data stays out of git; docs/stage_c_data_manifest.json
@@ -209,9 +210,19 @@ def main() -> None:
     ap.add_argument("--dataset", type=Path, default=DEFAULT_CSV)
     ap.add_argument("--out", type=Path, default=OUT_DIR)
     ap.add_argument("--package", action="store_true", help="only package the existing files")
+    ap.add_argument("--test", action="store_true",
+                    help="final evaluation only: write test.jsonl (built like val, own seed); train/val untouched")
     args = ap.parse_args()
     if args.package:
         package(args.out)
+        return
+    if args.test:
+        test = load_rows(args.dataset, split="test")
+        feats = FeatureDetector().detect_many([r["degraded_prompt"] for r in test], [r["context"] or None for r in test])
+        rows = build(test, feats, "test", random.Random(SEED + 1))
+        with open(args.out / "test.jsonl", "w", encoding="utf-8") as fh:
+            fh.writelines(json.dumps(e, ensure_ascii=False) + "\n" for e in rows)
+        print(f"test.jsonl: {len(rows)} examples, {Counter(e['kind'] for e in rows)}")
         return
 
     rng = random.Random(SEED)

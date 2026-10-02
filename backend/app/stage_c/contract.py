@@ -7,6 +7,10 @@
   list (forced routing, evaluation only). Every other field is locked: Stage B's value is kept.
 * The answer must be one JSON object with exactly the requested keys, and pass the same detectors as the rest of the
   pipeline (`validate`); otherwise the prompt keeps Stage B's result (fallback).
+* Category policy (`category_decision`): when the prompt was routed for the task category, Stage C's category is
+  accepted only if it is one of Stage A's top-2 categories, or Stage A's confidence is below 0.3 (Stage A knows too
+  little to object). Otherwise the category is "uncertain": it stays unresolved, Stage C's guess is kept for the UI
+  to pre-select, and the user is asked to pick. Stage C's other fields are applied either way.
 * `c_only_input` builds the input for the C-only ablation (no Stage B: nothing filled, no requirements).
 The same `model_input` / `to_messages` build the training data (app.stage_c.data), so training and inference match.
 """
@@ -21,6 +25,8 @@ from app.stage_b.ir import PromptIR, render_plain
 from app.stage_c.parse import is_format
 
 FIELDS = ("task", "output_format", "constraints")
+CATEGORY_TOP_K = 2                # Stage C's category must be among Stage A's top-k ...
+CATEGORY_LOW_CONFIDENCE = 0.3     # ... unless Stage A's confidence is below this
 CATEGORIES = ("closed_qa", "information_extraction", "classification", "summarization", "coding")
 SYSTEM_PROMPT = (
     "You are Stage C of PromptOpt. You get a user's prompt and the structured version a rule-based optimizer made of "
@@ -125,6 +131,12 @@ def patch_ir(ir: PromptIR, patch: dict) -> PromptIR:
     return ir.model_copy(update=update)
 
 
+def category_decision(guess: str, f: PromptFeatures) -> str:
+    """'accepted' or 'uncertain' for Stage C's (valid) category guess, given Stage A's scores."""
+    top = sorted(f.category_scores, key=f.category_scores.get, reverse=True)[:CATEGORY_TOP_K]
+    return "accepted" if guess in top or f.confidence < CATEGORY_LOW_CONFIDENCE else "uncertain"
+
+
 @dataclass
 class StageCResult:
     used: bool                                   # Stage C was called
@@ -134,6 +146,8 @@ class StageCResult:
     raw: str | None = None
     errors: list[str] = field(default_factory=list)
     seconds: float = 0.0
+    category_status: str | None = None           # "accepted" / "uncertain" when a category was requested
+    category_guess: str | None = None            # Stage C's category (pre-selected in the UI when uncertain)
 
     @property
     def optimized_text(self) -> str:
@@ -159,5 +173,11 @@ def apply_stage_c(prompt: str, f: PromptFeatures, out, generate: Callable[[list[
     if patch is None:
         return StageCResult(used=True, accepted=False, ir=out.ir, fields=fields, raw=raw, errors=errors,
                             seconds=seconds)
+    status = guess = None
+    if "category" in patch:
+        guess = patch["category"]
+        status = category_decision(guess, f)
+        if status == "uncertain":                 # keep "task category" unresolved; the user picks
+            patch = {k: v for k, v in patch.items() if k != "category"}
     return StageCResult(used=True, accepted=True, ir=patch_ir(out.ir, patch), fields=fields, raw=raw,
-                        seconds=seconds)
+                        seconds=seconds, category_status=status, category_guess=guess)

@@ -5,7 +5,7 @@ import pytest
 
 from app.stage_b.ir import Attachment
 from app.stage_b.optimizer import RULE_CODES, optimize
-from app.stage_c.contract import (CATEGORIES, apply_stage_c, c_only_input, model_input, natural_unresolved,
+from app.stage_c.contract import (CATEGORIES, apply_stage_c, category_decision, c_only_input, model_input, natural_unresolved,
                                   to_messages, validate)
 from tests.test_stage_b import feats
 
@@ -109,3 +109,41 @@ def test_attachment_is_passed_to_stage_c():
     out = optimize(text, f, attachment=Attachment(type="image"))
     assert out.needs_stage_c
     assert model_input(text, f, out.ir, natural_unresolved(out))["attachment"] == "image"
+
+
+# ---------------------------------------------------------------- category policy
+def scored(text, scores):
+    f = feats(text, max(scores, key=scores.get), max(scores.values()))
+    return f.model_copy(update={"category_scores": scores, "confidence": max(scores.values())})
+
+
+@pytest.mark.parametrize("scores, guess, status", [
+    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "summarization", "accepted"),   # Stage A's 2nd
+    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "coding", "accepted"),          # Stage A's 1st
+    ({"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2}, "closed_qa", "uncertain"),      # 3rd, conf >= 0.3
+    ({"coding": 0.28, "summarization": 0.27, "closed_qa": 0.25, "classification": 0.2}, "classification",
+     "accepted"),                                                                                 # conf < 0.3
+])
+def test_category_decision(scores, guess, status):
+    assert category_decision(guess, scored("x", scores)) == status
+
+
+def test_uncertain_category_stays_unresolved_but_other_fields_apply():
+    text = "which season goes with flowers, snowflakes"
+    f = scored(text, {"coding": 0.45, "summarization": 0.35, "closed_qa": 0.2})
+    out = optimize(text, f)
+    assert out.needs_stage_c
+    res = apply_stage_c(text, f, out, fake({"output_format": "Output one label per line.", "constraints": [],
+                                            "category": "classification"}))
+    assert res.accepted and res.category_status == "uncertain" and res.category_guess == "classification"
+    assert "task category" in res.ir.unresolved and res.ir.category == out.ir.category
+    assert res.ir.category_source == "stage_a" and res.ir.output_format == "Output one label per line."
+
+
+def test_accepted_category_resolves_it():
+    text = "which season goes with flowers, snowflakes"
+    f = scored(text, {"coding": 0.45, "classification": 0.35, "closed_qa": 0.2})
+    res = apply_stage_c(text, f, optimize(text, f), fake({"output_format": None, "constraints": [],
+                                                          "category": "classification"}))
+    assert res.category_status == "accepted" and res.ir.category == "classification"
+    assert "task category" not in res.ir.unresolved

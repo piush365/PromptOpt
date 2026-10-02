@@ -155,8 +155,8 @@ def ablation(model: StageCModel, rows: list[dict], feats: list, targets: dict, s
                     tgt = targets.get((r["id"], kind))
                     if c.used and tgt is not None:
                         item["fields"] = field_scores(parse_json(c.raw or ""), tgt, sim)
-                    if c.accepted:
-                        item["category_c"] = c.ir.category if "category" in c.fields else None
+                    if c.accepted and c.category_guess:
+                        item.update(category_c=c.category_guess, category_status=c.category_status)
                 res[s][name].append(item)
         res["reference"]["dataset optimized"].append(
             {"task_intent": sim(parse_optimized(r["optimized_prompt"]).task, r["original_instruction"]),
@@ -192,16 +192,41 @@ def ablation(model: StageCModel, rows: list[dict], feats: list, targets: dict, s
     ab = _table(["set", "system", "n", "task intent sim. (main)", "full-prompt sim. (reference)", "format stated", "JSON valid", "fallback", "category acc.",
                  "task sim.", "format null/non-null agree", "median s"], table)
 
-    routed_c = [i for i in res["routed"]["A+B+C"] if i.get("category_c")]
-    routed_all = res["routed"]["A+B+C"]
-    cat = _table(["", "n", "correct"], [
-        ["Stage A category (routed prompts)", len(routed_all),
-         _pct(_mean([float(i["stage_a"] == i["category_gold"]) for i in routed_all]))],
-        ["Stage C category (accepted answers)", len(routed_c),
-         _pct(_mean([float(i["category_c"] == i["category_gold"]) for i in routed_c]))],
-        ["Stage C category, same prompts: Stage A", len(routed_c),
-         _pct(_mean([float(i["stage_a"] == i["category_gold"]) for i in routed_c]))]])
+    cat = policy_table(res["routed"]["A+B+C"])
     return ab, cat, res
+
+
+def policy_table(items: list[dict]) -> str:
+    """Category on prompts routed for the task category: Stage A, Stage C's guess, and the policy's split into
+    accepted (Stage C's category used) and uncertain (the user is asked; Stage C's guess pre-selected)."""
+    guessed = [i for i in items if i.get("category_c")]
+    acc = [i for i in guessed if i["category_status"] == "accepted"]
+    unc = [i for i in guessed if i["category_status"] == "uncertain"]
+    ok = lambda xs, k: f"{sum(i[k] == i['category_gold'] for i in xs)}/{len(xs)}" + (
+        f" ({_pct(_mean([float(i[k] == i['category_gold']) for i in xs]))})" if xs else "")
+    return _table(["prompts", "n", "Stage A right", "Stage C guess right"], [
+        ["all prompts in this set", len(items), ok(items, "stage_a"), "-"],
+        ["with a valid Stage C category", len(guessed), ok(guessed, "stage_a"), ok(guessed, "category_c")],
+        ["policy: accepted (Stage C's category used)", len(acc), ok(acc, "stage_a"), ok(acc, "category_c")],
+        ["policy: uncertain (user asked, guess pre-selected)", len(unc), ok(unc, "stage_a"), ok(unc, "category_c")]])
+
+
+def forced_category(model: StageCModel, rows: list[dict], feats: list) -> tuple[str, list[dict]]:
+    """Every prompt of the split asked for its category the way a routed prompt is (output_format, constraints,
+    category requested; category hidden), so the policy can be judged on more than the few naturally routed ones."""
+    items = []
+    fields = ["output_format", "constraints", "category"]
+    for r, f in zip(rows, feats):
+        out = optimize(r["degraded_prompt"], f, separate_text=bool(r["context"].strip()))
+        c = apply_stage_c(r["degraded_prompt"], f, out, model.generate, fields=fields)
+        items.append({"id": r["id"], "category_gold": r["category"], "stage_a": f.task_type,
+                      "stage_a_conf": f.confidence, "category_c": c.category_guess if c.accepted else None,
+                      "category_status": c.category_status})
+    low = [i for i in items if i["stage_a_conf"] < 0.6]
+    text = "\n".join(["All prompts:\n", policy_table(items), "",
+                      "Only prompts with Stage A confidence < 0.6 (the range where the category is routed):\n",
+                      policy_table(low)])
+    return text, items
 
 
 # ---------------------------------------------------------------- named cases
@@ -212,12 +237,14 @@ def named_cases(model: StageCModel, det: FeatureDetector) -> str:
         f = det.detect(case["prompt"])
         out = optimize(case["prompt"], f, category=case["category"], attachment=att)
         c = apply_stage_c(case["prompt"], f, out, model.generate)
-        got = c.ir.category if c.accepted and "category" in c.fields else None
+        got = c.category_guess if c.accepted else None
         verdict = "not routed" if not c.used else ("rejected: " + "; ".join(c.errors) if not c.accepted else
                                                    ("right" if got == case["expected_category"] else "wrong"))
         rows.append([case["id"], f"`{case['prompt']}`", f"{f.task_type} ({f.confidence:.2f})", got or "-",
-                     case["expected_category"], f"**{verdict}**", f"`{(c.raw or '').strip()}`"])
-    return _table(["case", "prompt", "Stage A", "Stage C category", "expected", "result", "Stage C output"], rows)
+                     case["expected_category"], f"**{verdict}**", c.category_status or "-",
+                     f"`{(c.raw or '').strip()}`"])
+    return _table(["case", "prompt", "Stage A", "Stage C guess", "expected", "guess", "policy", "Stage C output"],
+                  rows)
 
 
 # ---------------------------------------------------------------- (c) latency
@@ -242,11 +269,13 @@ def main() -> None:
     ap.add_argument("--limit", type=int, help="first N val examples / prompts only (smoke test)")
     ap.add_argument("--cpu-n", type=int, default=20, help="prompts for the CPU latency measurement (0 = skip)")
     ap.add_argument("--device", default="auto")
+    ap.add_argument("--split", default="val", choices=["val", "test"],
+                    help="test: the final, one-time run (needs data/stage_c/test.jsonl from `data --test`)")
     args = ap.parse_args()
 
-    examples = [json.loads(x) for x in open(args.data / "val.jsonl", encoding="utf-8")][:args.limit]
+    examples = [json.loads(x) for x in open(args.data / f"{args.split}.jsonl", encoding="utf-8")][:args.limit]
     targets = {(e["id"], e["kind"]): e["target"] for e in examples}
-    rows = load_rows(DEFAULT_CSV, split="val")[:args.limit]
+    rows = load_rows(DEFAULT_CSV, split=args.split)[:args.limit]
     preds = json.loads(args.preds.read_text()) if args.preds and args.preds.exists() else {}
     sim = Similarity()
     det = FeatureDetector()
@@ -262,6 +291,8 @@ def main() -> None:
     if args.preds:
         args.preds.write_text(json.dumps(preds, indent=1))
     ab, cat, res = ablation(lora, rows, feats, targets, sim)
+    forced_cat, forced_items = forced_category(lora, rows, feats)
+    res["forced_category"]["A+B+C"] = forced_items
     named = named_cases(lora, det)
     lat = {"GPU" if lora.device == "cuda" else lora.device: latency(lora, [e for e in examples
                                                                          if e["kind"] == "forced_all"], 40)}
@@ -275,9 +306,10 @@ def main() -> None:
                      f"{lat_base['p95']:.2f}", f"{lat_base['max']:.2f}"])
     gpu = lat.get("GPU")
     text = "\n".join([
-        "# Stage C evaluation (val split)\n",
-        f"Adapter `{args.adapter}`; base `Qwen/Qwen2.5-0.5B-Instruct`; greedy decoding, batch 1. Val only "
-        f"({len(rows)} prompts, {len(examples)} Stage C examples); the test split is not used. Plan: "
+        f"# Stage C evaluation ({args.split} split)\n",
+        f"Adapter `{args.adapter}`; base `Qwen/Qwen2.5-0.5B-Instruct`; greedy decoding, batch 1. Split `{args.split}` "
+        f"({len(rows)} prompts, {len(examples)} Stage C examples)" + ("; the test split is not used." if
+        args.split == "val" else "; final, one-time run.") + " Plan: "
         "`docs/STAGE_C_PLAN.md`. Field targets come from the dataset's optimized prompts via the parser "
         "(known limitations in the plan). Similarities: cosine, all-MiniLM-L6-v2.\n",
         "## (a) Zero-shot base vs LoRA\n",
@@ -299,7 +331,13 @@ def main() -> None:
         "format) with the original instruction. It falls as a prompt gains the format and constraint sentences the "
         "optimizer is meant to add, so it is not an intent measure: the bare degraded prompts score higher on it "
         "than the dataset's own optimized prompts.\n",
-        ab, "", "### Category on routed prompts: Stage C vs Stage A (against the dataset label)\n", cat, "",
+        ab, "", "### Category: Stage C vs Stage A, and the category policy\n",
+        "Policy (contract.category_decision): Stage C's category is used only if it is one of Stage A's top-2 "
+        "categories or Stage A's confidence is below 0.3; otherwise the category is marked uncertain and the UI asks "
+        "the user, pre-selecting Stage C's guess. Right = equals the dataset label.\n",
+        "Prompts routed for the task category:\n", cat, "",
+        "Forced: every prompt asked for its category the way a routed prompt is (the routed set alone is small).\n",
+        forced_cat, "",
         "## Named cases (illustrative, not evidence)\n",
         "Hand-picked prompts reported by name (`evaluation/stage_c/named_cases.json`). Their expected categories "
         "were set or confirmed after a smoke run of Stage C had been seen, so they illustrate behaviour and are not "
@@ -313,7 +351,7 @@ def main() -> None:
     print(text)
     if args.out:
         args.out.write_text(text + "\n", encoding="utf-8")
-    raw = BACKEND_DIR.parent / "data" / "stage_c_runs" / "eval_details.json"
+    raw = BACKEND_DIR.parent / "data" / "stage_c_runs" / f"eval_details_{args.split}.json"
     raw.write_text(json.dumps({k: dict(v) for k, v in res.items()}, indent=1, default=str))
 
 
