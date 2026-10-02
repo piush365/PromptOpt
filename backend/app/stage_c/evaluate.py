@@ -317,7 +317,7 @@ def main() -> None:
         "constraints; `forced_all` = all three. `passes validation` = the answer would be used by the pipeline "
         "(contract in the plan, section 5).\n", t_models, "",
         "## (b) Ablation\n",
-        "`routed` = val prompts Stage B actually sends to Stage C (too few on their own); `forced` = every val prompt "
+        "`routed` = prompts Stage B actually sends to Stage C (too few on their own); `forced` = every prompt of the split "
         "with task, output_format and constraints requested. A+B = current pipeline; A+B+C = Stage C fills the "
         "requested fields, Stage B's other fields locked, rejected answers fall back to Stage B; C-only = Stage C "
         "fills all three fields with no Stage B rules (rejected -> the raw prompt). Format stated = A02 (or the "
@@ -342,7 +342,7 @@ def main() -> None:
         "## Named cases (illustrative, not evidence)\n",
         "Hand-picked prompts reported by name (`evaluation/stage_c/named_cases.json`). Their expected categories "
         "were set or confirmed after a smoke run of Stage C had been seen, so they illustrate behaviour and are not "
-        "part of the evidence; the val numbers above are.\n", named, "",
+        "part of the evidence; the split's numbers above are.\n", named, "",
         "## (c) Latency per prompt (Stage C call only, batch 1, greedy)\n",
         _table(["device", "n", "median s", "p95 s", "max s"], lat_rows), "",
         f"Requirement: under 3 s per prompt on the laptop GPU (median): **"
