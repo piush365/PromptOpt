@@ -1,0 +1,150 @@
+{
+ "coding": {
+  "prompt_id": 3,
+  "category": {
+   "used": "coding",
+   "source": "stage_a",
+   "requested": "auto",
+   "stage_a": "coding",
+   "disagreement": false,
+   "uncertain": false,
+   "guess": null
+  },
+  "rendered_for": "gpt",
+  "answered_by": "groq/openai/gpt-oss-120b",
+  "answered_by_label": "gpt-oss-120b on Groq",
+  "stand_in": true,
+  "label": "GPT-rendered prompt, answered by gpt-oss-120b on Groq (a stand-in: GPT itself is not available here)",
+  "settings": {
+   "temperature": 0.0,
+   "max_tokens": 2048,
+   "reasoning_effort": "low"
+  },
+  "original": {
+   "answer": "Here\u2019s a compact, easy\u2011to\u2011read implementation that generates **all permutations** of a given string (or any iterable of hashable items).  \nIt works for Python\u202f3.6+ and returns the permutations as a list of strings.\n\n```python\nfrom typing import List\n\ndef permutations(s: str) -> List[str]:\n    \"\"\"\n    Return a list containing every possible permutation of the characters in `s`.\n\n    Example\n    -------\n    >>> permutations(\"abc\")\n    ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']\n    \"\"\"\n    # Base case \u2013 a single character (or empty string) has only itself as a permutation\n    if len(s) <= 1:\n        return [s]\n\n    # Recursive case \u2013 fix each character in turn and permute the rest\n    result = []\n    for i, ch in enumerate(s):\n        # Characters before i + after i give the \"remaining\" substring\n        rest = s[:i] + s[i+1:]\n        # Recursively get permutations of the remaining characters\n        for perm in permutations(rest):\n            result.append(ch + perm)\n    return result\n\n\n# ----------------------------------------------------------------------\n# Demo / quick test\nif __name__ == \"__main__\":\n    test_strings = [\"\", \"a\", \"ab\", \"abc\", \"abcd\"]\n    for txt in test_strings:\n        print(f\"{txt!r} \u2192 {len(permutations(txt))} permutations\")\n        print(permutations(txt))\n        print(\"-\" * 40)\n```\n\n### How it works\n1. **Base case** \u2013 If the string length is `0` or `1`, the only permutation is the string itself.\n2. **Recursive step** \u2013 For each character `ch` in the string:\n   * Remove `ch` to form the *rest* of the string.\n   * Recursively compute all permutations of that *rest*.\n   * Prefix `ch` to each of those smaller permutations and collect the results.\n\nBecause each recursive call reduces the problem size by one character, the algorithm explores all `n!` possible orderings (where `n = len(s)`).  \n\n### Complexity\n* **Time:**\u202f`O(n\u202f\u00b7\u202fn!)` \u2013 you generate `n!` permutations and each one is built in `O(n)` time.\n* **Space:**\u202f`O(n\u202f\u00b7\u202fn!)` \u2013 the list of results stores every permutation; the recursion depth is `O(n)`.\n\n### Variations\n* **Iterative version** \u2013 using `itertools.permutations`:\n  ```python\n  import itertools\n  def permutations_iter(s: str) -> List[str]:\n      return [''.join(p) for p in itertools.permutations(s)]\n  ```\n* **Generator version** \u2013 yields permutations lazily, which is useful when `n!` is huge:\n  ```python\n  def perm_gen(s: str):\n      if len(s) <= 1:\n          yield s\n      else:\n          for i, ch in enumerate(s):\n              for perm in perm_gen(s[:i] + s[i+1:]):\n                  yield ch + perm\n  ```\n\nPick the style that best fits your use\u2011case!",
+   "input_tokens": 80,
+   "output_tokens": 688,
+   "reasoning_tokens": 10,
+   "total_tokens": 768,
+   "latency_ms": 1474,
+   "finish_reason": "stop",
+   "cached": false,
+   "prompt": "write code to get all permutations of a string"
+  },
+  "optimized": {
+   "answer": "```python\ndef permutations(s: str):\n    \"\"\"Return a list of all permutations of the input string `s`.\"\"\"\n    if len(s) <= 1:\n        return [s]\n\n    result = []\n    for i, ch in enumerate(s):\n        # Permutations of the remaining characters\n        for perm in permutations(s[:i] + s[i+1:]):\n            result.append(ch + perm)\n    return result\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_str = \"abc\"\n    for p in permutations(test_str):\n        print(p)\n```",
+   "input_tokens": 106,
+   "output_tokens": 142,
+   "reasoning_tokens": 13,
+   "total_tokens": 248,
+   "latency_ms": 311,
+   "finish_reason": "stop",
+   "cached": false,
+   "prompt": "### Task\nWrite code to get all permutations of a string.\n\n### Constraints\n- Use Python.\n\n### Output format\nReturn only the code, in a single code block."
+  },
+  "change_pct": {
+   "input_tokens": 32.5,
+   "output_tokens": -79.4,
+   "total_tokens": -67.7
+  },
+  "latency_change_pct": -78.9,
+  "tests": {
+   "item": "codealpaca-4815",
+   "validated": true,
+   "mode": "function",
+   "original": {
+    "outcome": "pass",
+    "passed": 6,
+    "total": 6,
+    "renamed": null,
+    "status": "passed",
+    "detail": "",
+    "code_chars": 1095
+   },
+   "optimized": {
+    "outcome": "pass",
+    "passed": 6,
+    "total": 6,
+    "renamed": null,
+    "status": "passed",
+    "detail": "",
+    "code_chars": 459
+   }
+  },
+  "judge": {
+   "model": "qwen/qwen3.8-27b",
+   "blind": true,
+   "original": {
+    "score": 10.0,
+    "reason": "The response provides correct, well-documented Python code for generating string permutations, including recursive, iterative, and generator variations, along with clear explanations of complexity and usage."
+   },
+   "optimized": {
+    "score": 10.0,
+    "reason": "The code correctly implements a recursive algorithm to generate all permutations of a string, includes a docstring, and provides a clear example of usage."
+   }
+  }
+ },
+ "closed_qa": {
+  "prompt_id": 4,
+  "category": {
+   "used": "closed_qa",
+   "source": "stage_a",
+   "requested": "auto",
+   "stage_a": "closed_qa",
+   "disagreement": false,
+   "uncertain": false,
+   "guess": null
+  },
+  "rendered_for": "claude",
+  "answered_by": "groq/openai/gpt-oss-120b",
+  "answered_by_label": "gpt-oss-120b on Groq",
+  "stand_in": true,
+  "label": "Claude-rendered prompt, answered by gpt-oss-120b on Groq (a stand-in: Claude itself is not available here)",
+  "settings": {
+   "temperature": 0.0,
+   "max_tokens": 2048,
+   "reasoning_effort": "low"
+  },
+  "original": {
+   "answer": "Hackpad was acquired by **Dropbox**.",
+   "input_tokens": 214,
+   "output_tokens": 24,
+   "reasoning_tokens": 6,
+   "total_tokens": 238,
+   "latency_ms": 67,
+   "finish_reason": "stop",
+   "cached": false,
+   "prompt": "which company bought hackpad according to that text?\n\nHackpad was a web-based collaborative real-time text editor forked from Etherpad.\n\nIt was used as the company wikis by multiple prominent startups of the 2010s, such as Airbnb, Stripe, and Upworthy.\n\nIn April 2014, Hackpad was acquired by Dropbox. In April 2015, it was announced that Hackpad would be released as open source and source code was published on GitHub in August 2015, under the Apache license 2.0. On April 25, 2017, Hackpad announced that it is to shut down on July 19, 2017, permanently migrating to Dropbox Paper."
+  },
+  "optimized": {
+   "answer": "Dropbox bought Hackpad.",
+   "input_tokens": 259,
+   "output_tokens": 20,
+   "reasoning_tokens": 6,
+   "total_tokens": 279,
+   "latency_ms": 58,
+   "finish_reason": "stop",
+   "cached": false,
+   "prompt": "<context>\n<document>\nHackpad was a web-based collaborative real-time text editor forked from Etherpad.\n\nIt was used as the company wikis by multiple prominent startups of the 2010s, such as Airbnb, Stripe, and Upworthy.\n\nIn April 2014, Hackpad was acquired by Dropbox. In April 2015, it was announced that Hackpad would be released as open source and source code was published on GitHub in August 2015, under the Apache license 2.0. On April 25, 2017, Hackpad announced that it is to shut down on July 19, 2017, permanently migrating to Dropbox Paper.\n</document>\n</context>\n\n<task>\nWhich company bought hackpad according to that text?\n</task>\n\n<constraints>\n- Answer in at most two sentences.\n</constraints>\n\n<output_format>\nStart with the direct answer.\n</output_format>"
+  },
+  "change_pct": {
+   "input_tokens": 21.0,
+   "output_tokens": -16.7,
+   "total_tokens": 17.2
+  },
+  "latency_change_pct": -13.4,
+  "tests": null,
+  "judge": {
+   "model": "qwen/qwen3.8-27b",
+   "blind": true,
+   "original": {
+    "score": 10.0,
+    "reason": "The response correctly identifies Dropbox as the company that acquired Hackpad based on the provided text."
+   },
+   "optimized": {
+    "score": 10.0,
+    "reason": "The response correctly identifies Dropbox as the company that acquired Hackpad based on the provided text."
+   }
+  }
+ }
+}
