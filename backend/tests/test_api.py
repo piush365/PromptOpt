@@ -160,3 +160,25 @@ def test_generated_tests_are_marked_unvalidated(tmp_path, monkeypatch):
     assert out["validated"] is False and out["tests"] == ["assert rev([1, 2]) == [2, 1]"]
     assert "UNVALIDATED" in out["note"]
     assert app_tests.generate("Write a function that reverses a list.", llm=None)["tests"] == out["tests"]  # cached
+
+
+def test_image_mode_is_separate_and_explicit(client):
+    r = client.post("/api/optimize", json={"prompt": "can you make me a picture of a cat on a windowsill, no text",
+                                           "category": "image_generation", "target": "stable_diffusion"}).json()
+    assert r["mode"] == "image" and r["target"] == "stable_diffusion"
+    assert set(r["renderings"]) == {"dalle", "nano_banana", "stable_diffusion"}
+    sd = r["renderings"]["stable_diffusion"]
+    assert sd["prompt"].startswith("A cat on a windowsill") and sd["negative_prompt"].startswith("text")
+    assert r["avoid_user"] == ["text"] and {d["attribute"] for d in r["defaults"]} >= {"style", "lighting"}
+    assert all(x["code"].startswith("I") for x in r["rules"]) and "stage_a" not in r
+    item = client.get(f"/api/history/{r['prompt_id']}").json()
+    assert item["results"][0]["ir"]["mode"] == "image" and "Negative prompt" in \
+        item["results"][0]["renderings"]["stable_diffusion"]
+    # never auto-detected: the same prompt in text mode goes through Stage A/B
+    t = client.post("/api/optimize", json={"prompt": "a picture of a cat"}).json()
+    assert t.get("mode") != "image" and "stage_a" in t
+    # targets must match the mode
+    assert client.post("/api/optimize", json={"prompt": "a cat", "category": "image_generation",
+                                              "target": "gpt"}).status_code == 422
+    assert client.post("/api/optimize", json={"prompt": "a cat", "target": "dalle"}).status_code == 422
+    assert client.get("/api/options").json()["image_targets"] == ["dalle", "nano_banana", "stable_diffusion"]

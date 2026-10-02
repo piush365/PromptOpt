@@ -6,7 +6,29 @@ const LABELS = {
   none: "None", image: "Image", pdf: "PDF", pptx: "Slides (PPTX)", docx: "Word (DOCX)",
   spreadsheet: "Spreadsheet", code: "Code file", other: "Other file",
   claude: "Claude", gpt: "GPT", gemini: "Gemini",
+  image_generation: "Image generation", dalle: "DALL-E", nano_banana: "Nano Banana (Gemini image)",
+  stable_diffusion: "Stable Diffusion",
+  subject_detail: "Subject detail", style: "Style / medium", composition: "Composition / framing",
+  lighting: "Lighting", palette: "Color palette", mood: "Mood", aspect_ratio: "Aspect ratio",
+  background: "Background", avoid: "Things to avoid",
 };
+let OPTIONS = null;
+let shownImage = "dalle";
+const isImageMode = () => $("category").value === "image_generation";
+
+function setTargets() {
+  const image = isImageMode();
+  const targets = image ? OPTIONS.image_targets : ["gpt", "gemini", "claude"];
+  $("target_legend").textContent = image ? "Target image model" : "Target LLM";
+  $("target_options").replaceChildren(...targets.map((t, i) => {
+    const label = el("label"), input = el("input");
+    input.type = "radio"; input.name = "target"; input.value = t; input.checked = i === 0;
+    label.append(input, " " + (LABELS[t] || t));
+    return label;
+  }));
+  $("attachment_box").hidden = image;
+  $("context_box").hidden = image;
+}
 let last = null;
 let shown = "gpt";
 
@@ -23,8 +45,11 @@ function fill(select, values) {
 
 async function init() {
   const opt = await (await fetch("/api/options")).json();
+  OPTIONS = opt;
   fill($("category"), opt.categories);
-  fill($("pick"), opt.categories.filter((c) => c !== "auto"));
+  fill($("pick"), opt.categories.filter((c) => c !== "auto" && c !== "image_generation"));
+  setTargets();
+  $("category").addEventListener("change", setTargets);
   fill($("attachment"), opt.attachment_types);
   $("retention").textContent = `(kept ${opt.retention_days} days)`;
   $("attachment").addEventListener("change", () => { $("attachment_name").hidden = $("attachment").value === "none"; });
@@ -39,8 +64,45 @@ function showTarget(t) {
   $("tokens").textContent = `${tk.tokens} input tokens for ${LABELS[t]} (${tk.exact ? "exact, " : ""}${tk.method})`;
 }
 
+function showImage(t) {
+  shownImage = t;
+  const r = last.renderings[t];
+  for (const b of $("image_tabs").children) b.setAttribute("aria-selected", b.dataset.target === t);
+  $("image_prompt").textContent = r.prompt;
+  $("negative_box").hidden = !r.negative_prompt;
+  $("negative_prompt").textContent = r.negative_prompt || "";
+  $("image_params").textContent = "Parameters: " + Object.entries(r.params).map(([k, v]) => `${k} ${v}`).join(", ") +
+    ` (aspect ratio ${last.aspect_source === "user" ? "from your prompt" : "default"})`;
+}
+
+function renderImage(r) {
+  last = r;
+  $("result").hidden = true;
+  $("coding_panel").hidden = true;
+  $("image_result").hidden = false;
+  $("image_tabs").replaceChildren(...OPTIONS.image_targets.map((t) => {
+    const b = el("button", LABELS[t] + (t === r.target ? " (selected)" : ""));
+    b.type = "button"; b.dataset.target = t; b.setAttribute("role", "tab");
+    b.addEventListener("click", () => showImage(t));
+    return b;
+  }));
+  showImage(r.target);
+  const stated = Object.entries(r.stated);
+  $("image_stated").replaceChildren(...(stated.length ? stated.map(([a, ev]) => el("li", `${LABELS[a] || a}: ${ev.join(", ")}`))
+                                                     : [el("li", "Only the subject.", "muted")]));
+  $("image_avoid").replaceChildren(...(r.avoid_user.length ? r.avoid_user.map((x) => el("li", x))
+                                                         : [el("li", "Nothing.", "muted")]));
+  $("image_defaults").replaceChildren(...(r.defaults.length ? r.defaults.map((d) => {
+    const li = el("li"); li.append(el("strong", LABELS[d.attribute] || d.attribute), " " + (d.text ||
+      (d.attribute === "aspect_ratio" ? `${r.aspect_ratio} (square)` : "usual quality negatives (text, watermarks, ...)")));
+    return li;
+  }) : [el("li", "Nothing: your prompt already covers every attribute.", "muted")]));
+  $("image_rules").replaceChildren(...r.rules.map((x) => { const li = el("li"); li.append(el("strong", x.code), " " + x.what); return li; }));
+}
+
 function render(r) {
   last = r;
+  $("image_result").hidden = true;
   $("result").hidden = false;
   $("tabs").replaceChildren(...["gpt", "gemini", "claude"].map((t) => {
     const b = el("button", LABELS[t] + (t === r.target ? " (selected)" : ""));
@@ -147,15 +209,16 @@ $("form").addEventListener("submit", async (ev) => {
     prompt: $("prompt").value,
     target: document.querySelector("input[name=target]:checked").value,
     category: $("category").value,
-    attachment_type: $("attachment").value,
+    attachment_type: isImageMode() ? "none" : $("attachment").value,
     attachment_name: $("attachment_name").value || null,
-    context: $("context").value || null,
+    context: isImageMode() ? null : ($("context").value || null),
   };
   try {
     const resp = await fetch("/api/optimize", { method: "POST", headers: { "Content-Type": "application/json" },
                                                 body: JSON.stringify(body) });
     if (!resp.ok) throw new Error((await resp.json()).detail?.[0]?.msg || resp.statusText);
-    render(await resp.json());
+    const data = await resp.json();
+    if (data.mode === "image") renderImage(data); else render(data);
     $("status").textContent = "";
     loadHistory();
   } catch (e) {
@@ -168,6 +231,13 @@ $("form").addEventListener("submit", async (ev) => {
 $("repick").addEventListener("click", () => {
   $("category").value = $("pick").value;          // the user's choice overrides Stage A
   $("form").requestSubmit();
+});
+
+$("image_copy").addEventListener("click", async () => {
+  const r = last.renderings[shownImage];
+  const text = r.prompt + (r.negative_prompt ? "\n\nNegative prompt: " + r.negative_prompt : "");
+  try { await navigator.clipboard.writeText(text); $("status").textContent = "Copied."; }
+  catch { $("status").textContent = "Copy failed; select the text instead."; }
 });
 
 $("copy").addEventListener("click", async () => {

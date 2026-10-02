@@ -18,23 +18,21 @@
       <label for="prompt">Your prompt</label>
       <textarea id="prompt" rows="4" required placeholder="e.g. hey can you summarize this report for me"></textarea>
 
-      <details>
+      <details id="context_box">
         <summary>Paste text the prompt works on (optional)</summary>
         <textarea id="context" rows="4" placeholder="A passage, an email, code ..."></textarea>
       </details>
 
       <div class="row">
-        <fieldset>
-          <legend>Target LLM</legend>
-          <label><input type="radio" name="target" value="gpt" checked> GPT</label>
-          <label><input type="radio" name="target" value="gemini"> Gemini</label>
-          <label><input type="radio" name="target" value="claude"> Claude</label>
+        <fieldset id="targets">
+          <legend id="target_legend">Target LLM</legend>
+          <span id="target_options"></span>
         </fieldset>
         <div>
           <label for="category">Category</label>
           <select id="category"></select>
         </div>
-        <div>
+        <div id="attachment_box">
           <label for="attachment">Attachment</label>
           <select id="attachment"></select>
           <input id="attachment_name" placeholder="file name (optional)" maxlength="255" hidden>
@@ -84,6 +82,37 @@
         <h2>Stage C: model fallback</h2>
         <p id="stage_c"></p>
         <pre id="stage_c_raw" class="small" hidden></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="image_result" hidden>
+    <div class="panel">
+      <div class="tabs" role="tablist" id="image_tabs"></div>
+      <pre id="image_prompt" tabindex="0"></pre>
+      <div id="negative_box" hidden>
+        <h3>Negative prompt</h3>
+        <pre id="negative_prompt"></pre>
+      </div>
+      <div class="meta">
+        <span id="image_params"></span>
+        <button type="button" id="image_copy">Copy</button>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="panel">
+        <h2>Stated in your prompt</h2>
+        <ul id="image_stated"></ul>
+        <h3>Left out (from your "no ..." / "without ...")</h3>
+        <ul id="image_avoid"></ul>
+      </div>
+      <div class="panel">
+        <h2>Added by PromptOpt <span class="muted">(neutral defaults: edit them if you want something else)</span></h2>
+        <ul id="image_defaults"></ul>
+      </div>
+      <div class="panel">
+        <h2>Image rules applied</h2>
+        <ol id="image_rules"></ol>
       </div>
     </div>
   </section>

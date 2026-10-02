@@ -115,7 +115,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c_eval.md` |
 | 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Done: final test run once on 2026-10-02, tag `final-for-test`; `evaluation/FINAL_RESULTS.md` (Stage A 74.7%; Stage B format 3.1% -> 95.0%, 6.4% routed; Stage C ablation: helps on routed prompts only; benchmark: quality 8.2 -> 9.0, task success 67% -> 85%, tokens -57%) |
 | 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`, plain HTML/JS in `app/static/`, Compare disabled until API keys |
-| 9 | Phase 2: image generation | Not started |
+| 9 | Phase 2: image generation | Done as finish phase 5: separate, explicitly selected image mode (`app/image/`); `evaluation/image_mode.md` |
 
 ### Finish phase (started 2026-10-02; due Sunday 2026-10-04, buffer to Thursday 2026-10-08)
 Product goal unchanged: prompt + target LLM + category (auto/5) + optional attachment type -> optimized, model-specific
@@ -134,6 +134,13 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
   `data/coding/`), `python -m app.coding.evaluate --out ../evaluation/coding_tests.md` (pass@1 degraded vs Stage B).
   Code only ever runs through `app.coding.sandbox.run_python` (bwrap: no network, read-only system; refuses to run
   without bwrap unless `SANDBOX_REQUIRE_BWRAP=0`).
+
+- **Image mode (phase 5):** "Image generation" is a separate mode the user picks (never auto-detected; Stage A/B/C
+  untouched). `app/image/attributes.py` (detectors: subject detail, style, composition, lighting, palette, mood,
+  aspect ratio, background, avoid), `optimizer.py` (rules I01-I11: clean request, move "no X" to avoid, aspect ratio,
+  neutral defaults marked in `ir.defaults`; the user's description is never rewritten), `render.py` (DALL-E and Nano
+  Banana sentences, Stable Diffusion keywords + negative prompt). `python -m app.image.evaluate --out
+  ../evaluation/image_mode.md`; optional local SD 1.5 + CLIP run `python -m app.image.generate` in `.venv-gpu`.
 
 ### Later, needs API keys (after step 7)
 - Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).

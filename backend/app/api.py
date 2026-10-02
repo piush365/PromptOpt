@@ -5,7 +5,8 @@
 Endpoints
     GET  /                      the UI
     GET  /api/options           targets, categories, attachment types, whether Stage C is loaded
-    POST /api/optimize          prompt -> Stage A result, issues, rules fired, Stage C, renderings + input tokens
+    POST /api/optimize          prompt -> Stage A result, issues, rules fired, Stage C, renderings + input tokens;
+                                category "image_generation" -> the separate image mode (app.image), image targets
     GET  /api/history           recent prompts (kept RETENTION_DAYS, then purged)
     GET  /api/history/{id}      one prompt with everything the system did to it
     POST /api/coding-tests      unvalidated tests for a coding prompt (Cerebras; 503 without CEREBRAS_API_KEY)
@@ -30,6 +31,9 @@ from app.config import RETENTION_DAYS
 from app.db import repository as repo
 from app.db.base import get_db
 from app.coding import app_tests
+from app.image.attributes import ATTRIBUTES as IMAGE_ATTRIBUTES
+from app.image.optimizer import IMAGE_TARGETS, RULES as IMAGE_RULES, optimize_image
+from app.image.render import DEFAULTS as IMAGE_DEFAULTS, render_all as render_image_all
 from app.db.models import Prompt
 from app.pipeline import process_prompt
 from app.rendering import TARGETS
@@ -37,9 +41,11 @@ from app.stage_b.ir import Attachment
 from app.stage_b.rules import RULES
 
 STATIC = Path(__file__).parent / "static"
-CATEGORIES = ("auto", "closed_qa", "information_extraction", "classification", "summarization", "coding")
+CATEGORIES = ("auto", "closed_qa", "information_extraction", "classification", "summarization", "coding",
+              "image_generation")
+TEXT_TARGETS = ("gpt", "gemini", "claude")
 ATTACHMENTS = ("none", "image", "pdf", "pptx", "docx", "spreadsheet", "code", "other")
-RULE_DOCS = {code: (fn.__doc__ or "").strip().split("\n")[0] for code, fn in RULES}
+RULE_DOCS = {code: (fn.__doc__ or "").strip().split("\n")[0] for code, fn in [*RULES, *IMAGE_RULES]}
 
 app = FastAPI(title="PromptOpt", version="0.2.0")
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
@@ -65,7 +71,7 @@ def stage_c_model():
 
 class OptimizeRequest(BaseModel):
     prompt: str = Field(min_length=1, max_length=20000)
-    target: Literal["claude", "gpt", "gemini"] = "gpt"
+    target: Literal["claude", "gpt", "gemini", "dalle", "nano_banana", "stable_diffusion"] = "gpt"
     category: Literal[CATEGORIES] = "auto"
     attachment_type: Literal[ATTACHMENTS] = "none"
     attachment_name: str | None = Field(default=None, max_length=255)
@@ -80,7 +86,8 @@ def index():
 @app.get("/api/options")
 def options():
     model = stage_c_model()
-    return {"targets": TARGETS, "categories": CATEGORIES, "attachment_types": ATTACHMENTS,
+    return {"targets": TARGETS, "image_targets": IMAGE_TARGETS, "categories": CATEGORIES,
+            "attachment_types": ATTACHMENTS,
             "stage_c": {"available": model is not None, "model": model.name if model else None,
                         "device": model.device if model else None},
             "retention_days": RETENTION_DAYS, "compare_enabled": False}
@@ -100,8 +107,40 @@ def issues(f) -> list[dict]:
     return out
 
 
+def optimize_image_prompt(req: OptimizeRequest, db: Session) -> dict:
+    """Image mode: chosen explicitly by the user, never auto-detected; Stage A/B/C are not involved. Stored like a
+    text prompt (PII scrubbed, retention) with the image IR and its rule log in the result's IR JSON (the rules table
+    holds the text pipeline's rules only)."""
+    if req.target not in IMAGE_TARGETS:
+        raise HTTPException(422, f"image generation targets are {list(IMAGE_TARGETS)}")
+    prompt = repo.create_prompt(db, req.prompt)
+    out = optimize_image(prompt.original_text, target=req.target)
+    rendered = render_image_all(out.ir)
+    result = repo.save_optimization(db, prompt.id, rendered[req.target]["prompt"],
+                                    {"mode": "image", **out.ir.model_dump(mode="json"), "steps": out.steps}, 1.0, [])
+    repo.save_renderings(db, result.id, {t: r["prompt"] + (f"\n\nNegative prompt: {r['negative_prompt']}"
+                                                           if r.get("negative_prompt") else "")
+                                         for t, r in rendered.items()})
+    db.commit()
+    return {"mode": "image", "prompt_id": prompt.id, "target": req.target,
+            "pii_redactions": prompt.pii_redactions,
+            "stated": {a: out.detected[a] for a in IMAGE_ATTRIBUTES if out.detected[a]},
+            "defaults": [{"attribute": a, "text": IMAGE_DEFAULTS[a][0] if a in IMAGE_DEFAULTS else None}
+                         for a in out.ir.defaults],
+            "avoid_user": list(out.ir.avoid_user), "aspect_ratio": out.ir.aspect_ratio,
+            "aspect_source": out.ir.aspect_source,
+            "rules": [{"code": s["rule_code"], "what": RULE_DOCS.get(s["rule_code"], ""), "before": s["before"],
+                       "after": s["after"]} for s in out.steps],
+            "ir": out.ir.model_dump(mode="json"), "renderings": rendered}
+
+
 @app.post("/api/optimize")
 def optimize_prompt(req: OptimizeRequest, db: Session = Depends(get_db)):
+    if req.category == "image_generation":
+        return optimize_image_prompt(req, db)
+    if req.target not in TEXT_TARGETS:
+        raise HTTPException(422, f"text targets are {list(TEXT_TARGETS)}; pick the image_generation category for "
+                                 f"image models")
     attachment = None if req.attachment_type == "none" else Attachment(type=req.attachment_type,
                                                                        name=req.attachment_name or None)
     model = stage_c_model()
