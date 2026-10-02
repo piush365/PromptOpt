@@ -482,3 +482,26 @@ def test_b06_yes_no_only_without_named_groups():
     text = "Which of these ski resorts are in utah"
     ir = b.b06_add_labels(ir_of(text, "classification"), feats(text, "classification"))
     assert ir.requirements == ('Use only these labels: "yes", "no".',)
+
+
+@pytest.mark.parametrize("kind, expected", [("spreadsheet", "Use Python."), ("pdf", "Use Python."),
+                                            ("image", "Use Python."), ("code", b.KEEP_LANGUAGE)])
+def test_b05_data_attachment_gets_the_default_language(kind, expected):
+    text = "compute the average grade per student"
+    out = optimize(text, feats(text, "coding"), attachment=Attachment(type=kind))
+    assert expected in out.ir.constraints and len([c for c in out.ir.constraints if "language" in c.lower()
+                                                   or c.startswith("Use Python")]) == 1
+
+
+def test_b05_embedded_code_with_a_data_attachment_keeps_its_language():
+    text = "fix this ```function f(x) { return x + }``` using the attached sheet"
+    out = optimize(text, feats(text, "coding"), attachment=Attachment(type="spreadsheet"))
+    assert b.KEEP_LANGUAGE in out.ir.constraints
+
+
+def test_b05_without_attachment_unchanged():
+    assert b.b05_add_language(ir_of("sort a list", "coding"), feats("sort a list", "coding")).constraints == (
+        "Use Python.",)
+    text = "fix this ```function f(x) { return x + }```"
+    out = optimize(text, feats(text, "coding"))
+    assert b.KEEP_LANGUAGE in out.ir.constraints

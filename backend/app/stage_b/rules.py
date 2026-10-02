@@ -242,12 +242,18 @@ DEFAULT_LANGUAGE = "Python"
 KEEP_LANGUAGE = "Keep the language of the given code."
 
 
+# Attachments that are data, not code (2026-10-02, after frozen-for-test; changes nothing without an attachment)
+_DATA_ATTACHMENTS = {"image", "pdf", "pptx", "docx", "spreadsheet", "other"}
+
+
 def b05_add_language(ir: PromptIR, f: PromptFeatures) -> PromptIR:
     """Coding prompts that name no language get the default one, unless code was supplied: then the language is
-    whatever that code is written in, which a regex cannot safely tell."""
+    whatever that code is written in, which a regex cannot safely tell. An attached spreadsheet, PDF, image, ... is
+    data for the code, not code, so it gets the default language too (unless code was also embedded in the prompt)."""
     if ir.category != "coding" or not category_is_reliable(ir, f) or "language" not in f.missing_constraints:
         return ir
-    rule = KEEP_LANGUAGE if f.has_context else f"Use {DEFAULT_LANGUAGE}."
+    data_only = ir.attachment.type in _DATA_ATTACHMENTS and not ir.context
+    rule = KEEP_LANGUAGE if f.has_context and not data_only else f"Use {DEFAULT_LANGUAGE}."
     return ir.model_copy(update={"constraints": (*ir.constraints, rule)})
 
 

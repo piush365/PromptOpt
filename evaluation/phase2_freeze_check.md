@@ -33,3 +33,16 @@ print(len(out), hashlib.sha256(json.dumps(out, sort_keys=True).encode()).hexdige
 ```
 Run as `PYTHONPATH=. CATEGORY_INDEX_PATH=<backend/artifacts/category_index.npz> python dump_b.py out.json
 <data/promptopt_dataset_v1_2_final/promptopt_dataset_v1_2_final.csv>` inside `backend/` of each checkout.
+
+## Re-check after the gated B05 fix (2026-10-02)
+
+B05 now gives a coding prompt with a data attachment (spreadsheet, PDF, image, pptx, docx, other) `Use Python.`
+instead of `Keep the language of the given code.`; without an attachment it is unchanged. The check is now a command,
+`python -m app.freeze_check` (same dump as above, run from a temporary worktree of the tag):
+
+```
+frozen-for-test: 35f7d4dcc929cbd8eee98474f5f941e8a5ef320dd117bdcfe774f3189713cb5e
+current:          35f7d4dcc929cbd8eee98474f5f941e8a5ef320dd117bdcfe774f3189713cb5e
+482 test prompts: BYTE-IDENTICAL
+```
+The regenerated `stage_b_test.md` still differs only by the two B14/B15 rows (0 prompts each). Attachment set: 30/30.

@@ -1,0 +1,8 @@
+[
+ {"id": "named-image-describe",
+  "prompt": "describe what is happening in the picture",
+  "attachment": {"type": "image", "name": null},
+  "category": "auto",
+  "expected_category": "summarization",
+  "why": "Found in the Phase 2 attachment check: Stage A predicts coding with low confidence, so the prompt goes to Stage C for the task category. Stage A is not changed for it; Phase 3 reports whether Stage C picks the right category. Describing supplied material is closest to summarization of the five categories; coding is wrong."}
+]

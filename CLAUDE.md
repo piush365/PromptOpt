@@ -8,7 +8,10 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   filler/redundancy, ambiguous references. spaCy + regex + Sentence-Transformers. Output: PromptFeatures (Pydantic).
 - **Stage B, rule-based optimization:** deterministic, independently testable rules (codes B01-B15 in `backend/app/db/seed.py`;
   B09-B15 are the attachment modifier, one rule per attachment type: image, pdf, pptx, docx, other, spreadsheet, code;
-  B14/B15 were added after the freeze and fire only when that attachment type is given).
+  B14/B15 were added after the freeze and fire only when that attachment type is given; also after the freeze, B05
+  gives a coding prompt with a data attachment (spreadsheet, PDF, image, ...) the default language instead of "Keep the
+  language of the given code"). Any change after the freeze must keep `python -m app.freeze_check` byte-identical
+  (Stage A + B on the test split vs `frozen-for-test`, no attachment).
   Category-specific rules (B03-B06) apply only when Stage A's category confidence is >= 0.6. Below that, B08 is the
   group-level fallback: if closed_qa + information_extraction + summarization together reach 0.6 and text is attached,
   it adds "Answer from the provided text in at most three sentences." (only the missing parts) and resolves the
@@ -32,7 +35,9 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   labelled). A user-selected category overrides Stage A (`optimize(..., category=...)`); `app/pipeline.py` runs one
   request end to end, saves the renderings and returns Stage A's own category and `category_disagreement`.
   Per-category templates: `docs/CATEGORY_TEMPLATES.md` (`python -m app.templates_doc`). Attachment rules on 30
-  hand-made prompts: `evaluation/attachment_test.md` (`python -m app.attachment_eval`).
+  hand-made prompts: `evaluation/attachment_test.md` (`python -m app.attachment_eval`); the team's blind set
+  (`evaluation/attachments/blind_test.csv`, instructions next to it) is reported separately with `--blind` in
+  `evaluation/attachment_blind_test.md`. Named Stage C cases: `evaluation/stage_c/named_cases.json`.
 - **Groq usage:** every Groq call records its tokens and cached tokens (failed JSON calls estimated) in
   `data/groq_usage.json`, over a rolling 24 hours like Groq's own limit; dataset generation stays within
   `--budget-fraction` (0.7) of each model's limit. Whether Groq counts cached tokens is not verified yet
