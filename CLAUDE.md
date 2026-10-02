@@ -17,7 +17,11 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   leaves something unresolved that Stage C can fix: the task category (still unresolved after the 0.6 gate and B08)
   or an ambiguous reference (`STAGE_C_REASONS` in `backend/app/stage_b/optimizer.py`). A missing label set or format
   is recorded but does not route; the confidence score is stored, not used for routing. Stage C patches the
-  unresolved fields, not the whole prompt.
+  unresolved fields, not the whole prompt. Plan, data format, known limitations and evaluation: `docs/STAGE_C_PLAN.md`.
+  Data: `python -m app.stage_c.data` (targets parsed from optimized prompts by `app/stage_c/parse.py`; Stage A on train
+  cross-fitted) -> `data/stage_c/` + `data/stage_c_data_v1.zip` (git-ignored; manifest committed as
+  `docs/stage_c_data_manifest.json`). Training: `app/stage_c/train.py`, locally in `backend/.venv-gpu` (CUDA torch;
+  `.venv` stays CPU-only) or Colab `notebooks/train_stage_c.ipynb` (zip from `MyDrive/PromptOpt/stage_c/`).
 - **IR + rendering:** the result becomes a model-agnostic intermediate representation (`app/stage_b/ir.py`: task,
   context, context_ref, constraints, requirements, output_format, attachment, target_llm, category_source, unresolved),
   rendered per target LLM by `app/rendering.py` (Claude XML tags, GPT markdown sections, Gemini labelled sections;
@@ -92,10 +96,23 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
 | 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Not started |
 | 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
-| 6 | Validation results -> retrain classifier -> train Stage C LoRA | Not started |
-| 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | **CURRENT**: Stage A retrained on final train; test split run once offline (Stage A 74.7%, macro-F1 0.746; Stage C 6.4%); benchmark LLM eval done (stage_b vs degraded: quality 9.0 vs 8.2, task success 85% vs 67%, total tokens -57%). Ablation not started |
-| 8 | FastAPI + React app with history | Not started |
+| 6 | Validation results -> retrain classifier -> train Stage C LoRA | Finish phase 1 (see below): data + notebook + plan done; training pending |
+| 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | In progress, continued by the finish phase below: Stage A retrained on final train; test split run once offline (Stage A 74.7%, macro-F1 0.746; Stage C 6.4%); benchmark LLM eval done (stage_b vs degraded: quality 9.0 vs 8.2, task success 85% vs 67%, total tokens -57%). Ablation not started |
+| 8 | FastAPI + web app with history | Not started; finish phase 3 builds it as plain HTML/JS served by FastAPI (no React) |
 | 9 | Phase 2: image generation | Not started |
+
+### Finish phase (started 2026-10-02; due Sunday 2026-10-04, buffer to Thursday 2026-10-08)
+Product goal unchanged: prompt + target LLM + category (auto/5) + optional attachment type -> optimized, model-specific
+prompt. Image generation out of scope; no paid APIs (Groq/Cerebras within quota). Stage A/B rules stay unchanged; new
+attachment rules may be added only if they fire ONLY when an attachment type is given (prove it: Stage B test metrics
+offline identical to the frozen ones). Tune new things on val only; the test split runs once at the very end, then tag
+`final-for-test`. Commit after every phase.
+
+| Phase | Work | Status |
+|---|---|---|
+| 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; training pending (local GPU or Colab) |
+| 2 | Renderers per target + token counts, category override with disagreement shown, attachment types (image, pdf, pptx, docx, spreadsheet, code file) with a 30-prompt hand-made test set, category templates | **CURRENT** (parallel to training) |
+| 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | After the adapter exists |
 
 ### Later, needs API keys (after step 7)
 - Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).
