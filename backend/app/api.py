@@ -32,8 +32,8 @@ from app.db import repository as repo
 from app.db.base import get_db
 from app.coding import app_tests
 from app.image.attributes import ATTRIBUTES as IMAGE_ATTRIBUTES
-from app.image.optimizer import IMAGE_TARGETS, RULES as IMAGE_RULES, optimize_image
-from app.image.render import DEFAULTS as IMAGE_DEFAULTS, render_all as render_image_all
+from app.image.optimizer import IMAGE_TARGETS, RULES as IMAGE_RULES
+from app.image.v2 import RULE_DOCS_V2, optimize_image_v2, parse_accepted, render_all_v2
 from app.db.models import Prompt
 from app.pipeline import process_prompt
 from app.rendering import TARGETS
@@ -46,6 +46,7 @@ CATEGORIES = ("auto", "closed_qa", "information_extraction", "classification", "
 TEXT_TARGETS = ("gpt", "gemini", "claude")
 ATTACHMENTS = ("none", "image", "pdf", "pptx", "docx", "spreadsheet", "code", "other")
 RULE_DOCS = {code: (fn.__doc__ or "").strip().split("\n")[0] for code, fn in [*RULES, *IMAGE_RULES]}
+RULE_DOCS.update({code: doc.strip().split("\n")[0] for code, doc in RULE_DOCS_V2.items()})
 
 app = FastAPI(title="PromptOpt", version="0.2.0")
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
@@ -76,6 +77,8 @@ class OptimizeRequest(BaseModel):
     attachment_type: Literal[ATTACHMENTS] = "none"
     attachment_name: str | None = Field(default=None, max_length=255)
     context: str | None = Field(default=None, max_length=50000, description="text pasted next to the prompt")
+    accepted_suggestions: list[str] = Field(default_factory=list, max_length=20,
+                                            description="image mode: suggestions the user clicked, 'lighting:soft daylight'")
 
 
 @app.get("/", include_in_schema=False)
@@ -108,30 +111,44 @@ def issues(f) -> list[dict]:
 
 
 def optimize_image_prompt(req: OptimizeRequest, db: Session) -> dict:
-    """Image mode: chosen explicitly by the user, never auto-detected; Stage A/B/C are not involved. Stored like a
-    text prompt (PII scrubbed, retention) with the image IR and its rule log in the result's IR JSON (the rules table
-    holds the text pipeline's rules only)."""
+    """Image mode (optimizer v2): chosen explicitly by the user, never auto-detected; Stage A/B/C are not involved.
+    Adds only what cannot conflict with the request; other missing attributes come back as suggestions, and the
+    ones the user clicks are sent back in `accepted_suggestions`. Stored like a text prompt (PII scrubbed,
+    retention) with the image IR and its rule log in the result's IR JSON (the rules table holds the text
+    pipeline's rules only)."""
     if req.target not in IMAGE_TARGETS:
         raise HTTPException(422, f"image generation targets are {list(IMAGE_TARGETS)}")
+    try:
+        accepted = parse_accepted(req.accepted_suggestions)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
     prompt = repo.create_prompt(db, req.prompt)
-    out = optimize_image(prompt.original_text, target=req.target)
-    rendered = render_image_all(out.ir)
+    out = optimize_image_v2(prompt.original_text, [f"{a}:{v}" for a, v in accepted], target=req.target)
+    rendered = render_all_v2(out.ir)
     result = repo.save_optimization(db, prompt.id, rendered[req.target]["prompt"],
                                     {"mode": "image", **out.ir.model_dump(mode="json"), "steps": out.steps}, 1.0, [])
     repo.save_renderings(db, result.id, {t: r["prompt"] + (f"\n\nNegative prompt: {r['negative_prompt']}"
                                                            if r.get("negative_prompt") else "")
                                          for t, r in rendered.items()})
     db.commit()
-    return {"mode": "image", "prompt_id": prompt.id, "target": req.target,
+    ir = out.ir
+    auto = [{"what": "negatives", "value": ", ".join(ir.avoid_default)}] if ir.avoid_default else []
+    if ir.quality:
+        auto.append({"what": "quality", "value": ir.quality})
+    if ir.aspect_ratio and not any(a == "aspect_ratio" for a, _ in accepted):
+        auto.append({"what": "aspect ratio (from your prompt)", "value": ir.aspect_ratio})
+    if ir.style_first:
+        auto.append({"what": "style moved to the front (Stable Diffusion)", "value": ", ".join(ir.style_first)})
+    return {"mode": "image", "version": "v2", "prompt_id": prompt.id, "target": req.target,
             "pii_redactions": prompt.pii_redactions,
             "stated": {a: out.detected[a] for a in IMAGE_ATTRIBUTES if out.detected[a]},
-            "defaults": [{"attribute": a, "text": IMAGE_DEFAULTS[a][0] if a in IMAGE_DEFAULTS else None}
-                         for a in out.ir.defaults],
-            "avoid_user": list(out.ir.avoid_user), "aspect_ratio": out.ir.aspect_ratio,
-            "aspect_source": out.ir.aspect_source,
+            "avoid_user": list(ir.avoid_user), "auto_added": auto,
+            "accepted": [f"{a}:{v}" for a, v in accepted],
+            "suggestions": [s.model_dump() for s in out.suggestions],
+            "aspect_ratio": ir.aspect_ratio,
             "rules": [{"code": s["rule_code"], "what": RULE_DOCS.get(s["rule_code"], ""), "before": s["before"],
                        "after": s["after"]} for s in out.steps],
-            "ir": out.ir.model_dump(mode="json"), "renderings": rendered}
+            "ir": ir.model_dump(mode="json"), "renderings": rendered}
 
 
 @app.post("/api/optimize")

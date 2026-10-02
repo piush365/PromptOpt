@@ -137,10 +137,14 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 
 - **Image mode (phase 5):** "Image generation" is a separate mode the user picks (never auto-detected; Stage A/B/C
   untouched). `app/image/attributes.py` (detectors: subject detail, style, composition, lighting, palette, mood,
-  aspect ratio, background, avoid), `optimizer.py` (rules I01-I11: clean request, move "no X" to avoid, aspect ratio,
-  neutral defaults marked in `ir.defaults`; the user's description is never rewritten), `render.py` (DALL-E and Nano
-  Banana sentences, Stable Diffusion keywords + negative prompt). `python -m app.image.evaluate --out
-  ../evaluation/image_mode.md`; optional local SD 1.5 + CLIP run `python -m app.image.generate` in `.venv-gpu`.
+  aspect ratio, background, avoid). The app uses **v2** (`v2.py`): the user's words verbatim (style first for Stable
+  Diffusion), their "no X" list as the avoid list / negative prompt, a ratio only when implied; every other missing
+  attribute (and the usual negatives) is a clickable suggestion, never inserted automatically. v1 (`optimizer.py`
+  rules I01-I11 + `render.py`, default keywords for every gap) is kept only for the evaluation: its defaults pulled
+  Stable Diffusion images away from the request (lesson in `evaluation/image_mode.md`). Dev prompts
+  `evaluation/image/image_prompts.json` (tuning only), held-out `heldout_prompts.json` (committed before v2, run
+  once). `python -m app.image.evaluate --out ../evaluation/image_mode.md`; local SD 1.5 + CLIP:
+  `python -m app.image.generate --set dev|heldout` in `.venv-gpu`.
 
 ### Later, needs API keys (after step 7)
 - Compare: original vs optimized prompt on the real target LLM (GPT, Gemini, Claude).

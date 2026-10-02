@@ -13,6 +13,7 @@ const LABELS = {
   background: "Background", avoid: "Things to avoid",
 };
 let OPTIONS = null;
+let accepted = new Set();                        // image mode: suggestions the user clicked
 let shownImage = "dalle";
 const isImageMode = () => $("category").value === "image_generation";
 
@@ -71,8 +72,9 @@ function showImage(t) {
   $("image_prompt").textContent = r.prompt;
   $("negative_box").hidden = !r.negative_prompt;
   $("negative_prompt").textContent = r.negative_prompt || "";
-  $("image_params").textContent = "Parameters: " + Object.entries(r.params).map(([k, v]) => `${k} ${v}`).join(", ") +
-    ` (aspect ratio ${last.aspect_source === "user" ? "from your prompt" : "default"})`;
+  const params = Object.entries(r.params).map(([k, v]) => `${k} ${v}`).join(", ");
+  $("image_params").textContent = (params ? "Parameters: " + params : "No parameters") +
+    (last.aspect_ratio ? "" : " (no aspect ratio stated: the model's default size)");
 }
 
 function renderImage(r) {
@@ -92,11 +94,28 @@ function renderImage(r) {
                                                      : [el("li", "Only the subject.", "muted")]));
   $("image_avoid").replaceChildren(...(r.avoid_user.length ? r.avoid_user.map((x) => el("li", x))
                                                          : [el("li", "Nothing.", "muted")]));
-  $("image_defaults").replaceChildren(...(r.defaults.length ? r.defaults.map((d) => {
-    const li = el("li"); li.append(el("strong", LABELS[d.attribute] || d.attribute), " " + (d.text ||
-      (d.attribute === "aspect_ratio" ? `${r.aspect_ratio} (square)` : "usual quality negatives (text, watermarks, ...)")));
-    return li;
-  }) : [el("li", "Nothing: your prompt already covers every attribute.", "muted")]));
+  $("image_auto").replaceChildren(...(r.auto_added.length ? r.auto_added.map((a) => {
+    const li = el("li"); li.append(el("strong", a.what + ":"), " " + a.value); return li;
+  }) : [el("li", "Nothing.", "muted")]));
+  $("image_suggestions").replaceChildren(...(r.suggestions.length ? r.suggestions.map((s) => {
+    const row = el("div", undefined, "suggest-row");
+    row.append(el("span", LABELS[s.attribute] || s.attribute, "label"));
+    if (s.hint) row.append(el("span", s.hint, "muted"));
+    for (const opt of s.options) {
+      const b = el("button", `add ${(LABELS[s.attribute] || s.attribute).toLowerCase()}: ${opt}`, "chip");
+      b.type = "button";
+      b.addEventListener("click", () => { accepted.add(`${s.attribute}:${opt}`); $("form").requestSubmit(); });
+      row.append(b);
+    }
+    return row;
+  }) : [el("span", "None: your prompt covers every attribute.", "muted")]));
+  $("image_accepted").replaceChildren(...(r.accepted.length ? r.accepted.map((a) => {
+    const [attr, value] = a.split(/:(.*)/s);
+    const b = el("button", `${(LABELS[attr] || attr).toLowerCase()}: ${value} ✕`, "chip accepted");
+    b.type = "button"; b.title = "Remove";
+    b.addEventListener("click", () => { accepted.delete(a); $("form").requestSubmit(); });
+    return b;
+  }) : [el("span", "Nothing yet.", "muted")]));
   $("image_rules").replaceChildren(...r.rules.map((x) => { const li = el("li"); li.append(el("strong", x.code), " " + x.what); return li; }));
 }
 
@@ -212,6 +231,7 @@ $("form").addEventListener("submit", async (ev) => {
     attachment_type: isImageMode() ? "none" : $("attachment").value,
     attachment_name: $("attachment_name").value || null,
     context: isImageMode() ? null : ($("context").value || null),
+    accepted_suggestions: isImageMode() ? [...accepted] : [],
   };
   try {
     const resp = await fetch("/api/optimize", { method: "POST", headers: { "Content-Type": "application/json" },
@@ -232,6 +252,8 @@ $("repick").addEventListener("click", () => {
   $("category").value = $("pick").value;          // the user's choice overrides Stage A
   $("form").requestSubmit();
 });
+
+$("prompt").addEventListener("input", () => { accepted = new Set(); });   // a new request starts clean
 
 $("image_copy").addEventListener("click", async () => {
   const r = last.renderings[shownImage];

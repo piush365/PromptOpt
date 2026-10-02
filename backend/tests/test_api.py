@@ -165,11 +165,13 @@ def test_generated_tests_are_marked_unvalidated(tmp_path, monkeypatch):
 def test_image_mode_is_separate_and_explicit(client):
     r = client.post("/api/optimize", json={"prompt": "can you make me a picture of a cat on a windowsill, no text",
                                            "category": "image_generation", "target": "stable_diffusion"}).json()
-    assert r["mode"] == "image" and r["target"] == "stable_diffusion"
+    assert r["mode"] == "image" and r["version"] == "v2" and r["target"] == "stable_diffusion"
     assert set(r["renderings"]) == {"dalle", "nano_banana", "stable_diffusion"}
     sd = r["renderings"]["stable_diffusion"]
-    assert sd["prompt"].startswith("A cat on a windowsill") and sd["negative_prompt"].startswith("text")
-    assert r["avoid_user"] == ["text"] and {d["attribute"] for d in r["defaults"]} >= {"style", "lighting"}
+    assert sd["prompt"] == "A cat on a windowsill" and sd["negative_prompt"] == "text"
+    assert r["avoid_user"] == ["text"] and r["accepted"] == []
+    offered = {s["attribute"] for s in r["suggestions"]}
+    assert {"lighting", "style", "palette"} <= offered
     assert all(x["code"].startswith("I") for x in r["rules"]) and "stage_a" not in r
     item = client.get(f"/api/history/{r['prompt_id']}").json()
     assert item["results"][0]["ir"]["mode"] == "image" and "Negative prompt" in \
@@ -182,3 +184,18 @@ def test_image_mode_is_separate_and_explicit(client):
                                               "target": "gpt"}).status_code == 422
     assert client.post("/api/optimize", json={"prompt": "a cat", "target": "dalle"}).status_code == 422
     assert client.get("/api/options").json()["image_targets"] == ["dalle", "nano_banana", "stable_diffusion"]
+
+
+def test_image_suggestions_are_added_only_when_accepted(client):
+    body = {"prompt": "a dog", "category": "image_generation", "target": "dalle"}
+    r = client.post("/api/optimize", json=body).json()
+    assert r["renderings"]["dalle"]["prompt"] == "A dog."
+    assert "lighting" in {s["attribute"] for s in r["suggestions"]}
+    r = client.post("/api/optimize", json={**body, "accepted_suggestions": ["lighting:soft daylight",
+                                                                            "aspect_ratio:16:9"]}).json()
+    assert "Lighting: soft daylight." in r["renderings"]["dalle"]["prompt"]
+    assert r["renderings"]["dalle"]["params"] == {"size": "1792x1024"} and r["accepted"] == [
+        "lighting:soft daylight", "aspect_ratio:16:9"]
+    assert "lighting" not in {s["attribute"] for s in r["suggestions"]}
+    assert client.post("/api/optimize", json={**body, "accepted_suggestions": ["lighting:laser show"]}
+                       ).status_code == 422

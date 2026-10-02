@@ -49,3 +49,7 @@ li { margin: 3px 0; }
 .warn { background: var(--warn-bg); color: var(--warn); padding: 8px; border-radius: 6px; }
 button.link { border: none; background: none; padding: 0; color: var(--accent); text-align: left; }
 #status { color: var(--muted); }
+.chip { border-radius: 999px; padding: 3px 10px; margin: 2px 4px 2px 0; font-size: 13px; }
+.chip.accepted { border-color: var(--accent); color: var(--accent); }
+.suggest-row { margin: 6px 0; }
+.suggest-row .label { color: var(--muted); margin-right: 6px; font-size: 13px; }
