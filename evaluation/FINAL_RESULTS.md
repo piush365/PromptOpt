@@ -4,7 +4,8 @@ Final evaluation of PromptOpt (Mini Project-I, 7CS345, WCE Sangli), run on 2026-
 **Val** is the development split: everything new was tuned and decided on it. **Test** is the final split: run
 **once**, after all decisions were committed (the last one in `3d6b81d`, category policy). Nothing was changed
 after seeing test numbers; the only edit afterwards was a wording fix in the Stage C report text ("val prompts" ->
-"prompts of the split"), no numbers.
+"prompts of the split"), no numbers. Sections 7-9 (coding tests, image mode, Compare) were added after
+`final-for-test` in finish phases 4-6: they add measurements and features and change nothing in sections 1-6.
 
 Dataset: PromptOpt Dataset v1.2 final (`docs/DATASET_CARD.md`): train 4,509 / val 149 / test 482 / benchmark 44
 prompts, five categories. Detailed reports: `stage_a_test_final.md`, `stage_b_test_final.md`, `stage_c_eval.md` (val),
@@ -163,7 +164,57 @@ Requirement under 3 s per prompt on the laptop GPU: **met**.
 * **App**: FastAPI + plain HTML/JS, fully offline (`uvicorn app.api:app` in `backend/`); Compare is disabled until API
   keys for the real target LLMs exist.
 
-## 7. Known limitations
+## 7. Coding: tests in a sandbox (finish phase 4, after `final-for-test`)
+
+Does the code the model writes actually work? Python test/benchmark coding items only (test: 47 of 98 coding items
+are Python; other languages not run). Cerebras gpt-oss-120b writes 3-6 assert tests per item, each kept only if it
+passes on the CodeAlpaca reference; references that fail are listed as suspects, not dropped. Code runs only in a
+bubblewrap sandbox (no network, read-only system, memory/CPU/process limits). Target: Cerebras gpt-oss-120b, the
+benchmark's settings. Details: `coding_tests.md`, `docs/CODING_TESTS.md`.
+
+| test split (29 tested items) | pass@1 strict | pass@1 lenient (naming-only failures counted as passes) |
+|---|---|---|
+| degraded prompt | 6/29 (20.7%) | 11/29 (37.9%) |
+| **Stage B prompt** | **10/29 (34.5%)** | 12/29 (41.4%) |
+
+Paired (strict): Stage B passes 4 items degraded fails, never the reverse (sign test p = 0.125; n is small). The gain is
+mostly interface: degraded answers more often name the function differently, give several alternatives, or are not
+Python. Real failures (wrong results) are similar (13 vs 16). Scope: 4 reference suspects, 14 untestable items
+(fragments, interactive, third-party packages), all reported.
+
+## 8. Image-generation mode (finish phase 5)
+
+A separate mode the user selects; Stage A/B/C are not involved. Details and images: `image_mode.md`.
+
+* **v1** filled every missing attribute (style, lighting, palette, ...) with "neutral" defaults. On a dev set of 40
+  prompts, images from v1's Stable Diffusion prompts matched the user's request worse than the original prompt
+  (CLIP vs original prompt 28.44 vs 29.95, worse in 25 of 40, p = 0.009): keywords like "natural lighting" turned a
+  watercolor request into a photo.
+* **v2** (the app's default) keeps the user's words first and adds nothing that can conflict; every other attribute is
+  a clickable suggestion. Final configuration chosen on dev; then a **held-out set of 30 prompts, written and
+  committed before any v2 code, run once** (SD 1.5 on the RTX 3050, 7.5 s/image):
+
+| held-out (n = 30) | CLIP vs original prompt | vs original: higher / lower / tie | style kept (12 styled) |
+|---|---|---|---|
+| original prompt | 33.08 | - | 12/12 |
+| v1 | 30.78 | 7 / 18 / 5 (p = 0.043) | 10/12 |
+| **v2** | **32.77** | 0 / 4 / 26 (p = 0.125) | **12/12** |
+| v2 + every first suggestion (simulated) | 31.07 | 3 / 20 / 7 (p < 0.001) | 10/12 |
+
+v2 does no measurable harm; CLIP against the user's own wording can show harm but not improvement (it also ignores
+negation: "without clouds" scores higher with clouds). Lesson: filling attributes raised coverage to 9.0 of 9 per
+prompt and made the images worse; the image model's output against the user's request is the check that matters.
+
+## 9. Compare (finish phase 6)
+
+The app's Compare runs the original and the optimized prompt on the same model (temperature 0, same max tokens),
+side by side: answers, input/output/reasoning/total tokens, latency, sandbox tests for dataset coding items, and an
+optional blind judge. Available now: gpt-oss-120b on Groq and Cerebras; Gemini when `GEMINI_API_KEY` is set; GPT and
+Claude are listed as "add API key". Every result says which model answered: a Claude-rendered prompt run on gpt-oss is
+labelled as a stand-in. Live examples (`compare_examples.md`, Groq): a coding prompt used 67.7% fewer total tokens
+(both answers 6/6 tests, judge 10/10); a closed_qa prompt whose answer was already one line used 17% more.
+
+## 10. Known limitations
 
 * Stage C training targets come from LLM-written optimized prompts; only 111 train rows were individually
   human-validated (the rest passed the human-rejection pass and the LLM-assisted filter).
@@ -177,8 +228,12 @@ Requirement under 3 s per prompt on the laptop GPU: **met**.
 * Real GPT/Gemini/Claude runs need API keys and are not done; the LLM numbers above use Cerebras/Groq stand-ins.
 * After Stage B, 27 test prompts that are not sent to Stage C still state no programming language according to the A03
   detector (`stage_b_test_final.md`, "Missing constraints left after Stage B").
+* Coding tests: Python items only (29 tested on test); the test writer is the same model as the target (tests are
+  validated on an independent reference, which limits but does not remove the bias).
+* Image mode: measured with SD 1.5 and CLIP only; DALL-E and Nano Banana prompts are untested without API keys.
+* Compare and all LLM numbers use gpt-oss-120b (Groq/Cerebras) as a stand-in for GPT, Gemini and Claude.
 
-## 8. Reproduce (inside `backend/`)
+## 11. Reproduce (inside `backend/`)
 
 ```
 python -m app.freeze_check                                             # Stage A/B vs frozen-for-test
@@ -188,4 +243,7 @@ python -m app.stage_c.data --test                                      # data/st
 .venv-gpu/bin/python -m app.stage_c.evaluate --split test --adapter artifacts/stage_c_adapter \
     --out ../evaluation/stage_c_test.md                                # and --split val for stage_c_eval.md
 python -m app.attachment_eval --out ../evaluation/attachment_test.md
+python -m app.coding.testgen && python -m app.coding.evaluate --out ../evaluation/coding_tests.md
+.venv-gpu/bin/python -m app.image.generate --set heldout && .venv-gpu/bin/python -m app.image.evaluate --out ../evaluation/image_mode.md
+.venv-gpu/bin/python -m app.evaluation.tokens --out ../evaluation/token_test.md
 ```
