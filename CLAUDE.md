@@ -78,6 +78,7 @@ v1.2 minus human-rejected and LLM-assisted-filter rows (`docs/DATASET_CARD.md`).
   - `python -m app.demo --examples [--target claude]`: offline demo (Stage A features, Stage B rules before/after,
     Stage C routing); `docs/MILESTONE_REVIEW.md` has the review checklist
   - `python -m pytest -q`: tests on SQLite; set `TEST_POSTGRES_URL` to also test PostgreSQL
+  - Exact versions: `pip install -r requirements-lock.txt` (.venv, CPU) / `requirements-gpu-lock.txt` (.venv-gpu)
   - `TEST_POSTGRES_URL` must point at the `promptopt_test` database only: the tests drop all tables.
 
 ## Conventions
@@ -110,8 +111,8 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 1 | Dataset v1.1 repair, then send rater sheets | Done: team 3 x 170 and faculty 20 rated; 295 of 330 accepted; v1.2 final = 5,184 rows (35 human-rejected + 9 LLM-assisted-filter rows left out); `evaluation/REVIEW_SUMMARY.md` |
 | 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. The default dataset is now v1.2 final (`config.DATASET_DIR` / `DATASET_CSV`), so no command needs `--dataset` |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
-| 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Finish phase 4: `app/coding/` (bwrap sandbox, Cerebras-generated asserts validated on the reference, naming discovery); method `docs/CODING_TESTS.md`, results `evaluation/coding_tests.md` |
-| 5 | Evaluation on val with Groq stand-in models | Not started (harness in `app/evaluation/` is built) |
+| 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Done (finish phase 4): `app/coding/` (bwrap sandbox, Cerebras-generated asserts validated on the reference, naming discovery); method `docs/CODING_TESTS.md`, results `evaluation/coding_tests.md` |
+| 5 | Evaluation on val with Groq stand-in models | Done: `dev-val-n10` (Stage B tuned on val; `evaluation/REVIEW_SUMMARY.md` section 5) and the Stage C val evaluation (`evaluation/stage_c_eval.md`) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c_eval.md` |
 | 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Done: final test run once on 2026-10-02, tag `final-for-test`; `evaluation/FINAL_RESULTS.md` (Stage A 74.7%; Stage B format 3.1% -> 95.0%, 6.4% routed; Stage C ablation: helps on routed prompts only; benchmark: quality 8.2 -> 9.0, task success 67% -> 85%, tokens -57%) |
 | 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`, plain HTML/JS in `app/static/`; Compare: finish phase 6 |
@@ -132,12 +133,11 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 | 4 | Coding test cases (Cerebras-generated asserts validated on the CodeAlpaca reference) + bwrap sandbox runner; pass@1 degraded vs Stage B | Done: test pass@1 strict 20.7% -> 34.5%, lenient 37.9% -> 41.4% (n=29, Python only; JS skipped); `evaluation/coding_tests.md`, `docs/CODING_TESTS.md` |
 | 5 | Image-generation mode (separate, explicitly selected): v1 rules + renderers, then v2 (user's words first, suggestions instead of default keywords); SD 1.5 + CLIP on dev and a held-out set | Done: held-out CLIP vs original: original 33.08, v1 30.78 (p=0.043), v2 32.77 (no sig. diff, style kept 12/12); `evaluation/image_mode.md` |
 | 6 | Compare: original vs optimized prompt on a real model (Groq, Cerebras now; Gemini if `GEMINI_API_KEY`; GPT/Claude disabled until keys), tokens / latency / sandbox tests / optional blind judge, honest provider labels | Done: `app/compare/`, live examples `evaluation/compare_examples.md` (coding -67.7% total tokens, both 6/6 tests; closed_qa +17%) |
-| 6b | Token evaluation on the FULL test split (482): degraded vs A+B (+ A+B+C on routed), Cerebras gpt-oss-120b, no judge, bootstrap CI + Wilcoxon (`python -m app.evaluation.tokens`) | **RUNNING** (started 2026-10-02 22:29, ~7 h, resumable; `evaluation/token_test.md`) |
-| 7 | `evaluation/FINAL_RESULTS.md` updated with phases 4-6 and the token headline; README "how to run the app" | README done; FINAL_RESULTS after 6b |
+| 6b | Token evaluation on the FULL test split (482): degraded vs A+B (+ A+B+C on routed), Cerebras gpt-oss-120b, no judge, bootstrap CI + Wilcoxon (`python -m app.evaluation.tokens`) | <!-- 6B_STATUS --> RUNNING: resumed 2026-10-07 18:53 (was interrupted at 70/482 on 2026-10-02); Cerebras caps 150 requests/hour, ends ~01:00 |
+| 7 | `evaluation/FINAL_RESULTS.md` updated with phases 4-6 and the token headline; README "how to run the app" | Done: FINAL_RESULTS sections 7-9 + token headline; README tested from a fresh clone |
 
-Waiting on others (not blocking): the team's blind sets (`evaluation/attachments/blind_test.csv` 15 rows,
-`evaluation/image/blind_test.csv` 10 rows), reported separately once filled in; API keys for GPT/Claude (Compare and
-the real-LLM evaluation).
+Not completed (by others): the team's blind sets (`evaluation/attachments/blind_test.csv` 15 rows,
+`evaluation/image/blind_test.csv` 10 rows) were never filled in; the reports say so. API keys for GPT/Claude: future work.
 
 - **Coding tests (phase 4):** `python -m app.coding.testgen` (items + validated tests, Cerebras, cached in
   `data/coding/`), `python -m app.coding.evaluate --out ../evaluation/coding_tests.md` (pass@1 degraded vs Stage B).
@@ -155,6 +155,16 @@ the real-LLM evaluation).
   once). `python -m app.image.evaluate --out ../evaluation/image_mode.md`; local SD 1.5 + CLIP:
   `python -m app.image.generate --set dev|heldout` in `.venv-gpu`.
 
-### Later, needs API keys (after step 7)
-- Compare on GPT and Claude (Groq/Cerebras/Gemini are wired in finish phase 6).
-- Real-LLM evaluation: repeat the val/test/benchmark evaluation per target LLM.
+### Close-out (2026-10-07): project complete, tag `v1.0`
+Blind sets marked "not completed" (team did not fill them in); cleanup (empty scaffolding removed, dataset-prep
+notebooks in `notebooks/dataset_prep/`); both venvs pinned (`backend/requirements-lock.txt`,
+`backend/requirements-gpu-lock.txt`); README run steps tested from a fresh clone; `docs/PROJECT_REPORT.md` and
+`docs/DEMO_SCRIPT.md`; GitHub release `v1.0` with the Stage C adapter, the Stage A category index and the Stage C data
+manifest (dataset on Drive, linked from the README). Nothing in the frozen text pipeline changed.
+
+### Future work (not started; nothing else is open)
+- Lean mode for short-answer categories (closed_qa): the optimized prompt's extra input can exceed the output saving.
+- Compare and the real-LLM evaluation on GPT, Claude, Gemini once API keys exist (Gemini is wired, never run live).
+- The team's blind sets (attachments 15 rows, image 10 rows), reported separately if ever filled in.
+- Stage A on closed_qa / information_extraction / summarization; more human-validated Stage C targets.
+- Coding tests beyond Python; image mode on DALL-E / Nano Banana.
