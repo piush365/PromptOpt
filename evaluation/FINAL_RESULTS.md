@@ -157,7 +157,8 @@ Requirement under 3 s per prompt on the laptop GPU: **met**.
 
 * **Attachment rules** (B09-B15): 30/30 hand-made prompts correct (own rule fired, no other, requirements and the
   attachment note in all three renderings, ambiguous references resolved; `attachment_test.md`). The team's blind set
-  (`attachments/blind_test.csv`) is reported separately in `attachment_blind_test.md` once filled in.
+  (`attachments/blind_test.csv`, 15 rows) is **not completed**: the team did not fill it in, so there is no blind
+  result (`attachment_blind_test.md`). The same holds for the image blind set (10 rows, `image_blind_test.md`).
 * **Renderers**: the same content for all three targets (Claude XML tags, GPT `###` sections, Gemini plain labels
   with the instruction first); every rendering is parsed back in the tests to check no field is lost. Input tokens per
   target: GPT exact (tiktoken o200k_base), Claude/Gemini approximate (characters / 4, labelled).

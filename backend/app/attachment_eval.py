@@ -112,7 +112,9 @@ def blind_report(items: list[dict], results: list[dict]) -> str:
              "ambiguous reference resolved). `meets expectation` is for the team to fill in by comparing the "
              "optimized prompt with their note.\n"]
     if not items:
-        return "\n".join(lines + ["No rows filled in yet (`evaluation/attachments/blind_test.csv`)."])
+        return "\n".join(lines + ["**Not completed.** The team has not filled in `evaluation/attachments/blind_test.csv` "
+                                   "(0 of 15 rows), so there is no blind result; only the hand-made set "
+                                   "(`attachment_test.md`) is reported."]) + "\n"
     lines += [f"**Automated checks: {sum(r['correct'] for r in results)}/{len(results)} pass.**\n",
               "| id | type | prompt | category (Stage A) | checks | Stage C | expected behaviour (team) | optimized prompt "
               "(plain) | meets expectation |", "|---|---|---|---|---|---|---|---|---|"]
