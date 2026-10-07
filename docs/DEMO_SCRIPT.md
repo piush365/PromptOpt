@@ -19,11 +19,11 @@ uvicorn app.api:app                    # http://127.0.0.1:8000
 | time | do | point out |
 |---|---|---|
 | 0:00-0:45 | Say the problem in one line: short prompts get long, unrequested answers; we rewrite the prompt for the chosen model and **measure** whether it helps. Show the pipeline diagram (README / report section 4). | A -> B -> C -> IR -> renderers. Rules first; the small model only for what rules cannot fix. |
-| 0:45-2:15 | Type `write code to get all permutations of a string`, target **GPT**, category **auto**, *Optimize*. | Stage A: coding, confidence 1.00, no format, no language. Rules that fired with before/after (B05 adds "Use Python", B03 "Return only the code, in a single code block"). Switch target tabs: same content, Claude XML tags vs GPT `###` vs Gemini labels. Input tokens per target: GPT exact (tiktoken), Claude/Gemini approximate, labelled. |
+| 0:45-2:15 | Type `write code to get all permutations of a string`, target **GPT**, category **auto**, *Optimize*. | Stage A: coding with full confidence, no format, no language. Rules that fired with before/after (B05 adds "Use Python", B03 "Return only the code, in a single code block"). Switch target tabs: same content, Claude XML tags vs GPT `###` vs Gemini labels. Input tokens per target: GPT exact (tiktoken), Claude/Gemini approximate, labelled. |
 | 2:15-3:15 | *Run on* gpt-oss-120b (Groq), *Compare*. | Side by side: original answer is a long explanation; optimized answer is one code block. Tokens in/out/reasoning, latency, sandbox tests. Measured on this prompt: **total -67.7%, both 6/6 tests** (`compare_examples.md`). Label says it is a stand-in for GPT. |
 | 3:15-4:00 | Type `which company bought hackpad according to that text?` and paste the Hackpad passage (from `compare_examples.md`), target **Claude**, *Optimize*, *Compare*. | **Honest case:** the original answer was already one line, so the optimized prompt costs more: **+17.2% total tokens**, same judge score. Savings come from long answers; for closed_qa, input grows more than output shrinks. Future work: "lean mode". |
 | 4:00-5:00 | Type `hey can you just summarize this article for me`, *Optimize*. Then `describe what is happening in the picture` with attachment **image**. | First: ambiguous reference ("this article") -> routed to Stage C; Stage C's answer is validated, and if it still contains an unclear reference it is rejected and Stage B's text is kept (the contract). Second: Stage A unsure (coding, 0.37) -> Stage C suggests a category, the UI **asks the user** and pre-selects it. Stage C runs on only 6.4% of test prompts. |
-| 5:00-5:45 | Category **Image generation**, target Stable Diffusion: `oil painting of a sailboat in a storm`. | v2 keeps the user's words first and adds nothing; missing attributes are clickable chips. v1 added "natural lighting" etc. and made images worse (held-out CLIP 30.78 vs original 33.08); v2 32.77, no significant difference, style kept 12/12. |
+| 5:00-5:45 | Category **Image generation**, target Stable Diffusion: `oil painting of a sailboat in a storm`. | v2 keeps the user's words first and adds nothing; missing attributes are clickable chips. v1 added "natural lighting" etc. and made images worse (held-out CLIP 30.78 vs original 33.08); v2 32.77, no significant difference, style kept 12/12. All image and attachment prompts are developer-written. |
 | 5:45-6:30 | Open *History*, reload a past prompt. Close with the headline. | 30-day retention, PII stripped before storing. Headline: <!-- TOKEN:headline:start -->**[PLACEHOLDER: token headline]**<!-- TOKEN:headline:end --> Quality on the benchmark 8.2 -> 9.0, task success 67% -> 85%. |
 
 If something fails live: run `python -m app.demo --examples` in the terminal (offline, shows Stage A features, every
@@ -82,6 +82,10 @@ frozen pipeline.
 **Are the GPT/Claude/Gemini results real?**
 No, they are stand-ins: gpt-oss-120b on Groq/Cerebras answers every rendering, and the UI labels it. Real runs need
 API keys (future work).
+
+**Were attachments and image mode tested on prompts you did not write?**
+No. Attachment results (30/30) and image results (dev 40, held-out 30) are on developer-written prompts only; the
+held-out image set was at least written before any v2 code. Blind sets written by others are future work.
 
 **What does the LLM-assisted filter do, and is it human validation?**
 It is not. An LLM rater reviewed the 90 overlap rows; only rows where the optimized prompt adds facts, leaks the

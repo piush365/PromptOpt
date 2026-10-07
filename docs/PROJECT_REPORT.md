@@ -154,8 +154,9 @@ Out-of-scope prompts (held-out Dolly brainstorming / creative writing): 68.5% cl
 (`python -m app.freeze_check`, sha256 `35f7d4dc...`); later rules (B14, B15, B05 for data attachments) act only with
 an attachment [`FINAL_RESULTS.md` section 2; `phase2_freeze_check.md`].
 
-**Attachments:** 30/30 hand-made prompts correct [`attachment_test.md`]. The team's blind sets are **not
-completed** [`attachment_blind_test.md`, `image_blind_test.md`].
+**Attachments:** 30/30 hand-made prompts correct [`attachment_test.md`]. **Attachment and image results are on
+developer-written prompts only**; blind sets written by people outside the development team are future work
+[`attachment_blind_test.md`, `image_blind_test.md`].
 
 ## 8. Stage C results and ablation
 
@@ -207,7 +208,8 @@ mostly interface (function naming, one solution, Python), not algorithmic correc
   rose to 9.0 of 9, but Stable Diffusion images matched the user's request **worse** (dev, 40 prompts: CLIP vs
   original prompt 28.44 vs 29.95, p = 0.009): "natural lighting" turned a watercolor request into a photo.
 * **v2** (the app's default) keeps the user's words first and adds nothing that can conflict; other attributes are
-  clickable suggestions. On a **held-out set of 30 prompts written before any v2 code**, run once:
+  clickable suggestions. On a **held-out set of 30 prompts written before any v2 code**, run once (all image prompts
+  are developer-written):
 
 | held-out (n = 30) | CLIP vs original prompt | style kept (12 styled) |
 |---|---|---|
@@ -254,7 +256,7 @@ cannot pay for itself. Savings come from long, unrequested answers.
 * Human validation: kappa target not met (kappa paradox); the LLM-assisted filter covered only the 90 overlap rows.
 * Coding tests: Python only, n = 29; the test writer is the same model family as the target.
 * Image mode: SD 1.5 + CLIP only; DALL-E and Nano Banana untested.
-* Blind test sets (attachments, image) not completed by the team.
+* Attachment and image results are on developer-written prompts only (no blind set written by others).
 
 ## 14. Future work
 
@@ -266,7 +268,7 @@ cannot pay for itself. Savings come from long, unrequested answers.
   prompts).
 * More human-validated Stage C targets; a larger routed evaluation set.
 * Coding tests beyond Python; image mode on DALL-E / Nano Banana.
-* The team's blind sets for attachments and image prompts.
+* Blind test sets for attachments (15) and image prompts (10), written by people outside the development team.
 
 ## 15. Reproduce
 

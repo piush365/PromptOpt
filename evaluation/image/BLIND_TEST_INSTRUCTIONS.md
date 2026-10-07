@@ -1,5 +1,7 @@
 # Blind image-prompt test: instructions for the team
 
+> **Status: future work.** Not collected for v1.0; results are on developer-written prompts only.
+
 Fill in `blind_test.csv` (10 rows) **without looking at the PromptOpt code, the image rules or
 `image_prompts.json`**, so the image mode is tested on prompts its authors did not write.
 

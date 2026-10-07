@@ -153,7 +153,7 @@ Per prompt, CLIP vs original prompt (original / v1 / v2 / v2_suggested / v2_draf
 
 ### 3c. Held-out set, run once: original vs v1 vs v2
 
-30 new prompts (`evaluation/image/heldout_prompts.json`), written and committed before any v2 code (commit d656add); the team's 10 blind prompts were not filled in yet, so n = 30. One run, no changes afterwards.
+30 new prompts (`evaluation/image/heldout_prompts.json`), written and committed before any v2 code (commit d656add) by the developers; a blind set written by others is future work, so n = 30. One run, no changes afterwards.
 
 | variant | CLIP vs original prompt (mean) | vs original: higher / lower / tie | sign test p | style kept (of 12 styled prompts) | P(stated style vs photo), mean | time per image, median |
 |---|---|---|---|---|---|---|

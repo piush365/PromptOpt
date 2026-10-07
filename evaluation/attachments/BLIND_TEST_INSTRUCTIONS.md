@@ -1,5 +1,7 @@
 # Blind attachment test: instructions for the team
 
+> **Status: future work.** Not collected for v1.0; results are on developer-written prompts only.
+
 Please fill in `blind_test.csv` (15 rows) **without looking at the PromptOpt code, the rules or
 `attachment_prompts.json`**. The point is to test the system on prompts its authors did not write.
 

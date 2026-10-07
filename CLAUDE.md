@@ -40,9 +40,9 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   labelled). A user-selected category overrides Stage A (`optimize(..., category=...)`); `app/pipeline.py` runs one
   request end to end, saves the renderings and returns Stage A's own category and `category_disagreement`.
   Per-category templates: `docs/CATEGORY_TEMPLATES.md` (`python -m app.templates_doc`). Attachment rules on 30
-  hand-made prompts: `evaluation/attachment_test.md` (`python -m app.attachment_eval`); the team's blind set
-  (`evaluation/attachments/blind_test.csv`, instructions next to it) is reported separately with `--blind` in
-  `evaluation/attachment_blind_test.md`. Named Stage C cases: `evaluation/stage_c/named_cases.json`.
+  hand-made prompts: `evaluation/attachment_test.md` (`python -m app.attachment_eval`); a blind set written by
+  others (`evaluation/attachments/blind_test.csv`, `--blind`) is future work: attachment and image results are on
+  developer-written prompts only. Named Stage C cases: `evaluation/stage_c/named_cases.json`.
 - **Groq usage:** every Groq call records its tokens and cached tokens (failed JSON calls estimated) in
   `data/groq_usage.json`, over a rolling 24 hours like Groq's own limit; dataset generation stays within
   `--budget-fraction` (0.7) of each model's limit. Whether Groq counts cached tokens is not verified yet
@@ -136,8 +136,9 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 | 6b | Token evaluation on the FULL test split (482): degraded vs A+B (+ A+B+C on routed), Cerebras gpt-oss-120b, no judge, bootstrap CI + Wilcoxon (`python -m app.evaluation.tokens`) | <!-- TOKEN:status:start -->RUNNING (detached, resumable): resumed 2026-10-07 19:15 from 70/482; Cerebras caps 150 requests/hour; result filled into the docs automatically when it ends<!-- TOKEN:status:end --> |
 | 7 | `evaluation/FINAL_RESULTS.md` updated with phases 4-6 and the token headline; README "how to run the app" | Done: FINAL_RESULTS sections 7-9 + token headline; README tested from a fresh clone |
 
-Not completed (by others): the team's blind sets (`evaluation/attachments/blind_test.csv` 15 rows,
-`evaluation/image/blind_test.csv` 10 rows) were never filled in; the reports say so. API keys for GPT/Claude: future work.
+Future work (decided 2026-10-07): the blind sets (`evaluation/attachments/blind_test.csv` 15 rows,
+`evaluation/image/blind_test.csv` 10 rows) will not be filled in by the team; attachment and image results are on
+developer-written prompts only. API keys for GPT/Claude: future work.
 
 - **Coding tests (phase 4):** `python -m app.coding.testgen` (items + validated tests, Cerebras, cached in
   `data/coding/`), `python -m app.coding.evaluate --out ../evaluation/coding_tests.md` (pass@1 degraded vs Stage B).
@@ -156,7 +157,7 @@ Not completed (by others): the team's blind sets (`evaluation/attachments/blind_
   `python -m app.image.generate --set dev|heldout` in `.venv-gpu`.
 
 ### Close-out (2026-10-07): project complete, tag `v1.0`
-Blind sets marked "not completed" (team did not fill them in); cleanup (empty scaffolding removed, dataset-prep
+Blind sets marked future work (developer-written prompts only); cleanup (empty scaffolding removed, dataset-prep
 notebooks in `notebooks/dataset_prep/`); both venvs pinned (`backend/requirements-lock.txt`,
 `backend/requirements-gpu-lock.txt`); README run steps tested from a fresh clone; `docs/PROJECT_REPORT.md` and
 `docs/DEMO_SCRIPT.md`; GitHub release `v1.0` with the Stage C adapter, the Stage A category index and the Stage C data
@@ -165,6 +166,6 @@ manifest (dataset on Drive, linked from the README). Nothing in the frozen text 
 ### Future work (not started; nothing else is open)
 - Lean mode for short-answer categories (closed_qa): the optimized prompt's extra input can exceed the output saving.
 - Compare and the real-LLM evaluation on GPT, Claude, Gemini once API keys exist (Gemini is wired, never run live).
-- The team's blind sets (attachments 15 rows, image 10 rows), reported separately if ever filled in.
+- Blind sets written by people outside the team (attachments 15 rows, image 10 rows); the tooling (`--blind`) is ready.
 - Stage A on closed_qa / information_extraction / summarization; more human-validated Stage C targets.
 - Coding tests beyond Python; image mode on DALL-E / Nano Banana.

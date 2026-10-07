@@ -38,6 +38,24 @@ prompts, five categories. Detailed reports: `stage_a_test_final.md`, `stage_b_te
 * The Stage A test report is identical to the frozen one (except the timing line). The Stage B test report differs
   only by two rule rows, B14 and B15, each fired on 0 test prompts.
 
+## 2a. Dataset validation (summary of `REVIEW_SUMMARY.md`)
+
+PromptOpt Dataset v1.2 final: 5,184 pairs. Three team members rated 170 rows each (90 shared overlap rows, five
+yes/no questions): 330 rows validated, **295 accepted, 35 rejected** (left out). The faculty accepted 19 of 20 rows.
+
+| question (90 overlap rows, 3 raters) | % Y | all 3 agree | Fleiss' kappa | Gwet's AC1 |
+|---|---|---|---|---|
+| Q1 degraded same task | 96.3% | 90.0% | 0.065 | 0.928 |
+| Q3 optimized same intent | 96.3% | 90.0% | 0.065 | 0.928 |
+| Q4 optimized better | 98.1% | 94.4% | -0.019 | 0.962 |
+| accept (all five Y) | 86.3% | 67.8% | 0.092 | 0.719 |
+
+Kappa paradox: with 96-98% "yes", chance agreement is close to 1, so kappa is near 0 although raters agree on
+89-94% of rows; Gwet's AC1 stays at 0.92-0.96 per question. The kappa target (> 0.6) is not met, for this reason.
+LLM-assisted filter (not human): an LLM rater accepted 38 of 90 overlap rows (team majority 97.8%); of its Q3 = N rows,
+those that add facts, leak the answer, set an impossible constraint or change the task were removed: 9 rows (train 7,
+test 2).
+
 ## 3. Stage A: feature detection (test, 482 prompts)
 
 | category | n | precision | recall | F1 |
@@ -160,9 +178,9 @@ Requirement under 3 s per prompt on the laptop GPU: **met**.
 ## 6. Attachments, rendering, app
 
 * **Attachment rules** (B09-B15): 30/30 hand-made prompts correct (own rule fired, no other, requirements and the
-  attachment note in all three renderings, ambiguous references resolved; `attachment_test.md`). The team's blind set
-  (`attachments/blind_test.csv`, 15 rows) is **not completed**: the team did not fill it in, so there is no blind
-  result (`attachment_blind_test.md`). The same holds for the image blind set (10 rows, `image_blind_test.md`).
+  attachment note in all three renderings, ambiguous references resolved; `attachment_test.md`). **Attachment and image results are on developer-written prompts only.** Blind sets
+  written by people outside the development team (attachments 15 rows, image 10 rows) are **future work**
+  (`attachment_blind_test.md`, `image_blind_test.md`).
 * **Renderers**: the same content for all three targets (Claude XML tags, GPT `###` sections, Gemini plain labels
   with the instruction first); every rendering is parsed back in the tests to check no field is lost. Input tokens per
   target: GPT exact (tiktoken o200k_base), Claude/Gemini approximate (characters / 4, labelled).
@@ -189,7 +207,8 @@ Python. Real failures (wrong results) are similar (13 vs 16). Scope: 4 reference
 
 ## 8. Image-generation mode (finish phase 5)
 
-A separate mode the user selects; Stage A/B/C are not involved. Details and images: `image_mode.md`.
+A separate mode the user selects; Stage A/B/C are not involved. Details and images: `image_mode.md`. All prompts
+(dev and held-out) were written by the developers; a blind set written by others is future work.
 
 * **v1** filled every missing attribute (style, lighting, palette, ...) with "neutral" defaults. On a dev set of 40
   prompts, images from v1's Stable Diffusion prompts matched the user's request worse than the original prompt
@@ -216,8 +235,14 @@ The app's Compare runs the original and the optimized prompt on the same model (
 side by side: answers, input/output/reasoning/total tokens, latency, sandbox tests for dataset coding items, and an
 optional blind judge. Available now: gpt-oss-120b on Groq and Cerebras; Gemini when `GEMINI_API_KEY` is set; GPT and
 Claude are listed as "add API key". Every result says which model answered: a Claude-rendered prompt run on gpt-oss is
-labelled as a stand-in. Live examples (`compare_examples.md`, Groq): a coding prompt used 67.7% fewer total tokens
-(both answers 6/6 tests, judge 10/10); a closed_qa prompt whose answer was already one line used 17% more.
+labelled as a stand-in. Live examples (`compare_examples.md`, Groq gpt-oss-120b; illustrations, not evidence):
+
+| prompt | original total tokens | optimized total tokens | change | quality |
+|---|---|---|---|---|
+| coding: "write code to get all permutations of a string" | 768 | 248 | **-67.7%** | both 6/6 tests, judge 10/10 |
+| closed_qa: "which company bought hackpad according to that text?" + passage | 238 | 279 | **+17.2%** | both judge 10/10 |
+
+The closed_qa answer was already one line, so the longer optimized prompt cannot pay for itself.
 
 ## 9a. Token evaluation on the full test split (after `final-for-test`)
 
@@ -242,6 +267,7 @@ labelled as a stand-in. Live examples (`compare_examples.md`, Groq): a coding pr
 * Coding tests: Python items only (29 tested on test); the test writer is the same model as the target (tests are
   validated on an independent reference, which limits but does not remove the bias).
 * Image mode: measured with SD 1.5 and CLIP only; DALL-E and Nano Banana prompts are untested without API keys.
+* Attachment and image results are on developer-written prompts only; blind sets written by others are future work.
 * Compare and all LLM numbers use gpt-oss-120b (Groq/Cerebras) as a stand-in for GPT, Gemini and Claude.
 <!-- TOKEN:limitation:start -->
 * **[PLACEHOLDER: categories with a net token increase, filled automatically when the token run finishes]**

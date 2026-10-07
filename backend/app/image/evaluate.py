@@ -113,8 +113,8 @@ def report(res: list[dict]) -> str:
               "tuning rows); these numbers are not the evidence.\n"] + variant_section("dev")
     lines += ["### 3c. Held-out set, run once: original vs v1 vs v2\n",
               "30 new prompts (`evaluation/image/heldout_prompts.json`), written and committed before any v2 code "
-              "(commit d656add); the team's 10 blind prompts were not filled in yet, so n = 30. One run, no changes "
-              "afterwards.\n"] + variant_section("heldout") + heldout_examples()
+              "(commit d656add) by the developers; a blind set written by others is future work, so n = 30. One run, no "
+              "changes afterwards.\n"] + variant_section("heldout") + heldout_examples()
     lines += LESSON
     lines += ["## 5. All dev prompts (v1)\n", "| id | prompt | stated by user | defaults added | avoid (user) |",
               "|---|---|---|---|---|"]
@@ -380,9 +380,10 @@ def blind_report(res: list[dict]) -> str:
              "the user accepts any suggestion; suggestions = the attributes offered as clickable chips. "
              "`meets expectation` is for the team to fill in.\n"]
     if not res:
-        return "\n".join(lines + ["**Not completed.** The team has not filled in `evaluation/image/blind_test.csv` "
-                                   "(0 of 10 rows), so there is no blind result; the held-out set "
-                                   "(`image_mode.md`) is the independent check."]) + "\n"
+        return "\n".join(lines + ["**Future work.** A blind set written by people outside the development team "
+                                   "(`evaluation/image/blind_test.csv`, 10 rows) was planned but not collected. Image "
+                                   "results are on developer-written prompts only (dev set and the held-out set "
+                                   "written before v2, `image_mode.md`)."]) + "\n"
     lines += ["| id | prompt | target | stated by user | optimized prompt (v2) | suggestions offered | expected behaviour "
               "(team) | meets expectation |", "|---|---|---|---|---|---|---|---|"]
     for r in res:

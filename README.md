@@ -139,7 +139,8 @@ no instruction shared across splits; human-validated sample and LLM-assisted fil
 ## Results and reports
 
 [`evaluation/FINAL_RESULTS.md`](evaluation/FINAL_RESULTS.md) is the summary; the project report is
-[`docs/PROJECT_REPORT.md`](docs/PROJECT_REPORT.md) and the demo walkthrough [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
+[`docs/PROJECT_REPORT.md`](docs/PROJECT_REPORT.md), the demo walkthrough [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)
+and a 10-minute cheat sheet [`docs/EXPLAIN_IN_10_MIN.md`](docs/EXPLAIN_IN_10_MIN.md).
 Every evaluation command is listed in FINAL_RESULTS section "Reproduce" and in each report's header.
 
 ## Repo layout
