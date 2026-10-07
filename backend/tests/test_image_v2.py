@@ -112,3 +112,38 @@ def test_accepted_suggestions_are_added_after_the_users_words_and_marked():
         parse_accepted(["lighting:anything I like"])          # only offered values
     with pytest.raises(ValueError):
         parse_accepted(["colour:red"])
+
+
+# ---------------------------------------------------------------- blind test report (the team's CSV)
+def _blind_csv(path, rows):
+    import csv
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["id", "prompt", "target_model", "expected_behaviour", "author"])
+        w.writerows(rows)
+    return path
+
+
+def test_blind_loader_normalizes_targets_and_skips_blank_rows(tmp_path):
+    from app.image.evaluate import load_blind
+    p = _blind_csv(tmp_path / "b.csv", [["blind-img-01", "", "", "", ""],
+                                        ["blind-img-02", " a pixel art spaceship ", "Stable Diffusion", "keep it", "AB"],
+                                        ["blind-img-03", "a cat", "DALL-E", "", ""]])
+    assert [(i["id"], i["prompt"], i["target"]) for i in load_blind(p)] == [
+        ("blind-img-02", "a pixel art spaceship", "stable_diffusion"), ("blind-img-03", "a cat", "dalle")]
+
+
+def test_blind_loader_rejects_unknown_target(tmp_path):
+    from app.image.evaluate import load_blind
+    with pytest.raises(SystemExit, match="blind-img-01"):
+        load_blind(_blind_csv(tmp_path / "b.csv", [["blind-img-01", "a cat", "midjourney", "", ""]]))
+
+
+def test_blind_report_shows_the_apps_v2_prompt_not_v1_defaults():
+    from app.image.evaluate import blind_report, run_blind
+    items = [{"id": "blind-img-01", "prompt": "a watercolor fox", "target": "stable_diffusion", "expected": "keep style"}]
+    text = blind_report(run_blind(items))
+    row = next(line for line in text.splitlines() if line.startswith("| blind-img-01"))
+    prompt_cell = row.split(" | ")[4].lower()
+    assert "watercolor" in prompt_cell
+    assert not any(keyword in prompt_cell for _, keyword in V1_DEFAULTS.values())

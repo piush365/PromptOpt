@@ -11,6 +11,10 @@ Dataset: PromptOpt Dataset v1.2 final (`docs/DATASET_CARD.md`): train 4,509 / va
 prompts, five categories. Detailed reports: `stage_a_test_final.md`, `stage_b_test_final.md`, `stage_c_eval.md` (val),
 `stage_c_test.md` (test), `attachment_test.md`, `final_benchmark_summary.md`.
 
+<!-- TOKEN:headline:start -->
+**[PLACEHOLDER: token headline, filled automatically when the full-test token run finishes]** Optimized prompts reduce total tokens by X% (95% CI a–b, n = N).
+<!-- TOKEN:headline:end -->
+
 ## 1. Headline numbers (test)
 
 | what | result |
@@ -215,6 +219,12 @@ Claude are listed as "add API key". Every result says which model answered: a Cl
 labelled as a stand-in. Live examples (`compare_examples.md`, Groq): a coding prompt used 67.7% fewer total tokens
 (both answers 6/6 tests, judge 10/10); a closed_qa prompt whose answer was already one line used 17% more.
 
+## 9a. Token evaluation on the full test split (after `final-for-test`)
+
+<!-- TOKEN:section:start -->
+**[PLACEHOLDER: full-test token results, filled automatically from `evaluation/token_test.md` when the run finishes]** Per-category input / output / total tokens, degraded vs A+B; categories with a net increase.
+<!-- TOKEN:section:end -->
+
 ## 10. Known limitations
 
 * Stage C training targets come from LLM-written optimized prompts; only 111 train rows were individually
@@ -233,6 +243,9 @@ labelled as a stand-in. Live examples (`compare_examples.md`, Groq): a coding pr
   validated on an independent reference, which limits but does not remove the bias).
 * Image mode: measured with SD 1.5 and CLIP only; DALL-E and Nano Banana prompts are untested without API keys.
 * Compare and all LLM numbers use gpt-oss-120b (Groq/Cerebras) as a stand-in for GPT, Gemini and Claude.
+<!-- TOKEN:limitation:start -->
+* **[PLACEHOLDER: categories with a net token increase, filled automatically when the token run finishes]**
+<!-- TOKEN:limitation:end -->
 
 ## 11. Reproduce (inside `backend/`)
 

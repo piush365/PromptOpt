@@ -24,7 +24,7 @@ uvicorn app.api:app                    # http://127.0.0.1:8000
 | 3:15-4:00 | Type `which company bought hackpad according to that text?` and paste the Hackpad passage (from `compare_examples.md`), target **Claude**, *Optimize*, *Compare*. | **Honest case:** the original answer was already one line, so the optimized prompt costs more: **+17.2% total tokens**, same judge score. Savings come from long answers; for closed_qa, input grows more than output shrinks. Future work: "lean mode". |
 | 4:00-5:00 | Type `hey can you just summarize this article for me`, *Optimize*. Then `describe what is happening in the picture` with attachment **image**. | First: ambiguous reference ("this article") -> routed to Stage C; Stage C's answer is validated, and if it still contains an unclear reference it is rejected and Stage B's text is kept (the contract). Second: Stage A unsure (coding, 0.37) -> Stage C suggests a category, the UI **asks the user** and pre-selects it. Stage C runs on only 6.4% of test prompts. |
 | 5:00-5:45 | Category **Image generation**, target Stable Diffusion: `oil painting of a sailboat in a storm`. | v2 keeps the user's words first and adds nothing; missing attributes are clickable chips. v1 added "natural lighting" etc. and made images worse (held-out CLIP 30.78 vs original 33.08); v2 32.77, no significant difference, style kept 12/12. |
-| 5:45-6:30 | Open *History*, reload a past prompt. Close with the headline. | 30-day retention, PII stripped before storing. Headline: <!-- TOKEN_HEADLINE --> *Pending: the full-test token run is in progress; filled in from `evaluation/token_test.md` when it ends.* Quality on the benchmark 8.2 -> 9.0, task success 67% -> 85%. |
+| 5:45-6:30 | Open *History*, reload a past prompt. Close with the headline. | 30-day retention, PII stripped before storing. Headline: <!-- TOKEN:headline:start -->**[PLACEHOLDER: token headline]**<!-- TOKEN:headline:end --> Quality on the benchmark 8.2 -> 9.0, task success 67% -> 85%. |
 
 If something fails live: run `python -m app.demo --examples` in the terminal (offline, shows Stage A features, every
 rule's before/after and Stage C routing) and use `compare_examples.md` for the Compare part.
@@ -59,7 +59,7 @@ labelled "approx." in the UI. In Compare and the evaluation, the counts are the 
 
 **Why does the optimized prompt reduce tokens if it is longer?**
 Input grows (the format and constraints add words), output shrinks a lot (the model stops writing unrequested
-explanations and alternatives). Net = input + output. <!-- TOKEN_ANSWER --> *Pending: the full-test token run is in progress; filled in from `evaluation/token_test.md` when it ends.*
+explanations and alternatives). Net = input + output. <!-- TOKEN:answer:start -->**[PLACEHOLDER: full-test numbers, filled when the token run finishes]**<!-- TOKEN:answer:end -->
 
 **What is the kappa paradox?**
 Kappa subtracts chance agreement computed from how often each answer is used. With 96-98% "yes", chance agreement

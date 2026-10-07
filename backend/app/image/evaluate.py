@@ -365,29 +365,54 @@ LESSON = [
 ]
 
 
+def run_blind(items: list[dict]) -> list[dict]:
+    """The app's optimizer (v2) on the team's prompts, as a user sees it before accepting any suggestion."""
+    out = []
+    for it in items:
+        o = optimize_image_v2(it["prompt"], target=it["target"])
+        out.append({**it, "v2": o, "rendered": render_all_v2(o.ir)})
+    return out
+
+
 def blind_report(res: list[dict]) -> str:
     lines = ["# Blind image-prompt test (written by the team without seeing the rules)\n",
-             "Reported separately from the 40 hand-written prompts. `meets expectation` is for the team to fill in.\n"]
+             "Reported separately from the 40 hand-written prompts. Optimized prompt = the app's optimizer (v2), before "
+             "the user accepts any suggestion; suggestions = the attributes offered as clickable chips. "
+             "`meets expectation` is for the team to fill in.\n"]
     if not res:
         return "\n".join(lines + ["**Not completed.** The team has not filled in `evaluation/image/blind_test.csv` "
                                    "(0 of 10 rows), so there is no blind result; the held-out set "
                                    "(`image_mode.md`) is the independent check."]) + "\n"
-    lines += ["| id | prompt | target | stated by user | optimized prompt | expected behaviour (team) | meets expectation |",
-              "|---|---|---|---|---|---|---|"]
+    lines += ["| id | prompt | target | stated by user | optimized prompt (v2) | suggestions offered | expected behaviour "
+              "(team) | meets expectation |", "|---|---|---|---|---|---|---|---|"]
     for r in res:
-        t = r["target"] if r["target"] in IMAGE_TARGETS else "dalle"
-        rd = r["rendered"][t]
+        rd = r["rendered"][r["target"]]
         text = rd["prompt"] + (f" / negative: {rd['negative_prompt']}" if rd.get("negative_prompt") else "")
-        stated = [a for a in ATTRIBUTES if r["before"][a]]
-        lines.append(f"| {r['id']} | {r['prompt']} | {t} | {', '.join(stated) or '-'} | {text.replace('|', '/')} | "
-                     f"{r['expected']} |  |")
+        stated = [a for a in ATTRIBUTES if r["v2"].detected[a]]
+        offered = [s.attribute for s in r["v2"].suggestions]
+        lines.append(f"| {r['id']} | {r['prompt']} | {r['target']} | {', '.join(stated) or '-'} | "
+                     f"{text.replace('|', '/')} | {', '.join(offered) or '-'} | {r['expected']} |  |")
     return "\n".join(lines) + "\n"
 
 
+TARGET_ALIASES = {"dall-e": "dalle", "dall_e": "dalle", "nano banana": "nano_banana", "nano-banana": "nano_banana",
+                  "stable diffusion": "stable_diffusion", "stable-diffusion": "stable_diffusion", "sd": "stable_diffusion"}
+
+
 def load_blind(path: Path) -> list[dict]:
+    """Filled rows of the team's blind CSV (rows without a prompt are skipped); a bad target stops with a message."""
+    items = []
     with open(path, encoding="utf-8-sig", newline="") as f:
-        return [{"id": r["id"], "prompt": r["prompt"].strip(), "target": r["target_model"].strip().lower(),
-                 "expected": r["expected_behaviour"].strip()} for r in csv.DictReader(f) if r["prompt"].strip()]
+        for r in csv.DictReader(f):
+            if not (r.get("prompt") or "").strip():
+                continue
+            raw = r["target_model"].strip().lower()
+            target = TARGET_ALIASES.get(raw, raw)
+            if target not in IMAGE_TARGETS:
+                raise SystemExit(f"{r['id']}: target_model must be one of {IMAGE_TARGETS}; got {raw!r}")
+            items.append({"id": r["id"], "prompt": r["prompt"].strip(), "target": target,
+                          "expected": r["expected_behaviour"].strip()})
+    return items
 
 
 def main() -> None:
@@ -396,7 +421,7 @@ def main() -> None:
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
     items = load_blind(args.blind) if args.blind else json.loads(PROMPTS.read_text(encoding="utf-8"))
-    res = run(items)
+    res = run_blind(items) if args.blind else run(items)
     text = blind_report(res) if args.blind else report(res)
     print(text)
     if args.out:

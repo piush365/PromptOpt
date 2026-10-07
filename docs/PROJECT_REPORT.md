@@ -8,6 +8,10 @@ Every number below is copied from an evaluation file in this repository, cited n
 `FINAL_RESULTS.md` means `evaluation/FINAL_RESULTS.md`; other report files are in `evaluation/` unless a path is
 given. Code at tag `v1.0`; the final test numbers come from tag `final-for-test`.
 
+<!-- TOKEN:headline:start -->
+**[PLACEHOLDER: token headline, filled automatically when the full-test token run finishes]** Optimized prompts reduce total tokens by X% (95% CI a–b, n = N).
+<!-- TOKEN:headline:end -->
+
 ---
 
 ## 1. Problem
@@ -215,7 +219,9 @@ Lesson: coverage is the wrong target; the image model's output against the user'
 
 ## 11. Token results (full test split)
 
-<!-- TOKEN_RESULTS --> *Pending: the full-test token run is in progress; filled in from `evaluation/token_test.md` when it ends.*
+<!-- TOKEN:section:start -->
+**[PLACEHOLDER: full-test token results, filled automatically from `evaluation/token_test.md` when the run finishes]** Per-category input / output / total tokens, degraded vs A+B; categories with a net increase.
+<!-- TOKEN:section:end -->
 
 ## 12. Compare: live examples
 
@@ -237,6 +243,9 @@ cannot pay for itself. Savings come from long, unrequested answers.
   the real targets. Claude/Gemini token counts in the app are approximate (characters / 4).
 * The optimized prompt is **longer**: input tokens grow; net savings depend on the model writing shorter answers.
   Where answers are already short (closed_qa), the net effect can be an increase.
+<!-- TOKEN:limitation:start -->
+* **[PLACEHOLDER: categories with a net token increase, filled automatically when the token run finishes]**
+<!-- TOKEN:limitation:end -->
 * Stage A: 74.7% category accuracy; the closed_qa / extraction / summarization group is the weak spot.
 * Stage B's "format stated" is measured with Stage A's own A02 detector; quality and task success come from the
   judge and the sandbox tests on smaller sets.
