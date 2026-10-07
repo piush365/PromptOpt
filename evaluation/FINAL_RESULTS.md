@@ -12,7 +12,7 @@ prompts, five categories. Detailed reports: `stage_a_test_final.md`, `stage_b_te
 `stage_c_test.md` (test), `attachment_test.md`, `final_benchmark_summary.md`.
 
 <!-- TOKEN:headline:start -->
-**[PLACEHOLDER: token headline, filled automatically when the full-test token run finishes]** Optimized prompts reduce total tokens by X% (95% CI a–b, n = N).
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/token_test.md`): input grows, the saving comes from shorter answers.
 <!-- TOKEN:headline:end -->
 
 ## 1. Headline numbers (test)
@@ -247,7 +247,22 @@ The closed_qa answer was already one line, so the longer optimized prompt cannot
 ## 9a. Token evaluation on the full test split (after `final-for-test`)
 
 <!-- TOKEN:section:start -->
-**[PLACEHOLDER: full-test token results, filled automatically from `evaluation/token_test.md` when the run finishes]** Per-category input / output / total tokens, degraded vs A+B; categories with a net increase.
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** [`token_test.md`]: mean of the per-prompt changes in total tokens (input + output, output including hidden reasoning tokens), degraded prompt vs Stage A + B, on `cerebras/gpt-oss-120b`, temperature 0, the final benchmark's settings, frozen pipeline. Summed over all prompts: -55.4%; Wilcoxon signed-rank p < 0.001.
+
+**Input grows; the saving comes from output.** Input tokens 226 -> 241 per prompt (+11.1% per prompt); output tokens 682 -> 165 (-52.7% per prompt): a stated format and length stop long, unrequested answers.
+
+| category | n | input tokens (mean) | output tokens (mean) | total tokens (mean) | total: mean change per prompt [95% CI] | total: summed tokens |
+|---|---|---|---|---|---|---|
+| closed_qa | 99 | 279 -> 290 | 835 -> 127 | 1115 -> 417 | -44.5% [-51.3%, -37.6%] | -62.6% |
+| information_extraction | 93 | 338 -> 351 | 538 -> 115 | 875 -> 466 | -24.2% [-32.4%, -16.2%] | -46.8% |
+| classification | 98 | 98 -> 122 | 390 -> 156 | 488 -> 278 | -28.5% [-35.8%, -21.1%] | -43.0% |
+| summarization | 94 | 338 -> 348 | 831 -> 204 | 1169 -> 552 | -43.3% [-49.4%, -37.0%] | -52.8% |
+| coding | 98 | 89 -> 102 | 813 -> 222 | 903 -> 324 | -54.7% [-60.8%, -48.0%] | -64.1% |
+| **all** | 482 | 226 -> 241 | 682 -> 165 | 909 -> 406 | -39.2% [-42.5%, -35.9%] | -55.4% |
+
+**No category shows a net increase** in total tokens; the smallest saving is information_extraction (-24.2% per prompt). **Limitation:** input grows in every category, and **87 of 482 prompts (18.0%) individually cost more** in total, because their answer was already short: information_extraction 35/93, classification 23/98, closed_qa 11/99, summarization 10/94, coding 8/98. Future work: a **lean mode** that adds less (only the output-format line, or nothing) when the expected answer is short.
+
+Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: `token_test.md`.
 <!-- TOKEN:section:end -->
 
 ## 10. Known limitations
@@ -270,7 +285,7 @@ The closed_qa answer was already one line, so the longer optimized prompt cannot
 * Attachment and image results are on developer-written prompts only; blind sets written by others are future work.
 * Compare and all LLM numbers use gpt-oss-120b (Groq/Cerebras) as a stand-in for GPT, Gemini and Claude.
 <!-- TOKEN:limitation:start -->
-* **[PLACEHOLDER: categories with a net token increase, filled automatically when the token run finishes]**
+* **Token cost:** input tokens grow in every category; no category increases total tokens on average, but 87 of 482 test prompts (18.0%) individually cost more, most in information_extraction (35/93). Future work: lean mode (`token_test.md`).
 <!-- TOKEN:limitation:end -->
 
 ## 11. Reproduce (inside `backend/`)

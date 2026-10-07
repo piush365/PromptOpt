@@ -9,7 +9,7 @@ Every number below is copied from an evaluation file in this repository, cited n
 given. Code at tag `v1.0`; the final test numbers come from tag `final-for-test`.
 
 <!-- TOKEN:headline:start -->
-**[PLACEHOLDER: token headline, filled automatically when the full-test token run finishes]** Optimized prompts reduce total tokens by X% (95% CI a–b, n = N).
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/token_test.md`): input grows, the saving comes from shorter answers.
 <!-- TOKEN:headline:end -->
 
 ---
@@ -222,7 +222,22 @@ Lesson: coverage is the wrong target; the image model's output against the user'
 ## 11. Token results (full test split)
 
 <!-- TOKEN:section:start -->
-**[PLACEHOLDER: full-test token results, filled automatically from `evaluation/token_test.md` when the run finishes]** Per-category input / output / total tokens, degraded vs A+B; categories with a net increase.
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** [`token_test.md`]: mean of the per-prompt changes in total tokens (input + output, output including hidden reasoning tokens), degraded prompt vs Stage A + B, on `cerebras/gpt-oss-120b`, temperature 0, the final benchmark's settings, frozen pipeline. Summed over all prompts: -55.4%; Wilcoxon signed-rank p < 0.001.
+
+**Input grows; the saving comes from output.** Input tokens 226 -> 241 per prompt (+11.1% per prompt); output tokens 682 -> 165 (-52.7% per prompt): a stated format and length stop long, unrequested answers.
+
+| category | n | input tokens (mean) | output tokens (mean) | total tokens (mean) | total: mean change per prompt [95% CI] | total: summed tokens |
+|---|---|---|---|---|---|---|
+| closed_qa | 99 | 279 -> 290 | 835 -> 127 | 1115 -> 417 | -44.5% [-51.3%, -37.6%] | -62.6% |
+| information_extraction | 93 | 338 -> 351 | 538 -> 115 | 875 -> 466 | -24.2% [-32.4%, -16.2%] | -46.8% |
+| classification | 98 | 98 -> 122 | 390 -> 156 | 488 -> 278 | -28.5% [-35.8%, -21.1%] | -43.0% |
+| summarization | 94 | 338 -> 348 | 831 -> 204 | 1169 -> 552 | -43.3% [-49.4%, -37.0%] | -52.8% |
+| coding | 98 | 89 -> 102 | 813 -> 222 | 903 -> 324 | -54.7% [-60.8%, -48.0%] | -64.1% |
+| **all** | 482 | 226 -> 241 | 682 -> 165 | 909 -> 406 | -39.2% [-42.5%, -35.9%] | -55.4% |
+
+**No category shows a net increase** in total tokens; the smallest saving is information_extraction (-24.2% per prompt). **Limitation:** input grows in every category, and **87 of 482 prompts (18.0%) individually cost more** in total, because their answer was already short: information_extraction 35/93, classification 23/98, closed_qa 11/99, summarization 10/94, coding 8/98. Future work: a **lean mode** that adds less (only the output-format line, or nothing) when the expected answer is short.
+
+Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: `token_test.md`.
 <!-- TOKEN:section:end -->
 
 ## 12. Compare: live examples
@@ -244,9 +259,10 @@ cannot pay for itself. Savings come from long, unrequested answers.
 * All LLM numbers use gpt-oss-120b on Groq/Cerebras as a **stand-in** for GPT, Gemini and Claude; no API keys for
   the real targets. Claude/Gemini token counts in the app are approximate (characters / 4).
 * The optimized prompt is **longer**: input tokens grow; net savings depend on the model writing shorter answers.
-  Where answers are already short (closed_qa), the net effect can be an increase.
+  On the full test split no category increases total tokens on average, but prompts whose answer is already short
+  can cost more (87 of 482; the live closed_qa example: +17.2%).
 <!-- TOKEN:limitation:start -->
-* **[PLACEHOLDER: categories with a net token increase, filled automatically when the token run finishes]**
+* **Token cost:** input tokens grow in every category; no category increases total tokens on average, but 87 of 482 test prompts (18.0%) individually cost more, most in information_extraction (35/93). Future work: lean mode (`token_test.md`).
 <!-- TOKEN:limitation:end -->
 * Stage A: 74.7% category accuracy; the closed_qa / extraction / summarization group is the weak spot.
 * Stage B's "format stated" is measured with Stage A's own A02 detector; quality and task success come from the
@@ -260,7 +276,8 @@ cannot pay for itself. Savings come from long, unrequested answers.
 
 ## 14. Future work
 
-* **Lean mode** for categories with short answers (closed_qa): add only the output-format line, or nothing, when the
+* **Lean mode** for prompts with short answers (87 of 482 test prompts cost more, most in information_extraction):
+  add only the output-format line, or nothing, when the
   expected answer is already short, so the input overhead does not exceed the output saving.
 * Real GPT / Claude / Gemini runs (Compare and the full evaluation) once API keys are available; exact token
   counters for Claude and Gemini.

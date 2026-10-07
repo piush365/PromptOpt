@@ -50,7 +50,7 @@ Stage B's text is kept.
 ## 3. Key numbers
 
 <!-- TOKEN:headline:start -->
-**[PLACEHOLDER: token headline, filled automatically when the full-test token run finishes]** Optimized prompts reduce total tokens by X% (95% CI a–b, n = N).
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/token_test.md`): input grows, the saving comes from shorter answers.
 <!-- TOKEN:headline:end -->
 
 | what | number | source |
@@ -75,7 +75,7 @@ Stage B's text is kept.
 | limitation | what to say |
 |---|---|
 | Real GPT/Claude/Gemini never called | "All LLM numbers use gpt-oss-120b on Groq/Cerebras as a stand-in, and the app labels it. Real runs need API keys; the code paths are there." |
-| The optimized prompt is longer | "Input tokens grow; the saving comes from shorter answers. When the answer is already short, for example a one-line closed_qa answer, the prompt can cost more (+17.2% in our live example). Future work: a lean mode." |
+| The optimized prompt is longer | "Input tokens grow; the saving comes from shorter answers. No category increases on average, but 87 of 482 test prompts cost more, mostly where the answer is already short (information_extraction 35/93; live closed_qa example +17.2%). Future work: a lean mode." |
 | Stage A at 74.7% | "Coding and classification are near-perfect; closed_qa, extraction and summarization are hard to tell apart from a vague prompt. That is why there is a 0.6 gate and a group rule instead of guessing." |
 | "Format stated" measured with our own detector | "That's why we also report an independent LLM judge and task success on the benchmark, and real tests for code." |
 | Kappa target missed | "It's the kappa paradox: with 96-98% yes answers, kappa collapses even though raters agree on 89-94% of rows. AC1 is 0.92-0.96; we report everything." |
