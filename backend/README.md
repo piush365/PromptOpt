@@ -10,10 +10,8 @@ The same code runs on both; only `DATABASE_URL` changes.
 ## Setup
 
 ```bash
-pip install torch --index-url https://download.pytorch.org/whl/cpu   # CPU build; skip if you have a GPU setup
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-cp .env.example .env        # then fill in the real passwords; .env is git-ignored
+pip install -r requirements-lock.txt   # exact versions (CPU torch, en_core_web_sm); full guide: ../README.md "How to run"
+cp .env.example .env        # optional: DATABASE_URL, API keys; .env is git-ignored
 
 python -m app.init_db       # uses DATABASE_URL from .env, or SQLite ./promptopt.db if it is not set
 ```
