@@ -258,16 +258,47 @@ All examples are real outputs of the frozen code.
 | **Freeze check** | sha256 of all Stage A features, IR, text, steps, routing and confidence on the 482 test prompts, compared with `frozen-for-test` | identical (`35f7d4dc…`) [FR §2] |
 | **Attachment rules** | 30 hand-made prompts: own rule fired, no other rule fired, requirements in all three renderings, ambiguous reference resolved | **30/30** [FR §6] |
 
-**Per-rule precision/recall (expected vs fired) and a "defect fix rate"** were **not measured** on the dataset.
-There are no per-rule gold labels saying "this prompt should have triggered B04". The closest measures we have:
-* the format-stated rate (a fix rate for the most common defect, the missing format);
-* the wrong-category additions (a precision-like measure for B03–B08);
-* the attachment test, which *is* an expected-vs-fired check: 30/30 means every expected attachment rule fired and
-  no other did, on developer-written prompts;
-* every rule has its own unit tests.
+**Per-rule accuracy, B01–B08** [FR §4.1] (`backend/app/stage_b/rule_accuracy.py`; measured on the frozen rules
+after `final-for-test`, nothing tuned).
+* **Expected:** the dataset's optimized prompt (the target) fixes the rule's defect while the degraded prompt has
+  it, judged with the Stage A detectors. For B01 the degraded prompt has filler and the target has none; for B03 the
+  target states a format and the degraded prompt does not; for B04 the target has a length; for B05 the target names
+  a language; for B06 the target lists the labels explicitly; for B07 the target puts inline data in its own block;
+  for B08 the target says to answer from the provided text.
+* **Fired:** the rule's entry in the change log.
+* **TP** = expected and fired, **FP** = fired but not expected, **FN** = expected but not fired.
+  Precision = TP / (TP + FP), recall = TP / (TP + FN), F1 = 2PR / (P + R).
 
-If asked, I would say: "we measured each defect's before/after rate rather than per-rule precision, because the
-dataset has no per-rule labels; per-rule labels are a natural next step."
+| rule | TP | FP | FN | precision | recall | F1 |
+|---|---|---|---|---|---|---|
+| B01 remove filler | 18 | 0 | 0 | 1.000 | 1.000 | 1.000 |
+| B02 remove duplicates | 0 | 1 | 0 | 0.000 | - | - |
+| B03 output format | 243 | 52 | 124 | 0.824 | 0.662 | 0.734 |
+| B04 length | 67 | 14 | 146 | 0.827 | 0.315 | 0.456 |
+| B05 language | 37 | 3 | 2 | 0.925 | 0.949 | 0.937 |
+| B06 labels | 37 | 27 | 20 | 0.578 | 0.649 | 0.612 |
+| B07 structure (change log) | 17 | 464 | 0 | 0.035 | 1.000 | 0.068 |
+| B08 group fallback | 109 | 40 | 99 | 0.732 | 0.524 | 0.611 |
+| **macro (B01–B08)** | | | | **0.615** | **0.728** | **0.631** |
+| B07, data moved only (not in macro) | 14 | 33 | 3 | 0.298 | 0.824 | 0.438 |
+| macro, with B07 = data moved | | | | 0.648 | 0.703 | 0.684 |
+
+How to read it, and what I would say:
+* **"Expected" comes from LLM-written targets**, not human labels. A rule that adds something the LLM left out
+  counts as a false positive, even when the addition is reasonable.
+* **B07's change-log entry includes tidying** (a capital letter, a final "."), so it fires on 481 of 482 prompts.
+  The "data moved" row is the meaningful one for B07.
+* **B01's perfect score is consistency, not independent accuracy**: its "expected" uses the same filler detector
+  as the rule.
+* **B02** had no expected prompt on test (one firing), so its recall and F1 are undefined.
+* **Low recall for B04 (0.315) and B08 (0.524) is mostly by design.** Stage B adds a length only above the 0.6 gate
+  and only for closed_qa/summarization, while the LLM targets add one almost everywhere. Rules also share defects
+  (a length can come from B04 or B08), and a defect fixed by another rule counts as a miss.
+
+Other checks of the rules:
+* the format-stated rate above (a fix rate for the most common defect);
+* the attachment test (30/30, an expected-vs-fired check for B09–B15 on developer-written prompts);
+* the unit tests for every rule.
 
 **With a real LLM** (benchmark split, 44 prompts; target `cerebras/gpt-oss-120b`, blind judge `qwen/qwen3.8-27b`):
 quality 8.2 → **9.0**, task success 67% → **85%**, total tokens 894 → **386** per prompt (−57%), latency

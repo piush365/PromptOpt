@@ -93,6 +93,37 @@ Routed to Stage C: 24 for the task category, 7 for an ambiguous reference. Wrong
 | **Stage B** | **9.0** | **85%** | 235 | 151 | **386** | 773 |
 | dataset optimized prompt | 9.0 | 81% | 242 | 129 | 371 | 1189 |
 
+### 4.1 Per-rule accuracy, B01-B08 (test, 482 prompts; added after `final-for-test`, measurement only)
+
+Frozen rules, nothing tuned (`stage_b_rule_accuracy.md`, `python -m app.stage_b.rule_accuracy`). **Expected** = the
+dataset's optimized prompt fixes the rule's defect while the degraded prompt has it, judged with the Stage A detectors
+(B01 filler, B02 repetition, B03 format, B04 length, B05 programming language, B06 labels listed explicitly, B07 data
+put in its own block, B08 answer grounded in the provided text). **Fired** = the rule's change-log entry.
+**The targets are LLM-written**, so "expected" is the LLM's choice, not a human gold label.
+
+| rule | TP | FP | FN | precision | recall | F1 |
+|---|---|---|---|---|---|---|
+| B01 remove filler | 18 | 0 | 0 | 1.000 | 1.000 | 1.000 |
+| B02 remove duplicates | 0 | 1 | 0 | 0.000 | - | - |
+| B03 output format | 243 | 52 | 124 | 0.824 | 0.662 | 0.734 |
+| B04 length | 67 | 14 | 146 | 0.827 | 0.315 | 0.456 |
+| B05 language | 37 | 3 | 2 | 0.925 | 0.949 | 0.937 |
+| B06 labels | 37 | 27 | 20 | 0.578 | 0.649 | 0.612 |
+| B07 structure (change log) | 17 | 464 | 0 | 0.035 | 1.000 | 0.068 |
+| B08 group fallback | 109 | 40 | 99 | 0.732 | 0.524 | 0.611 |
+| **macro (B01-B08)** | | | | **0.615** | **0.728** | **0.631** |
+| B07, data moved only (not in macro) | 14 | 33 | 3 | 0.298 | 0.824 | 0.438 |
+| macro, with B07 = data moved | | | | 0.648 | 0.703 | 0.684 |
+
+Macro = unweighted mean over the rules where the value is defined (B02 has no expected prompt, so its recall and F1
+are left out). Reading:
+* B07's change-log entry also covers tidying (capital letter, final '.'), so it fires on 481 prompts; the "data moved"
+  row is the meaningful one for B07.
+* B01 uses the same filler detector as its "expected", so 1.000 shows consistency, not independent accuracy.
+* Low recall for B04 (0.315) and B08 (0.524) is mostly by design: lengths and formats are added only above the 0.6
+  confidence gate and only for the categories where they matter, while the LLM targets add them almost everywhere;
+  rules also share defects (a length can come from B04 or B08), and a defect fixed by another rule counts as a miss.
+
 ## 5. Stage C: LoRA fallback
 
 Qwen2.5-0.5B-Instruct + LoRA (r 16), trained locally on the RTX 3050 (bf16, effective batch 16) on 4,456 train
@@ -294,6 +325,7 @@ Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: 
 python -m app.freeze_check                                             # Stage A/B vs frozen-for-test
 python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a_test_final.md
 python -m app.stage_b.evaluate --split test --out ../evaluation/stage_b_test_final.md
+python -m app.stage_b.rule_accuracy --out ../evaluation/stage_b_rule_accuracy.md  # per-rule accuracy (4.1)
 python -m app.stage_c.data --test                                      # data/stage_c/test.jsonl
 .venv-gpu/bin/python -m app.stage_c.evaluate --split test --adapter artifacts/stage_c_adapter \
     --out ../evaluation/stage_c_test.md                                # and --split val for stage_c_eval.md
