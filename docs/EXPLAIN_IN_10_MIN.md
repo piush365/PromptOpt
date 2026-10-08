@@ -1,32 +1,44 @@
-# PromptOpt in 10 minutes
+# PromptOpt in 10 minutes (simple version)
 
-A cheat sheet for presenting the project. Every number comes from `evaluation/FINAL_RESULTS.md` (cited by
-section) or the report file named next to it.
+Plain words, real numbers. Every number is from `evaluation/FINAL_RESULTS.md` (section in brackets).
 
-## 1. The problem (2 lines)
+## 1. The problem
 
-People type short, vague prompts ("write code for permutations"), so the model guesses and writes long,
-unrequested answers. PromptOpt rewrites the prompt for the model you use, and **measures** whether that helps.
+People type short, lazy prompts like "write code for permutations". The AI has to guess what they want, so it
+writes a long answer full of things nobody asked for. Long answers cost more money and take longer.
 
-## 2. The pipeline in plain words
+## 2. What PromptOpt does
 
-| step | in plain words |
+It fixes your prompt **before** it goes to the AI, then checks whether the fix really helped.
+
+Think of it as a spell-checker for prompts: it adds the details you forgot ("use Python", "give only the code",
+"answer in two sentences"), so the AI gives a short, useful answer.
+
+## 3. How it works: three steps
+
+| step | what it does, simply |
 |---|---|
-| **Stage A: look** | Read the prompt and work out what kind of task it is (closed_qa, information extraction, classification, summarization, coding) and how sure we are. Note what is missing: an output format, a length, a programming language, a label set. Note filler words and unclear references like "this article". |
-| **Stage B: fix with rules** | Fixed, testable rules (B01-B15) add only what is missing, and every change is logged with before/after. Category-specific rules fire only when Stage A's confidence is at least 0.6. Otherwise a safe group rule (B08) is used, or the field is left unresolved. |
-| **Stage C: small model, only if needed** | A small fine-tuned model (Qwen2.5-0.5B + LoRA) runs only when Stage B could not settle the category or an unclear reference: 6.4% of test prompts. Its answer is checked; if it is bad, Stage B's version is kept. Its category guess is only a suggestion the user confirms. |
-| **IR + renderers** | One neutral representation (task, context, constraints, output format), written out per model: Claude gets XML tags, GPT gets `###` sections, Gemini gets plain labels. Same content in all three. |
-| **Compare** | Run the original and the optimized prompt on the same real model, side by side: answers, tokens, latency, tests for code, optional blind judge. |
-| **Image mode** | A separate mode for image generators. It keeps the user's words and offers missing details (lighting, style...) as clickable suggestions. |
+| **Step A: read** | Looks at the prompt. What kind of task is it (question, pulling out facts, sorting into groups, summary, code)? What is missing (answer format, length, programming language)? Is anything unclear, like "this article"? |
+| **Step B: fix with rules** | Simple fixed rules add only what is missing, and every change is shown before and after. If Step A is not sure about the task type (below 0.6 confidence), it does not guess. |
+| **Step C: small AI, only when stuck** | If the rules cannot fix something (unclear task type, or an unclear word like "this"), a small AI model trained by us tries. Its answer is checked; if it is wrong, we keep Step B's version. Needed for only **6.4%** of prompts [4]. |
 
-### One prompt, walked through
+Then the fixed prompt is written in the style each AI likes best: **Claude**, **GPT** or **Gemini**. The content
+is the same; only the layout differs.
 
-**Typed:** `write code to get all permutations of a string`
+Extra features:
+* **Compare:** runs your original prompt and the fixed prompt on a real AI, side by side, and shows the tokens
+  (cost), time and answers [9].
+* **Image mode:** for image generators. It keeps your words exactly and only *suggests* extra details (lighting,
+  style) as buttons you can click [8].
 
-1. **Stage A:** coding, fully confident; no output format; no programming language stated.
-2. **Stage B:** B07 tidies the structure, B05 adds "Use Python.", B03 adds "Return only the code, in a single code
-   block." Nothing is unresolved, so **Stage C is not called**.
-3. **Rendered for Claude:**
+## 4. One example, start to finish
+
+You type: **`write code to get all permutations of a string`**
+
+1. **Step A:** it is a coding task. No language given. No answer format given.
+2. **Step B:** adds "Use Python." and "Return only the code, in a single code block."
+3. **Step C:** not needed; nothing was unclear.
+4. **Result for Claude:**
    ```
    <task>
    Write code to get all permutations of a string.
@@ -40,69 +52,63 @@ unrequested answers. PromptOpt rewrites the prompt for the model you use, and **
    Return only the code, in a single code block.
    </output_format>
    ```
-4. **Compare** (Groq gpt-oss-120b): total tokens 768 -> 248 (**-67.7%**), both answers pass 6/6 tests, judge 10/10
-   (`FINAL_RESULTS.md` section 9, `compare_examples.md`).
+5. **Compare on a real AI:** tokens went from 768 to 248 (**67.7% fewer**). Both answers passed all 6/6 code tests
+   [9].
 
-**When Stage C runs:** `hey can you just summarize this article for me` contains an unclear reference ("this
-article"), so it is routed to Stage C. If Stage C's rewrite still has an unclear reference, the check rejects it and
-Stage B's text is kept.
-
-## 3. Key numbers
+## 5. The main results (the facts to say)
 
 <!-- TOKEN:headline:start -->
 **Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/token_test.md`): input grows, the saving comes from shorter answers.
 <!-- TOKEN:headline:end -->
 
-| what | number | source |
-|---|---|---|
-| Dataset | 5,184 pairs; test split 482 prompts | `FINAL_RESULTS.md` 2a, `DATASET_CARD.md` |
-| Human validation | 330 rows rated, 295 accepted, 35 rejected; AC1 0.92-0.96 per question | `FINAL_RESULTS.md` 2a, `REVIEW_SUMMARY.md` |
-| Stage A category accuracy (test) | **74.7%** | `FINAL_RESULTS.md` 3 |
-| Stage B: output format stated (test) | **3.1% -> 95.0%** | `FINAL_RESULTS.md` 4 |
-| Prompts routed to Stage C (test) | **6.4%** (31 of 482) | `FINAL_RESULTS.md` 4 |
-| Benchmark, real LLM: quality / task success | **8.2 -> 9.0** / **67% -> 85%** | `FINAL_RESULTS.md` 4 |
-| Benchmark: total tokens per prompt | 894 -> 386 | `FINAL_RESULTS.md` 4 |
-| Stage C valid answers: zero-shot vs LoRA | 5.0% vs **98.2%** | `FINAL_RESULTS.md` 5.1 |
-| Stage C on routed prompts: format stated | **22.6% -> 90.3%** | `FINAL_RESULTS.md` 5.2 |
-| Stage C on all prompts (forced): task intent | 0.886 -> 0.769 (worse, so routed only) | `FINAL_RESULTS.md` 5.2 |
-| Stage C latency, laptop GPU / CPU | 0.74 s / 4.55 s | `FINAL_RESULTS.md` 5.5 |
-| Coding tests pass@1 (strict) | **20.7% -> 34.5%** (n = 29) | `FINAL_RESULTS.md` 7 |
-| Image v2 vs original, held-out CLIP | 32.77 vs 33.08 (no significant difference); v1 30.78 | `FINAL_RESULTS.md` 8 |
-| Freeze | Stage A/B byte-identical to `frozen-for-test` on 482 prompts | `FINAL_RESULTS.md` 2 |
+In simple words: on 482 test prompts, the fixed prompt used **39.2% fewer tokens** in total. The prompt itself
+gets a bit longer, but the AI's answer gets much shorter [9a].
 
-## 4. What to say about each limitation
+| what we measured | before | after | source |
+|---|---|---|---|
+| Prompts that say what answer format they want | 3.1% | **95.0%** | [4] |
+| Answer quality, scored 0-10 by another AI | 8.2 | **9.0** | [4] |
+| Task done correctly | 67% | **85%** | [4] |
+| Code that passes tests | 20.7% | **34.5%** | [7] |
+| Tokens per prompt (benchmark) | 894 | **386** | [4] |
 
-| limitation | what to say |
+Other facts:
+* **Dataset:** 5,184 prompt pairs we built; 482 kept aside only for the final test [2a].
+* **Human check:** 3 team members rated 330 rows: 295 accepted, 35 thrown out [2a].
+* **Step A** guesses the task type right **74.7%** of the time [3].
+* **Step C (our small AI)** gives a usable answer **98.2%** of the time; without our training it was only 5.0%
+  [5.1]. It runs in **0.74 s** on a laptop GPU [5.5].
+* **Fair test:** the test prompts were used once, at the very end; nothing was tuned on them [2].
+
+## 6. Weak points: say them honestly
+
+| weak point | what to say |
 |---|---|
-| Real GPT/Claude/Gemini never called | "All LLM numbers use gpt-oss-120b on Groq/Cerebras as a stand-in, and the app labels it. Real runs need API keys; the code paths are there." |
-| The optimized prompt is longer | "Input tokens grow; the saving comes from shorter answers. No category increases on average, but 87 of 482 test prompts cost more, mostly where the answer is already short (information_extraction 35/93; live closed_qa example +17.2%). Future work: a lean mode." |
-| Stage A at 74.7% | "Coding and classification are near-perfect; closed_qa, extraction and summarization are hard to tell apart from a vague prompt. That is why there is a 0.6 gate and a group rule instead of guessing." |
-| "Format stated" measured with our own detector | "That's why we also report an independent LLM judge and task success on the benchmark, and real tests for code." |
-| Kappa target missed | "It's the kappa paradox: with 96-98% yes answers, kappa collapses even though raters agree on 89-94% of rows. AC1 is 0.92-0.96; we report everything." |
-| Stage C trained on LLM-written targets, small routed set (31) | "Stage C is a fallback for a few prompts. The forced ablation on all 482 shows why it isn't used everywhere." |
-| Coding tests: Python only, n = 29 | "Small and paired; Stage B never lost an item the degraded prompt passed (sign test p = 0.125, so not significant)." |
-| Attachments and image mode on developer-written prompts only | "Blind sets written by others are future work. The held-out image set was at least written before any v2 code." |
-| Image mode: SD 1.5 + CLIP only | "DALL-E and Nano Banana need API keys; CLIP can show harm but not improvement, so we claim 'no harm'." |
+| We never used the real GPT, Claude or Gemini | "We had no paid API keys, so a free model (gpt-oss-120b) stood in for all three, and the app says so." |
+| The fixed prompt is longer | "Yes, the prompt grows a little, but the answer shrinks a lot. On average every category saves. 87 of 482 prompts did cost more, mostly ones whose answer was already short. A 'lean mode' is future work." |
+| Step A is right only 74.7% of the time | "Code and sorting tasks are almost always right. Questions, fact-pulling and summaries look alike when the prompt is vague. So when it is unsure, it does not guess." |
+| The human agreement score (kappa) looked bad | "Almost every answer was 'yes', and that breaks kappa. The raters actually agreed on 89-94% of rows. Another score, AC1, is 0.92-0.96." |
+| Small tests in some places | "The code tests used 29 items, Python only. Step C only ran on 31 test prompts." |
+| File and image features | "Tested on prompts we wrote ourselves. Tests by outsiders are future work." |
 
-## 5. Top 10 viva questions (2-line answers)
+## 7. Top 10 questions and short answers
 
-1. **How is Stage B's accuracy measured?** Offline on 482 test prompts (format stated 3.1% -> 95.0%, wrong-category
-   additions 5.2%), plus a blind LLM judge and task success on the benchmark (8.2 -> 9.0, 67% -> 85%) and sandbox tests for code.
-2. **What is the B -> C contract?** Stage C runs only for an unresolved category or an unclear reference, must return
-   JSON with exactly those fields, and is checked by Stage A's detectors; if it fails, Stage B's result stays.
-3. **Why Stage C only for routed prompts?** On routed prompts it raises format stated 22.6% -> 90.3%; on all prompts
-   it lowers task intent 0.886 -> 0.769 and adds nothing. Decided on val, confirmed on test.
-4. **How do you count tokens per model?** GPT exactly with tiktoken o200k_base; Claude and Gemini approximately
-   (characters / 4, labelled). In Compare and the evaluation we use the provider's own usage numbers, including reasoning tokens.
-5. **If the prompt is longer, how do you save tokens?** Input grows; output shrinks because a stated format and length
-   stop long, unrequested answers. We report net = input + output (see the token headline above).
-6. **What is the kappa paradox?** With nearly all answers "yes", chance agreement is near 1, so kappa is near 0 even at
-   89-94% raw agreement; Gwet's AC1 (0.92-0.96) does not collapse.
-7. **Why did image v1 fail?** Default keywords like "natural lighting" conflicted with requests (watercolor became a
-   photo): held-out CLIP 33.08 -> 30.78. v2 keeps the user's words: 32.77, style kept 12/12.
-8. **Was the test set used for tuning?** No: everything was tuned on val; test ran once (tag `final-for-test`), and
-   `python -m app.freeze_check` proves Stage A/B are byte-identical.
-9. **Why rules first and not just an LLM?** Rules are free, offline, instant, explainable and testable one by one;
-   the C-only ablation is the weakest (routed task intent 0.712).
-10. **Are GPT/Claude/Gemini results real?** No: gpt-oss-120b stands in for all three and the UI says so; real runs
-    need API keys (future work).
+1. **How do you know the fixes are good?** Three checks: the fixed prompts state a format (3.1% -> 95.0%), another AI
+   scores the answers higher (8.2 -> 9.0), and code passes more real tests (20.7% -> 34.5%).
+2. **When does the small AI (Step C) run?** Only when the rules are stuck: unclear task type or an unclear word.
+   Its answer is checked; if it is bad, we keep the rules' version.
+3. **Why not use the small AI for every prompt?** We tried. It made prompts worse when the rules had already done
+   the job (meaning kept: 0.886 -> 0.769). So it only helps where the rules are stuck.
+4. **How do you count tokens?** For GPT, exactly (with its own tokenizer). For Claude and Gemini, an estimate
+   (characters / 4), clearly labelled. In real runs we use the numbers the AI service reports.
+5. **How can a longer prompt save tokens?** Because the answer gets much shorter. We count both: prompt plus
+   answer. Result: 39.2% fewer in total.
+6. **Why was kappa low?** Almost everyone said "yes" almost every time, which pushes kappa down even when people
+   agree. Raw agreement was 89-94%.
+7. **What went wrong with image mode at first?** Version 1 added words like "natural lighting" to every prompt,
+   which turned a watercolor request into a photo. Version 2 keeps the user's words and only suggests.
+8. **Did you cheat by tuning on the test set?** No. We tuned on a separate set, ran the test once, and a script
+   proves the code did not change afterwards.
+9. **Why rules first instead of just an AI?** Rules are free, instant, work offline, and every change can be
+   explained. Using only the small AI was the worst option we tested.
+10. **Are the GPT/Claude/Gemini results real?** No. A free model stood in for them, and we say so everywhere.
