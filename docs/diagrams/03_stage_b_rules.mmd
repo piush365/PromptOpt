@@ -1,0 +1,23 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  IN["Prompt +<br/>PromptFeatures"] --> B07
+  subgraph CHAIN["Stage B rules, in run order"]
+    direction LR
+    B07["B07<br/>structure"] --> B01["B01<br/>filler"] --> B02["B02<br/>duplicates"] --> ATT["B09–B15<br/>attachment<br/>(if attached)"] --> B08["B08<br/>group fallback<br/>(below gate)"] --> B06
+    subgraph GATE["only if confidence ≥ 0.6"]
+      direction LR
+      B06["B06<br/>labels"] --> B05["B05<br/>language"] --> B04["B04<br/>length"] --> B03["B03<br/>format"]
+    end
+  end
+  B03 --> OUT["IR +<br/>unresolved list"]
+  CHAIN -. "every change:<br/>rule · before · after" .-> LOG[("Change log<br/>transformations")]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class B07,B01,B02,ATT,B08,B06,B05,B04,B03 stageB
+  class IN,OUT result
+  class LOG neutral
+  style GATE fill:#bbf7d0,stroke:#15803d,stroke-width:2px,stroke-dasharray:6 4
+  style CHAIN fill:#f0fdf4,stroke:#15803d

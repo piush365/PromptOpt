@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  T[("Test 482<br/>Benchmark 44")] --> V1["Degraded<br/>prompt"]
+  T --> V2["Optimized<br/>Stage A + B"]
+  V1 --> M["Target LLM<br/>gpt-oss-120b<br/>temperature 0"]
+  V2 --> M
+  M --> TOK["Tokens from<br/>API usage"]
+  M --> J["Blind judge<br/>qwen3.8-27b"]
+  M --> TS["Task success"]
+  M --> SBX["Sandbox tests<br/>Python"]
+  TOK --> R1["Tokens −39.2%<br/>CI 35.9–42.5%<br/>test · n 482"]
+  J --> R2["Quality<br/>8.2 → 9.0<br/>bench · n 44"]
+  TS --> R3["Success<br/>67% → 85%<br/>bench · n 44"]
+  SBX --> R4["pass@1<br/>20.7% → 34.5%<br/>test · n 29"]
+  R1 & R2 & R3 & R4 --> FR["FINAL_RESULTS.md"]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class V1 neutral
+  class V2 stageB
+  class T,M,TOK,J,TS,SBX neutral
+  class R1,R2,R3,R4,FR result

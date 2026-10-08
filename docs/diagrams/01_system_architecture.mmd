@@ -1,0 +1,34 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  UI["Web UI (HTML/JS)<br/>prompt · category · attachment · target LLM"]
+  subgraph API["FastAPI backend"]
+    direction LR
+    A["Stage A<br/>feature detection"]
+    B["Stage B<br/>rules → IR"]
+    R{"Category or<br/>reference unresolved?"}
+    C["Stage C<br/>LoRA fallback"]
+    IR["Final IR"]
+    REN["Renderers"]
+    IMG["Image mode v2<br/>(chosen explicitly)"]
+    A --> B --> R
+    R -- "no · 93.6%" --> IR
+    R -- "yes · 6.4%" --> C --> IR
+    IR --> REN
+  end
+  UI --> A
+  UI -. "image mode" .-> IMG
+  REN --> CL["Claude<br/>XML tags"]
+  REN --> GP["GPT<br/>### sections"]
+  REN --> GE["Gemini<br/>plain labels"]
+  CL & GP & GE --> CMP["Compare<br/>original vs optimized"]
+  CMP --> PROV["Providers<br/>Groq · Cerebras · Gemini"]
+  API <-- "history, results" --> DB[("Database<br/>SQLite / PostgreSQL<br/>10 tables")]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class A stageA
+  class B stageB
+  class C stageC
+  class R,IR,REN,IMG,CL,GP,GE,CMP,PROV,UI neutral

@@ -1,0 +1,20 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  DO["Dolly-15k<br/>4 text categories"] --> S["Sample<br/>instructions"]
+  CA["CodeAlpaca-20k<br/>coding"] --> S
+  S --> G["LLM writes<br/>degraded + optimized<br/>(Groq / Cerebras)"]
+  G --> Q["Automatic checks<br/>+ deterministic repair"]
+  Q --> H["Human review<br/>3 raters × 170 rows<br/>295 of 330 accepted<br/>faculty: 19 of 20"]
+  H --> L["LLM-assisted filter<br/>9 rows removed"]
+  L --> F[("v1.2 final<br/>5,184 pairs")]
+  F --> TRN["train 4,509"]
+  F --> VAL["val 149"]
+  F --> TST["test 482"]
+  F --> BEN["benchmark 44"]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class DO,CA,S,G,Q,H,L neutral
+  class F,TRN,VAL,TST,BEN result

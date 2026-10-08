@@ -25,6 +25,47 @@ A user types a vague prompt such as *"hey can you please summarize this for me"*
    missing fields.
 4. The **renderer** turns the IR into a prompt laid out the way Claude, GPT or Gemini prefer.
 
+<!-- DIAGRAM:01_system_architecture:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  UI["Web UI (HTML/JS)<br/>prompt · category · attachment · target LLM"]
+  subgraph API["FastAPI backend"]
+    direction LR
+    A["Stage A<br/>feature detection"]
+    B["Stage B<br/>rules → IR"]
+    R{"Category or<br/>reference unresolved?"}
+    C["Stage C<br/>LoRA fallback"]
+    IR["Final IR"]
+    REN["Renderers"]
+    IMG["Image mode v2<br/>(chosen explicitly)"]
+    A --> B --> R
+    R -- "no · 93.6%" --> IR
+    R -- "yes · 6.4%" --> C --> IR
+    IR --> REN
+  end
+  UI --> A
+  UI -. "image mode" .-> IMG
+  REN --> CL["Claude<br/>XML tags"]
+  REN --> GP["GPT<br/>### sections"]
+  REN --> GE["Gemini<br/>plain labels"]
+  CL & GP & GE --> CMP["Compare<br/>original vs optimized"]
+  CMP --> PROV["Providers<br/>Groq · Cerebras · Gemini"]
+  API <-- "history, results" --> DB[("Database<br/>SQLite / PostgreSQL<br/>10 tables")]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class A stageA
+  class B stageB
+  class C stageC
+  class R,IR,REN,IMG,CL,GP,GE,CMP,PROV,UI neutral
+```
+
+*System architecture*: [PNG](diagrams/01_system_architecture.png) · [SVG](diagrams/01_system_architecture.svg) · source [`01_system_architecture.mmd`](diagrams/01_system_architecture.mmd)
+<!-- DIAGRAM:01_system_architecture:end -->
+
 ---
 
 ## 1. Stage A: feature detection (`backend/app/stage_a/`)
@@ -55,6 +96,45 @@ Every detector returns **evidence**, meaning the exact words it matched, so the 
 flagged.
 
 ### 1.2 How the category is decided (detector A01, `classifier.py`)
+
+<!-- DIAGRAM:02_stage_a:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  P["Prompt"] --> E["MiniLM embedding<br/>all-MiniLM-L6-v2"]
+  P --> KW["Keyword cues<br/>(regex)"]
+  E --> K["k-NN vote<br/>k = 25 train examples"]
+  E --> H["Logistic head<br/>embedding + cues"]
+  KW --> H
+  K --> BL["Blend<br/>k-NN + cues + head"]
+  KW --> BL
+  H --> BL
+  BL --> O{"Nearest example<br/>similarity < 0.3?"}
+  O -- "yes" --> OT["'other' backstop"]
+  O -- "no" --> CAT["Category + confidence<br/>(top score)"]
+  OT --> CAT
+  P --> DET
+  subgraph DET["Rule detectors"]
+    direction TB
+    A2["A02 output format"]
+    A3["A03 constraints"]
+    A4["A04 filler / repeats"]
+    A5["A05 ambiguous refs"]
+  end
+  CAT --> F["PromptFeatures<br/>accuracy 74.7% (test)"]
+  DET --> F
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class E,KW,K,H,BL,OT,CAT,A2,A3,A4,A5 stageA
+  class O neutral
+  class P,F result
+```
+
+*Stage A internals*: [PNG](diagrams/02_stage_a.png) · [SVG](diagrams/02_stage_a.svg) · source [`02_stage_a.mmd`](diagrams/02_stage_a.mmd)
+<!-- DIAGRAM:02_stage_a:end -->
 
 **Step 1: embed the prompt.** The prompt goes through the Sentence-Transformers model **all-MiniLM-L6-v2**
 (`config.SENTENCE_MODEL`). This turns any text into a 384-number vector, and similar meanings give similar vectors.
@@ -196,6 +276,36 @@ Each detector is a separate pure function. The examples below are real outputs.
 6. **context_ref** is set, and the confidence is computed. The confidence is stored, **not used for routing**:
    Stage A's confidence minus 0.2 per unresolved item, or 0.3 for `other`.
 
+<!-- DIAGRAM:03_stage_b_rules:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  IN["Prompt +<br/>PromptFeatures"] --> B07
+  subgraph CHAIN["Stage B rules, in run order"]
+    direction LR
+    B07["B07<br/>structure"] --> B01["B01<br/>filler"] --> B02["B02<br/>duplicates"] --> ATT["B09–B15<br/>attachment<br/>(if attached)"] --> B08["B08<br/>group fallback<br/>(below gate)"] --> B06
+    subgraph GATE["only if confidence ≥ 0.6"]
+      direction LR
+      B06["B06<br/>labels"] --> B05["B05<br/>language"] --> B04["B04<br/>length"] --> B03["B03<br/>format"]
+    end
+  end
+  B03 --> OUT["IR +<br/>unresolved list"]
+  CHAIN -. "every change:<br/>rule · before · after" .-> LOG[("Change log<br/>transformations")]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class B07,B01,B02,ATT,B08,B06,B05,B04,B03 stageB
+  class IN,OUT result
+  class LOG neutral
+  style GATE fill:#bbf7d0,stroke:#15803d,stroke-width:2px,stroke-dasharray:6 4
+  style CHAIN fill:#f0fdf4,stroke:#15803d
+```
+
+*Stage B rule chain*: [PNG](diagrams/03_stage_b_rules.png) · [SVG](diagrams/03_stage_b_rules.svg) · source [`03_stage_b_rules.mmd`](diagrams/03_stage_b_rules.mmd)
+<!-- DIAGRAM:03_stage_b_rules:end -->
+
 ### 2.3 The 0.6 category gate
 
 `CATEGORY_MIN_CONFIDENCE = 0.6` (`rules.py`). Rules B03 to B06 add **category-specific** content: a format, a length,
@@ -243,6 +353,38 @@ All examples are real outputs of the frozen code.
   * `output format` → `output_format` (only asked when the prompt is routed anyway)
 * **What is locked:** every other field. Stage C sees Stage B's values (including requirements such as the
   attachment rules) but may only return the requested keys, and `patch_ir` changes nothing else.
+
+<!-- DIAGRAM:04_b_to_c_contract:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+sequenceDiagram
+  autonumber
+  box rgb(220,252,231) Stage B
+    participant B as Stage B
+  end
+  box rgb(254,243,199) Stage C
+    participant C as Stage C (LoRA)
+    participant V as Validator
+  end
+  participant IR as Final IR
+  participant U as User (UI)
+  Note over B: routed if "task category" or<br/>"ambiguous reference" is unresolved<br/>(6.4% of test prompts)
+  B->>C: JSON: prompt + IR, requested fields = null
+  Note over B,C: every other field is locked
+  C->>V: JSON with the requested keys only
+  Note over V: checks: valid JSON · exact keys ·<br/>no ambiguous ref (A05) ·<br/>format stated (A02) · valid category
+  alt passes (98.2% of test answers)
+    V->>IR: patch only the requested fields
+    opt category was requested
+      V->>U: "uncertain": ask the user,<br/>pre-select Stage C's guess
+    end
+  else fails
+    V->>IR: fallback: keep Stage B's IR
+  end
+```
+
+*B → C contract*: [PNG](diagrams/04_b_to_c_contract.png) · [SVG](diagrams/04_b_to_c_contract.svg) · source [`04_b_to_c_contract.mmd`](diagrams/04_b_to_c_contract.mmd)
+<!-- DIAGRAM:04_b_to_c_contract:end -->
 
 ### 2.6 How Stage B is measured (test, n = 482)
 
@@ -379,6 +521,33 @@ Real example (the named case, see section 4):
   lowest value, **0.7047, at step 550**. Steps 600, 650 and 700 were all worse, so training stopped at **step 700**
   (51 min), and the saved adapter is the step-550 one [FR §5]. Val loss rising while train loss kept falling is the
   usual sign of overfitting, which is exactly what early stopping guards against.
+
+<!-- DIAGRAM:05_stage_c_training:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  D[("Train split<br/>v1.2 final")] --> XA["Stage A<br/>cross-fitted, 5 folds"]
+  XA --> SB["Stage B<br/>real run"]
+  D --> PT["Targets parsed from<br/>optimized prompts"]
+  SB --> EX["4,456 train examples<br/>routed + forced fields"]
+  PT --> EX
+  EX --> TR["LoRA training<br/>Qwen2.5-0.5B-Instruct<br/>r 16 · batch 16 · bf16"]
+  TR --> ES{"Val loss<br/>every 50 steps"}
+  ES -- "best 0.7047<br/>at step 550" --> AD["Adapter<br/>(step 550)"]
+  ES -- "3 evals no gain" --> ST["Early stop<br/>at step 700 · 51 min"]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class XA stageA
+  class SB stageB
+  class PT,EX,TR,ES,AD,ST stageC
+  class D neutral
+```
+
+*Stage C training*: [PNG](diagrams/05_stage_c_training.png) · [SVG](diagrams/05_stage_c_training.svg) · source [`05_stage_c_training.mmd`](diagrams/05_stage_c_training.mmd)
+<!-- DIAGRAM:05_stage_c_training:end -->
 
 ### 3.3 Validation, fallback, and the category policy (`contract.py`)
 
@@ -566,6 +735,37 @@ This shows the safety net: a bad model answer never reaches the user.
 
 ## 5. End-to-end measurements
 
+<!-- DIAGRAM:07_evaluation_flow:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  T[("Test 482<br/>Benchmark 44")] --> V1["Degraded<br/>prompt"]
+  T --> V2["Optimized<br/>Stage A + B"]
+  V1 --> M["Target LLM<br/>gpt-oss-120b<br/>temperature 0"]
+  V2 --> M
+  M --> TOK["Tokens from<br/>API usage"]
+  M --> J["Blind judge<br/>qwen3.8-27b"]
+  M --> TS["Task success"]
+  M --> SBX["Sandbox tests<br/>Python"]
+  TOK --> R1["Tokens −39.2%<br/>CI 35.9–42.5%<br/>test · n 482"]
+  J --> R2["Quality<br/>8.2 → 9.0<br/>bench · n 44"]
+  TS --> R3["Success<br/>67% → 85%<br/>bench · n 44"]
+  SBX --> R4["pass@1<br/>20.7% → 34.5%<br/>test · n 29"]
+  R1 & R2 & R3 & R4 --> FR["FINAL_RESULTS.md"]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class V1 neutral
+  class V2 stageB
+  class T,M,TOK,J,TS,SBX neutral
+  class R1,R2,R3,R4,FR result
+```
+
+*Evaluation flow*: [PNG](diagrams/07_evaluation_flow.png) · [SVG](diagrams/07_evaluation_flow.svg) · source [`07_evaluation_flow.mmd`](diagrams/07_evaluation_flow.mmd)
+<!-- DIAGRAM:07_evaluation_flow:end -->
+
 | measure | how | result |
 |---|---|---|
 | **Tokens** | from the provider's API usage fields: `prompt_tokens` → input, `completion_tokens` → output (this includes gpt-oss's hidden reasoning tokens) (`evaluation/llm.py`); total = input + output | – |
@@ -709,3 +909,118 @@ the same IR is rendered for Claude, GPT or Gemini. On a real model, the optimize
     Stage A on the three text categories (summarization F1 0.51); Stage C's targets are mostly LLM-written (111
     human-validated train rows); the routed set is small (31); all LLM numbers use gpt-oss-120b as a stand-in,
     because GPT/Claude/Gemini need API keys [FR §3, §10].
+
+---
+
+## 8. Dataset and database
+
+Where the data comes from (numbers: [FR §2a] and the dataset line of FINAL_RESULTS) and how one request is stored (`backend/app/db/models.py`; prompts expire after 30 days and delete with cascade).
+
+<!-- DIAGRAM:06_dataset_pipeline:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  DO["Dolly-15k<br/>4 text categories"] --> S["Sample<br/>instructions"]
+  CA["CodeAlpaca-20k<br/>coding"] --> S
+  S --> G["LLM writes<br/>degraded + optimized<br/>(Groq / Cerebras)"]
+  G --> Q["Automatic checks<br/>+ deterministic repair"]
+  Q --> H["Human review<br/>3 raters × 170 rows<br/>295 of 330 accepted<br/>faculty: 19 of 20"]
+  H --> L["LLM-assisted filter<br/>9 rows removed"]
+  L --> F[("v1.2 final<br/>5,184 pairs")]
+  F --> TRN["train 4,509"]
+  F --> VAL["val 149"]
+  F --> TST["test 482"]
+  F --> BEN["benchmark 44"]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class DO,CA,S,G,Q,H,L neutral
+  class F,TRN,VAL,TST,BEN result
+```
+
+*Dataset pipeline*: [PNG](diagrams/06_dataset_pipeline.png) · [SVG](diagrams/06_dataset_pipeline.svg) · source [`06_dataset_pipeline.mmd`](diagrams/06_dataset_pipeline.mmd)
+<!-- DIAGRAM:06_dataset_pipeline:end -->
+
+<!-- DIAGRAM:08_database_er:start -->
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+erDiagram
+  users ||--o{ prompts : writes
+  prompts ||--o| prompt_features : "Stage A"
+  prompts ||--o{ optimization_results : "optimized as"
+  optimization_results ||--o{ transformations : "change log"
+  optimization_results ||--o{ renderings : "per target"
+  optimization_results ||--o{ token_usage : "per target"
+  rules |o--o{ transformations : "rule_id"
+  lora_models |o--o{ optimization_results : "lora_model_id"
+  users {
+    int id PK
+    string display_name
+  }
+  prompts {
+    int id PK
+    int user_id FK
+    text original_text "PII scrubbed"
+    datetime expires_at "30-day retention"
+  }
+  prompt_features {
+    int id PK
+    int prompt_id FK
+    string task_type
+    float confidence
+    json missing_constraints
+  }
+  optimization_results {
+    int id PK
+    int prompt_id FK
+    int lora_model_id FK
+    json ir
+    text optimized_text
+    bool used_lora
+  }
+  transformations {
+    int id PK
+    int result_id FK
+    int rule_id FK
+    string stage
+    text before_text
+    text after_text
+  }
+  renderings {
+    int id PK
+    int result_id FK
+    string target_llm
+    text rendered_text
+  }
+  token_usage {
+    int id PK
+    int result_id FK
+    string target_llm
+    int original_input_tokens
+    int optimized_input_tokens
+  }
+  rules {
+    int id PK
+    string code "B01-B15"
+    bool enabled
+  }
+  lora_models {
+    int id PK
+    string base_model
+    int lora_rank
+  }
+  evaluation_runs {
+    int id PK
+    string run_name
+    string variant
+    int input_tokens
+    int output_tokens
+    float quality_score
+    bool task_success
+  }
+```
+
+*Database (10 tables)*: [PNG](diagrams/08_database_er.png) · [SVG](diagrams/08_database_er.svg) · source [`08_database_er.mmd`](diagrams/08_database_er.mmd)
+<!-- DIAGRAM:08_database_er:end -->

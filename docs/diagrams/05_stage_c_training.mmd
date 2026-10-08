@@ -1,0 +1,20 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  D[("Train split<br/>v1.2 final")] --> XA["Stage A<br/>cross-fitted, 5 folds"]
+  XA --> SB["Stage B<br/>real run"]
+  D --> PT["Targets parsed from<br/>optimized prompts"]
+  SB --> EX["4,456 train examples<br/>routed + forced fields"]
+  PT --> EX
+  EX --> TR["LoRA training<br/>Qwen2.5-0.5B-Instruct<br/>r 16 · batch 16 · bf16"]
+  TR --> ES{"Val loss<br/>every 50 steps"}
+  ES -- "best 0.7047<br/>at step 550" --> AD["Adapter<br/>(step 550)"]
+  ES -- "3 evals no gain" --> ST["Early stop<br/>at step 700 · 51 min"]
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class XA stageA
+  class SB stageB
+  class PT,EX,TR,ES,AD,ST stageC
+  class D neutral

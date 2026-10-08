@@ -1,0 +1,32 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+flowchart LR
+  P["Prompt"] --> E["MiniLM embedding<br/>all-MiniLM-L6-v2"]
+  P --> KW["Keyword cues<br/>(regex)"]
+  E --> K["k-NN vote<br/>k = 25 train examples"]
+  E --> H["Logistic head<br/>embedding + cues"]
+  KW --> H
+  K --> BL["Blend<br/>k-NN + cues + head"]
+  KW --> BL
+  H --> BL
+  BL --> O{"Nearest example<br/>similarity < 0.3?"}
+  O -- "yes" --> OT["'other' backstop"]
+  O -- "no" --> CAT["Category + confidence<br/>(top score)"]
+  OT --> CAT
+  P --> DET
+  subgraph DET["Rule detectors"]
+    direction TB
+    A2["A02 output format"]
+    A3["A03 constraints"]
+    A4["A04 filler / repeats"]
+    A5["A05 ambiguous refs"]
+  end
+  CAT --> F["PromptFeatures<br/>accuracy 74.7% (test)"]
+  DET --> F
+  classDef stageA fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a
+  classDef stageB fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef stageC fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f
+  classDef neutral fill:#f3f4f6,stroke:#4b5563,stroke-width:1px,color:#111827
+  classDef result fill:#ffffff,stroke:#111827,stroke-width:2px,color:#111827
+  class E,KW,K,H,BL,OT,CAT,A2,A3,A4,A5 stageA
+  class O neutral
+  class P,F result

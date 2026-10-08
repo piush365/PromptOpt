@@ -1,0 +1,25 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+sequenceDiagram
+  autonumber
+  box rgb(220,252,231) Stage B
+    participant B as Stage B
+  end
+  box rgb(254,243,199) Stage C
+    participant C as Stage C (LoRA)
+    participant V as Validator
+  end
+  participant IR as Final IR
+  participant U as User (UI)
+  Note over B: routed if "task category" or<br/>"ambiguous reference" is unresolved<br/>(6.4% of test prompts)
+  B->>C: JSON: prompt + IR, requested fields = null
+  Note over B,C: every other field is locked
+  C->>V: JSON with the requested keys only
+  Note over V: checks: valid JSON · exact keys ·<br/>no ambiguous ref (A05) ·<br/>format stated (A02) · valid category
+  alt passes (98.2% of test answers)
+    V->>IR: patch only the requested fields
+    opt category was requested
+      V->>U: "uncertain": ask the user,<br/>pre-select Stage C's guess
+    end
+  else fails
+    V->>IR: fallback: keep Stage B's IR
+  end

@@ -1,0 +1,75 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
+erDiagram
+  users ||--o{ prompts : writes
+  prompts ||--o| prompt_features : "Stage A"
+  prompts ||--o{ optimization_results : "optimized as"
+  optimization_results ||--o{ transformations : "change log"
+  optimization_results ||--o{ renderings : "per target"
+  optimization_results ||--o{ token_usage : "per target"
+  rules |o--o{ transformations : "rule_id"
+  lora_models |o--o{ optimization_results : "lora_model_id"
+  users {
+    int id PK
+    string display_name
+  }
+  prompts {
+    int id PK
+    int user_id FK
+    text original_text "PII scrubbed"
+    datetime expires_at "30-day retention"
+  }
+  prompt_features {
+    int id PK
+    int prompt_id FK
+    string task_type
+    float confidence
+    json missing_constraints
+  }
+  optimization_results {
+    int id PK
+    int prompt_id FK
+    int lora_model_id FK
+    json ir
+    text optimized_text
+    bool used_lora
+  }
+  transformations {
+    int id PK
+    int result_id FK
+    int rule_id FK
+    string stage
+    text before_text
+    text after_text
+  }
+  renderings {
+    int id PK
+    int result_id FK
+    string target_llm
+    text rendered_text
+  }
+  token_usage {
+    int id PK
+    int result_id FK
+    string target_llm
+    int original_input_tokens
+    int optimized_input_tokens
+  }
+  rules {
+    int id PK
+    string code "B01-B15"
+    bool enabled
+  }
+  lora_models {
+    int id PK
+    string base_model
+    int lora_rank
+  }
+  evaluation_runs {
+    int id PK
+    string run_name
+    string variant
+    int input_tokens
+    int output_tokens
+    float quality_score
+    bool task_success
+  }
