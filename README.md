@@ -492,8 +492,9 @@ backend/app/         Stage A/B/C, IR + rendering, pipeline, API + web UI (static
                      coding/ (sandbox, tests), image/ (image mode), compare/ (providers), evaluation/
 backend/tests/       offline test suite
 docs/                dataset card, Stage C plan, coding tests, category templates, milestone review
-evaluation/          all reports; FINAL_RESULTS.md is the summary
+evaluation/          all reports, grouped by topic; FINAL_RESULTS.md is the summary
 notebooks/           Stage C training notebook (Colab); dataset_prep/: dataset EDA and annotation sheets
+team_input/          everything that needs a person: correctness gold-answer review, blind sets, rater guide (README.md)
 ```
 
 More detail on the backend and database: [`backend/README.md`](backend/README.md).

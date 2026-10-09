@@ -191,7 +191,7 @@ def _p(p: float) -> str:
 
 def human_status(cases: list[dict]) -> list[str]:
     if not HUMAN.exists():
-        return ["Gold answers: **auto-validated; human review pending**.", "Human review: **pending**. `cases_review.xlsx` (3 sheets, one per team member) asks each reviewer "
+        return ["Gold answers: **auto-validated; human review pending**.", "Human review: **pending**. `team_input/correctness_review/cases_review.xlsx` (3 sheets, one per team member) asks each reviewer "
                 "to tick \"gold correct Y/N\"; import it with `python -m app.correctness.review --import <file>`. "
                 "Until then the gold answers are checked automatically only (`validation.md`)."]
     h = json.loads(HUMAN.read_text())

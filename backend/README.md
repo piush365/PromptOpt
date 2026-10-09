@@ -172,7 +172,7 @@ python -m app.stage_b.evaluate --split test --out ../evaluation/stage_b/stage_b_
 Lab assistants validate 20 records (4 per category, from the benchmark split). All three students rate the same
 90-record overlap set (18 per category) for Fleiss' Kappa, and each rates 60 extra records alone, most useful first
 (benchmark/test, then borderline automatic-check scores, then the noisy categories). Records are keyed by
-`source_id`, never `id`. See `../docs/validation_guide.md`.
+`source_id`, never `id`. See `../team_input/validation_guide.md`.
 
 ```bash
 python -m app.validation assign --students <name1> <name2> <name3>   # -> ../data/validation/*.xlsx

@@ -14,4 +14,4 @@ Fill in `blind_test.csv` (10 rows) **without looking at the PromptOpt code, the 
 | `author` | your initials |
 
 No personal data. Results are reported in `evaluation/image/image_blind_test.md`, separately from the 40 hand-written
-prompts (`python -m app.image.evaluate --blind ../evaluation/image/blind_test.csv`).
+prompts (`python -m app.image.evaluate --blind ../team_input/image_blind_set/blind_test.csv`).

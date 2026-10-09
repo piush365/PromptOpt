@@ -1,6 +1,6 @@
 """Human check of the gold answers: a workbook for the team, and the import of their ticks.
 
-    python -m app.correctness.review                       # writes evaluation/correctness_suite/cases_review.xlsx
+    python -m app.correctness.review                       # writes team_input/correctness_review/cases_review.xlsx
     python -m app.correctness.review --import filled.xlsx  # -> human_review.json + human_review.md
 
 The workbook has an instructions sheet and 3 reviewer sheets (cases dealt round-robin within each category, so every
@@ -14,9 +14,10 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from app.config import BACKEND_DIR
 from app.correctness.cases import CATEGORIES, SUITE_DIR, load_cases
 
-XLSX = SUITE_DIR / "cases_review.xlsx"
+XLSX = BACKEND_DIR.parent / "team_input" / "correctness_review" / "cases_review.xlsx"
 SHEETS = ("Reviewer 1", "Reviewer 2", "Reviewer 3")
 HEADERS = ("case id", "category", "scenario", "material", "vague prompt", "gold answer", "how it is checked",
            "gold correct (Y/N)", "comment")

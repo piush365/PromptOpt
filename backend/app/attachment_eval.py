@@ -1,7 +1,7 @@
 """Attachment rules (B09-B15) on a hand-made test set: 30 prompts, 5 per attachment type.
 
     python -m app.attachment_eval --out ../evaluation/attachments/attachment_test.md
-    python -m app.attachment_eval --blind ../evaluation/attachments/blind_test.csv \
+    python -m app.attachment_eval --blind ../team_input/attachment_blind_set/blind_test.csv \
         --out ../evaluation/attachments/attachment_blind_test.md       # the team's blind set, reported separately
 
 The prompts (`evaluation/attachments/attachment_prompts.json`) were written by hand for this check and are not from
@@ -113,7 +113,7 @@ def blind_report(items: list[dict], results: list[dict]) -> str:
              "optimized prompt with their note.\n"]
     if not items:
         return "\n".join(lines + ["**Future work.** A blind set written by people outside the development team "
-                                   "(`evaluation/attachments/blind_test.csv`, 15 rows) was planned but not collected. "
+                                   "(`team_input/attachment_blind_set/blind_test.csv`, 15 rows) was planned but not collected. "
                                    "Attachment results are on developer-written prompts only (`attachments/attachment_test.md`)."]) + "\n"
     lines += [f"**Automated checks: {sum(r['correct'] for r in results)}/{len(results)} pass.**\n",
               "| id | type | prompt | category (Stage A) | checks | Stage C | expected behaviour (team) | optimized prompt "

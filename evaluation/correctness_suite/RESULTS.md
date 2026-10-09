@@ -8,7 +8,7 @@ Are optimized prompts not just shorter but **correct**? 50 new, hand-written cas
 - McNemar: exact two-sided test on the discordant cases (only optimized right vs only vague right).
 - Code: `v1.0-5-ga5d031a`; generated 2026-10-09T22:09.
 - Gold answers: **auto-validated; human review pending**.
-- Human review: **pending**. `cases_review.xlsx` (3 sheets, one per team member) asks each reviewer to tick "gold correct Y/N"; import it with `python -m app.correctness.review --import <file>`. Until then the gold answers are checked automatically only (`validation.md`).
+- Human review: **pending**. `team_input/correctness_review/cases_review.xlsx` (3 sheets, one per team member) asks each reviewer to tick "gold correct Y/N"; import it with `python -m app.correctness.review --import <file>`. Until then the gold answers are checked automatically only (`validation.md`).
 
 Not run: `gemini/gemini-2.5-flash` (future work: no API key, same as GPT and Claude).
 

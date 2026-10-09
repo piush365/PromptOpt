@@ -41,7 +41,7 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   request end to end, saves the renderings and returns Stage A's own category and `category_disagreement`.
   Per-category templates: `docs/CATEGORY_TEMPLATES.md` (`python -m app.templates_doc`). Attachment rules on 30
   hand-made prompts: `evaluation/attachments/attachment_test.md` (`python -m app.attachment_eval`); a blind set written by
-  others (`evaluation/attachments/blind_test.csv`, `--blind`) is future work: attachment and image results are on
+  others (`team_input/attachment_blind_set/blind_test.csv`, `--blind`) is future work: attachment and image results are on
   developer-written prompts only. Named Stage C cases: `evaluation/stage_c/named_cases.json`.
 - **Groq usage:** every Groq call records its tokens and cached tokens (failed JSON calls estimated) in
   `data/groq_usage.json`, over a rolling 24 hours like Groq's own limit; dataset generation stays within
@@ -136,8 +136,8 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 | 6b | Token evaluation on the FULL test split (482): degraded vs A+B (+ A+B+C on routed), Cerebras gpt-oss-120b, no judge, bootstrap CI + Wilcoxon (`python -m app.evaluation.tokens`) | <!-- TOKEN:status:start -->Done (2026-10-08 00:50): Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482); `evaluation/tokens/token_test.md`<!-- TOKEN:status:end --> |
 | 7 | `evaluation/FINAL_RESULTS.md` updated with phases 4-6 and the token headline; README "how to run the app" | Done: FINAL_RESULTS sections 7-9 + token headline; README tested from a fresh clone |
 
-Future work (decided 2026-10-07): the blind sets (`evaluation/attachments/blind_test.csv` 15 rows,
-`evaluation/image/blind_test.csv` 10 rows) will not be filled in by the team; attachment and image results are on
+Future work (decided 2026-10-07): the blind sets (`team_input/attachment_blind_set/blind_test.csv` 15 rows,
+`team_input/image_blind_set/blind_test.csv` 10 rows) will not be filled in by the team; attachment and image results are on
 developer-written prompts only. API keys for GPT/Claude: future work.
 
 - **Coding tests (phase 4):** `python -m app.coding.testgen` (items + validated tests, Cerebras, cached in

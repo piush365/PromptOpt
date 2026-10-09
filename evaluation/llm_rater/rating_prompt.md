@@ -19,7 +19,7 @@ CONTEXT passage) from Dolly-15k or CodeAlpaca-20k, which is the ground truth for
 vaguer version a user might type); an OPTIMIZED prompt (the clear rewrite); and a CATEGORY label, one of
 closed_qa, information_extraction, classification, summarization, coding.
 
-Follow `docs/validation_guide.md` and answer each question Y or N. Apply every question literally and strictly:
+Follow `team_input/validation_guide.md` and answer each question Y or N. Apply every question literally and strictly:
 
 1. **Q1_degraded_same_task**: does the degraded prompt ask for the same task as the original instruction?
    N if it changes the task even slightly: a different question, a dropped or changed object of the task, a changed

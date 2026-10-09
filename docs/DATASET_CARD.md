@@ -124,7 +124,7 @@ benchmark numbers for those two rest on fewer items.
 ## Human validation
 
 Three team members rated 90 shared rows (18 per category) plus 60 extra and 20 v1.2 rows each (330 distinct rows);
-the faculty rated 20 of the shared rows as an independent check. See `docs/validation_guide.md` and
+the faculty rated 20 of the shared rows as an independent check. See `team_input/validation_guide.md` and
 `evaluation/REVIEW_SUMMARY.md` for the agreement statistics (Fleiss' Kappa, Gwet's AC1, PABAK, raw agreement,
 prevalence).
 

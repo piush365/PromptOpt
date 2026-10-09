@@ -1,7 +1,7 @@
 """Image mode on the hand-written prompt set: attribute coverage before/after, per attribute and per target.
 
     python -m app.image.evaluate --out ../evaluation/image/image_mode.md
-    python -m app.image.evaluate --blind ../evaluation/image/blind_test.csv --out ../evaluation/image/image_blind_test.md
+    python -m app.image.evaluate --blind ../team_input/image_blind_set/blind_test.csv --out ../evaluation/image/image_blind_test.md
 
 Coverage = the attribute detectors (app.image.attributes) find the attribute in the text: before = the user's
 request (scaffolding and filler removed), after = each rendering (with the Stable Diffusion negative prompt). The
@@ -381,7 +381,7 @@ def blind_report(res: list[dict]) -> str:
              "`meets expectation` is for the team to fill in.\n"]
     if not res:
         return "\n".join(lines + ["**Future work.** A blind set written by people outside the development team "
-                                   "(`evaluation/image/blind_test.csv`, 10 rows) was planned but not collected. Image "
+                                   "(`team_input/image_blind_set/blind_test.csv`, 10 rows) was planned but not collected. Image "
                                    "results are on developer-written prompts only (dev set and the held-out set "
                                    "written before v2, `image/image_mode.md`)."]) + "\n"
     lines += ["| id | prompt | target | stated by user | optimized prompt (v2) | suggestions offered | expected behaviour "

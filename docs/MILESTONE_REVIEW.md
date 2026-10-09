@@ -7,7 +7,7 @@ Full write-up: `evaluation/REVIEW_SUMMARY.md`.
 | # | Area | Status | Key numbers | Proof |
 |---|---|---|---|---|
 | 1 | Dataset | Done | v1.2 final: **5,184** pairs, 1,000-1,089 per category; train 4,509 / val 149 / test 482 / benchmark 44; no instruction in two splits | `docs/DATASET_CARD.md`, `evaluation/dataset/final_dataset_merge_log.csv` |
-| 2 | Human validation | Done | 3 raters x 170 rows + faculty 20; **330 validated, 295 accepted, 35 rejected**; team per-question raw agreement 89-94%, Gwet's AC1 0.92-0.96, PABAK 0.85-0.93, Fleiss' kappa -0.04 to 0.07 | `evaluation/dataset/validation_report.md`, `docs/validation_guide.md` |
+| 2 | Human validation | Done | 3 raters x 170 rows + faculty 20; **330 validated, 295 accepted, 35 rejected**; team per-question raw agreement 89-94%, Gwet's AC1 0.92-0.96, PABAK 0.85-0.93, Fleiss' kappa -0.04 to 0.07 | `evaluation/dataset/validation_report.md`, `team_input/validation_guide.md` |
 | 3 | Faculty check | Done | faculty vs team majority: agreement 85-100% per question, AC1 0.83-1.00 | `evaluation/dataset/validation_report.md` |
 | 4 | LLM-assisted filter (automatic, not human) | Done | LLM rater on the 90 overlap rows; **9 rows removed** (answer leaked, impossible constraint, added facts, changed task); never counted in agreement | `evaluation/llm_rater/`, `evaluation/REVIEW_SUMMARY.md` section 4 |
 | 5 | Stage A (feature detection) | Done, retrained on final train | test (482, run once): **accuracy 74.7%, macro-F1 0.746**; classification F1 0.945, coding 0.985, closed_qa 0.652, information_extraction 0.634, summarization 0.512; out-of-scope -> `other` 68.5% | `evaluation/stage_a/stage_a_test.md` |
