@@ -1,0 +1,2545 @@
+{
+ "generated": "2026-10-09T22:09",
+ "settings": {
+  "temperature": 0.0,
+  "max_tokens": 2048,
+  "reasoning_effort": "low",
+  "judge": "qwen/qwen3.8-27b"
+ },
+ "models": {
+  "groq/openai/gpt-oss-120b": {
+   "label": "gpt-oss-120b on Groq (prompt rendered for GPT)",
+   "target_rendering": "gpt",
+   "cases": {
+    "cqa-01": {
+     "vague": {
+      "answer": "**Total amount you need to pay on 18 July 2026**\n\n| Fee component | Amount (₹) |\n|---------------|------------|\n| Room rent (Boys’ hostel) | 38,000 |\n| Mess charges | 42,000 |\n| Caution deposit* | 5,000 |\n| **Subtotal** | **85,000** |\n| Late fee (3 days × ₹100) | 300 |\n| **Grand total** | **85,300** |\n\n\\*The caution deposit is a one‑time, refundable amount that you pay only at the time of your first admission to the hostel. If you have already paid it in a previous year, you do **not** need to pay it again.\n\nSo, if you make the payment on **18 July 2026**, the amount you should remit through the ERP portal is **₹ 85,300**.",
+      "input_tokens": 254,
+      "output_tokens": 258,
+      "reasoning_tokens": 61,
+      "total_tokens": 512,
+      "latency_ms": 543,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "deterministic",
+      "detail": {
+       "reason": "gold answer not in the response"
+      }
+     },
+     "optimized": {
+      "answer": "The annual room rent (₹38,000) plus mess charges (₹42,000) total ₹80,000. Paying on 18 July is 3 days late, incurring a ₹100 per‑day late fee → ₹300. Hence the amount due is **₹80,300**.",
+      "input_tokens": 281,
+      "output_tokens": 157,
+      "reasoning_tokens": 85,
+      "total_tokens": 438,
+      "latency_ms": 348,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "₹80,300"
+      }
+     }
+    },
+    "cqa-02": {
+     "vague": {
+      "answer": "Your **Computer Design (CD) / Compiler Design** paper was originally scheduled for **10 November 2026**, but because of the Diwali holiday it has been **rescheduled to 17 November 2026**.\n\n- **New date:** **17 Nov 2026**  \n- **Time:** 10:00 am – 1:00 pm (same as the other end‑semester exams)  \n\nAll other papers remain on their originally announced dates. Good luck with your preparation!",
+      "input_tokens": 220,
+      "output_tokens": 165,
+      "reasoning_tokens": 49,
+      "total_tokens": 385,
+      "latency_ms": 354,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "17 November 2026"
+      }
+     },
+     "optimized": {
+      "answer": "Your Compiler Design (CD) paper is scheduled for **17 November 2026** (rescheduled from 10 Nov due to the Diwali holiday).",
+      "input_tokens": 247,
+      "output_tokens": 81,
+      "reasoning_tokens": 39,
+      "total_tokens": 328,
+      "latency_ms": 177,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "17 November 2026"
+      }
+     }
+    },
+    "cqa-03": {
+     "vague": {
+      "answer": "**Target for Mechanical:** **154 runs**  \n\n*Explanation:*  \n- CSE total = 34 + 12 + 0 + 45 + 7 + 22 + 3 + 18 + 1 = 142 runs  \n- Extras = 11 runs  \n- Overall CSE score = 142 + 11 = 153 runs  \n\nTherefore, Mechanical needs **154 runs** to win.",
+      "input_tokens": 289,
+      "output_tokens": 163,
+      "reasoning_tokens": 59,
+      "total_tokens": 452,
+      "latency_ms": 353,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "154 runs"
+      }
+     },
+     "optimized": {
+      "answer": "The CSE side scored 142 runs off the bat plus 11 extras, for a total of **153 runs**.  \nTherefore, the Mechanical team’s target was **154 runs** to win.",
+      "input_tokens": 316,
+      "output_tokens": 124,
+      "reasoning_tokens": 74,
+      "total_tokens": 440,
+      "latency_ms": 270,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "154 runs"
+      }
+     }
+    },
+    "cqa-04": {
+     "vague": {
+      "answer": "**Kanda Poha – Scaled for ≈ 10 people (about 2½ × the original 4‑serving recipe)**  \n\n| Ingredient | Original (4 servings) | × 2.5 (≈10 servings) | How to measure / notes |\n|------------|----------------------|---------------------|------------------------|\n| Thick poha (flattened rice) | 2 cups | **5 cups** | Rinse in a strainer; do **not** soak. |\n| Onion, large | 1 | **2½ large** (≈ 2 ½ medium) | Peel and chop finely. |\n| Green chilies | 2 | **5 chilies** | Slit or finely chop (adjust to heat preference). |\n| Turmeric powder | ½ tsp | **1 ¼ tsp** | Can round to 1 ¼ tsp or 1 ½ tsp if you like a deeper colour. |\n| Mustard seeds | 1 tsp | **2½ tsp** (≈ ½ Tbsp) | |\n| Curry leaves | 10‑12 | **25‑30 leaves** | Fresh is best; tear gently before adding. |\n| Peanuts | ¼ cup | **⅝ cup** (≈ ½ cup + 2 Tbsp) | Roughly chopped or left whole. |\n| Oil (vegetable, canola, or peanut) | 1 Tbsp | **2½ Tbsp** (≈ 2 Tbsp + 1½ tsp) | |\n| Salt | to taste | to taste | Start with ½ tsp, adjust after mixing. |\n| Sugar | to taste | to taste | ½ tsp is a good baseline; increase if you like a sweeter poha. |\n| Lemon (for serving) | wedges | **1 ½ – 2 lemons** (cut into wedges) | Squeeze over each plate just before eating. |\n\n### Quick Method (scaled)\n\n1. **Rinse the poha** in a fine‑mesh strainer under running water until it’s clean but still separate. Set aside in a large bowl.\n2. Heat **2½ Tbsp oil** in a wide pan (or wok) over medium heat. Add **2½ tsp mustard seeds**; when they pop, add the **25‑30 curry leaves** and **5 chopped green chilies**. Sauté 30 seconds.\n3. Add the **chopped onion** and sauté until translucent (≈ 3‑4 min). Sprinkle **1¼ tsp turmeric** and stir quickly.\n4. Toss in the **⅝ cup peanuts** and fry for another minute for extra crunch.\n5. Add the rinsed poha, **salt**, and **½ tsp sugar** (or to taste). Mix gently, cooking 3‑4 min until the poha is heated through and evenly coated.\n6. Taste and adjust seasoning. Remove from heat, garnish with extra peanuts or fresh coriander if you like, and serve with **lemon wedges** on the side.\n\n> **Tip for a hostel kitchen:**  \n> Use a large, shallow tray or a big sauté pan so the poha spreads out; this prevents it from steaming and becoming soggy. If you don’t have a 5‑cup measuring cup, simply measure 2 cups twice (4 cups) and then add another cup‑half.\n\nEnjoy your hearty, hostel‑friendly Kanda Poha! 🍽️",
+      "input_tokens": 180,
+      "output_tokens": 798,
+      "reasoning_tokens": 25,
+      "total_tokens": 978,
+      "latency_ms": 1671,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "5 cups"
+      }
+     },
+     "optimized": {
+      "answer": "{\n  \"amount\": \"For 10 people (2.5 × the original recipe):\\n- 5 cups thick poha\\n- 2½ large onions (about 2‑3 onions)\\n- 5 green chillies\\n- 1¼ tsp turmeric\\n- 2½ tsp mustard seeds\\n- 25‑30 curry leaves\\n- 5/8 cup peanuts (≈2/3 cup)\\n- 2½ tbsp oil\\n- Salt, sugar, and lemon to taste\"\n}",
+      "input_tokens": 204,
+      "output_tokens": 325,
+      "reasoning_tokens": 207,
+      "total_tokens": 529,
+      "latency_ms": 696,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-05": {
+     "vague": {
+      "answer": "**Infosys – Specialist Programmer (B.Tech)**  \n\n- **Minimum CGPA:** **6.5** (or 60 % aggregate) throughout the program.  \n- **Backlog policy:** You may have **at most one dead backlog** (i.e., a backlog that has not been cleared).  \n- **Eligible branches:** CSE, IT, E&TC.  \n\nSo, to be eligible for the Infosys campus drive as a B.Tech student, you need a CGPA of **6.5 or higher** and no more than one unresolved backlog.",
+      "input_tokens": 218,
+      "output_tokens": 156,
+      "reasoning_tokens": 30,
+      "total_tokens": 374,
+      "latency_ms": 336,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     },
+     "optimized": {
+      "answer": "Infosys requires a minimum CGPA of **6.5** (or 60 % aggregate) for B.Tech students in CSE, IT, or E&TC. This is the eligibility criterion listed for the Specialist Programmer role.",
+      "input_tokens": 245,
+      "output_tokens": 89,
+      "reasoning_tokens": 32,
+      "total_tokens": 334,
+      "latency_ms": 254,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-06": {
+     "vague": {
+      "answer": "**Cheapest plan that gives you ≥ 2 GB per day**\n\n| Plan | Price (₹) | Validity | Data per day | Cost per day (₹) |\n|------|-----------|----------|--------------|------------------|\n| **P5** | 2,999 | 365 days | 2.5 GB | **≈ 8.22** |\n| P3 | 719 | 84 days | 2 GB | ≈ 8.56 |\n| P4 | 859 | 84 days | 2.5 GB | ≈ 10.23 |\n| P2 | 349 | 28 days | 2 GB | ≈ 12.46 |\n\nAll other plans either give less than 2 GB per day or have a higher cost per day.\n\n**Therefore, the cheapest way to get at least 2 GB each day is the annual **P5** plan (₹2,999 for 365 days), costing about ₹8.22 per day.**",
+      "input_tokens": 218,
+      "output_tokens": 369,
+      "reasoning_tokens": 139,
+      "total_tokens": 587,
+      "latency_ms": 772,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "P5"
+      }
+     },
+     "optimized": {
+      "answer": "The plan that meets the minimum 2 GB/day requirement and has the lowest cost per day is **P5** (Rs 2,999 for 365 days, giving 2.5 GB/day, which works out to about Rs 8.22 per day).",
+      "input_tokens": 246,
+      "output_tokens": 231,
+      "reasoning_tokens": 163,
+      "total_tokens": 477,
+      "latency_ms": 492,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-07": {
+     "vague": {
+      "answer": "**Step‑by‑step calculation**\n\n| Item | Date |\n|------|------|\n| Issue date | 19 Sep 2026 |\n| Due date   | 3 Oct 2026 |\n| Return date| 14 Oct 2026 |\n\n1. **Determine the number of days overdue**  \n   - The book was due on **3 Oct**.  \n   - It was returned on **14 Oct**.  \n   - Days of delay = 14 Oct – 3 Oct = **11 days** (the library counts Sundays as delay days, so no adjustment is needed).\n\n2. **Apply the fine schedule**  \n\n| Delay period | Rate per day | Days in period | Fine |\n|--------------|--------------|----------------|------|\n| First 7 days | Rs 2         | 7              | 7 × 2 = Rs 14 |\n| After first 7 days | Rs 5 | 11 – 7 = 4 | 4 × 5 = Rs 20 |\n\n3. **Total fine**  \n   - Rs 14 + Rs 20 = **Rs 34**\n\n---\n\n**Answer:** You need to pay **Rs 34** as the fine for the overdue “Operating System Concepts” book.",
+      "input_tokens": 207,
+      "output_tokens": 347,
+      "reasoning_tokens": 62,
+      "total_tokens": 554,
+      "latency_ms": 769,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     },
+     "optimized": {
+      "answer": "The book was returned 11 days after the due date.  \nFine = (7 days × Rs 2) + (4 days × Rs 5) = Rs 14 + Rs 20 = **Rs 34**.",
+      "input_tokens": 234,
+      "output_tokens": 129,
+      "reasoning_tokens": 63,
+      "total_tokens": 363,
+      "latency_ms": 287,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-08": {
+     "vague": {
+      "answer": "You’ll catch the **08:30 Ordinary** bus.\n\n- **Departure:** 08:30 (you’re already at the stand by 08:10)  \n- **Travel time:** 1 hour 50 minutes  \n- **Estimated arrival in Kolhapur:** **10:20 am**\n\nThe later buses (09:00 Shivshahi and 09:30 Ordinary) would get you to Kolhapur at about 10:25 am and 11:20 am respectively, so the 08:30 Ordinary is the earliest option.",
+      "input_tokens": 216,
+      "output_tokens": 214,
+      "reasoning_tokens": 82,
+      "total_tokens": 430,
+      "latency_ms": 449,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "08:30 Ordinary"
+      }
+     },
+     "optimized": {
+      "answer": "The next bus after you reach the stand at 8:10 is the **08:30 Ordinary** service, which takes 1 hour 50 minutes and reaches Kolhapur at 10:20. This is the earliest possible arrival on Sunday.",
+      "input_tokens": 244,
+      "output_tokens": 154,
+      "reasoning_tokens": 89,
+      "total_tokens": 398,
+      "latency_ms": 329,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-09": {
+     "vague": {
+      "answer": "**Final price calculation**\n\n| Step | Amount (₹) | Explanation |\n|------|------------|-------------|\n| Deal price | 1,299 | Base price after the 35 % off sale |\n| Coupon discount | **‑50** | Rs 50 off applied on the deal price |\n| Price after coupon | **1,249** | 1,299 ‑ 50 |\n| SBI‑card instant discount | **‑100** (max) | 10 % of 1,249 = 124.9, but the offer caps at Rs 100 |\n| **Final price** | **1,149** | 1,249 ‑ 100 |\n\n**Result:** The SoundPods X1 TWS earbuds will cost **₹ 1,149** after applying the Rs 50 coupon and the SBI‑card instant discount (capped at Rs 100). Delivery is free.",
+      "input_tokens": 162,
+      "output_tokens": 267,
+      "reasoning_tokens": 71,
+      "total_tokens": 429,
+      "latency_ms": 559,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "₹ 1,149"
+      }
+     },
+     "optimized": {
+      "answer": "The deal price is Rs 1,299. After applying the Rs 50 coupon, the price becomes Rs 1,249. The SBI card gives a 10 % discount up to Rs 100, so you get the maximum Rs 100 off, making the final price Rs 1,149.",
+      "input_tokens": 189,
+      "output_tokens": 140,
+      "reasoning_tokens": 68,
+      "total_tokens": 329,
+      "latency_ms": 302,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "Rs 1,149"
+      }
+     }
+    },
+    "cqa-10": {
+     "vague": {
+      "answer": "**Database Engineering (DBMS) – How many more lectures can you miss?**\n\n| Item | Value |\n|------|-------|\n| Lectures planned for the whole semester | **60** |\n| Minimum attendance required (75 % of 60) | **45** lectures |\n| Lectures you have already attended | **38** |\n| Lectures you can still attend to reach 45 | **45 – 38 = 7** |\n| Lectures remaining in the semester (planned – conducted) | **60 – 48 = 12** |\n\nYou need **45** attended lectures to meet the 75 % rule. You have already attended **38**, so you can still attend **7** more lectures and still be at the required threshold.\n\nSince there are **12** lectures left in the semester, you can afford to miss up to **7** of those remaining lectures and still end up with exactly 45 attended lectures (75 % attendance).\n\n**Answer:** You can bunk **up to 7 more DBMS lectures** (out of the 12 that are still to be held) and still meet the 75 % attendance requirement.",
+      "input_tokens": 207,
+      "output_tokens": 344,
+      "reasoning_tokens": 90,
+      "total_tokens": 551,
+      "latency_ms": 722,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "deterministic",
+      "detail": {
+       "reason": "gold answer not in the response"
+      }
+     },
+     "optimized": {
+      "answer": "You need at least 45 attendances (75 % of 60). You already have 38, so you must attend at least 7 of the remaining 12 lectures. Therefore you can bunk at most 5 more DBMS lectures and still reach 75 %.",
+      "input_tokens": 234,
+      "output_tokens": 225,
+      "reasoning_tokens": 154,
+      "total_tokens": 459,
+      "latency_ms": 474,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "5"
+      }
+     }
+    },
+    "ie-01": {
+     "vague": {
+      "answer": "**Branches eligible for the Persistent Systems – Graduate Engineer Trainee role**\n\n| Eligible Branches | Notes |\n|-------------------|-------|\n| **Computer Science & Engineering (CSE)** | Core software development focus |\n| **Information Technology (IT)** | Similar skill set to CSE, strong programming emphasis |\n| **Electronics & Tele‑Communication (E&TC)** | Works on embedded and hardware‑software integration |\n\n**Not eligible** (for this specific role): Mechanical, Civil, Electrical, and any other non‑listed streams.\n\n---\n\n### Quick recap of the Persistent Systems posting\n\n- **Position:** Graduate Engineer Trainee (GET)  \n- **Eligibility:** 6.0 CGPA (or higher) with **no active backlogs**  \n- **Application window:** Open now (check the T&P Cell drive notice for exact dates)  \n- **Selection process:** Online test scheduled for **20 Oct** (follow the T&P Cell portal for the exact time and test format)  \n\nIf you belong to one of the three eligible branches and meet the academic criteria, you can go ahead and submit your application through the T&P Cell drive portal. Good luck!",
+      "input_tokens": 176,
+      "output_tokens": 261,
+      "reasoning_tokens": 13,
+      "total_tokens": 437,
+      "latency_ms": 560,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "CSE",
+        "E&TC",
+        "IT"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "**Computer Science & Engineering (CSE)** | Core software development focus",
+        "**Information Technology (IT)** | Similar skill set to CSE, strong programming emphasis",
+        "**Electronics & Tele‑Communication (E&TC)** | Works on embedded and hardware‑software integration"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "The eligible branches for the Persistent Systems Graduate Engineer Trainee role are **Computer Science and Engineering (CSE), Information Technology (IT), and Electronics & Tele‑Communication (E&TC)**. Mechanical, Civil, and Electrical students are not eligible.",
+      "input_tokens": 203,
+      "output_tokens": 78,
+      "reasoning_tokens": 19,
+      "total_tokens": 281,
+      "latency_ms": 168,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "CSE",
+        "E&TC",
+        "IT"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "Computer Science and Engineering (CSE)",
+        "Information Technology (IT)",
+        "Electronics & Tele‑Communication (E&TC)"
+       ]
+      }
+     }
+    },
+    "ie-02": {
+     "vague": {
+      "answer": "**Deadlines from the email**\n\n| # | Task | Deadline | Notes |\n|---|------|----------|-------|\n| 1 | Synopsis submission (via department portal) | **14 Oct 2026** | Original date (7 Oct) was extended |\n| 2 | Mid‑semester progress report upload | **21 Oct 2026** |  |\n| 3 | Final project report (hard‑bound, 2 copies) | **30 Nov 2026** |  |\n\n*Additional information:* The department will be closed on **20 Oct 2026** for Dussehra (not a deadline, but a day when the office will be unavailable).",
+      "input_tokens": 206,
+      "output_tokens": 164,
+      "reasoning_tokens": 12,
+      "total_tokens": 370,
+      "latency_ms": 348,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "14 Oct",
+        "21 Oct",
+        "30 Nov"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "1 | Synopsis submission (via department portal) | **14 Oct 2026** | Original date (7 Oct) was extended",
+        "2 | Mid‑semester progress report upload | **21 Oct 2026** |  ",
+        "3 | Final project report (hard‑bound, 2 copies) | **30 Nov 2026** |  "
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "Synopsis submission: 14 Oct 2026  \nMid-semester progress report upload: 21 Oct 2026  \nFinal project report (hard‑bound, 2 copies): 30 Nov 2026",
+      "input_tokens": 245,
+      "output_tokens": 109,
+      "reasoning_tokens": 58,
+      "total_tokens": 354,
+      "latency_ms": 236,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "14 Oct",
+        "21 Oct",
+        "30 Nov"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     }
+    },
+    "ie-03": {
+     "vague": {
+      "answer": "**Operating system versions where the crash occurs**\n\n| Platform | OS version(s) where the crash is reproduced |\n|----------|---------------------------------------------|\n| Android  | 12 – 13 (e.g., Android 12 on Samsung, Android 13 on Redmi Note 12) |\n| iOS      | 17.2 (e.g., iPhone 13 on iOS 17.2) |\n\n**Not affected**\n\n| Platform | OS version(s) where the crash does **not** occur |\n|----------|---------------------------------------------------|\n| Android  | 14 (e.g., Pixel 7) |\n| iOS      | 17.4 (crash stopped after updating) |\n\nSo, the problematic OS versions are **Android 12, Android 13, and iOS 17.2**.",
+      "input_tokens": 215,
+      "output_tokens": 202,
+      "reasoning_tokens": 26,
+      "total_tokens": 417,
+      "latency_ms": 435,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "Android 12",
+        "Android 13",
+        "iOS 17.2"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "Android 12 – 13 (e.g., Android 12 on Samsung, Android 13 on Redmi Note 12)",
+        "17.2 (e.g., iPhone 13 on iOS 17.2)"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "The crash occurs on **Android 12**, **Android 13**, and **iOS 17.2**. It does not happen on Android 14 or iOS 17.4.",
+      "input_tokens": 242,
+      "output_tokens": 73,
+      "reasoning_tokens": 24,
+      "total_tokens": 315,
+      "latency_ms": 166,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "Android 12",
+        "Android 13",
+        "iOS 17.2"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "Android 12",
+        "Android 13",
+        "iOS 17.2"
+       ]
+      }
+     }
+    },
+    "ie-04": {
+     "vague": {
+      "answer": "**Students with backlogs (i.e., at least one F or AB grade):**\n\n- Rohan Patil – OS = **F**  \n- Vedant Joshi – CN = **AB** (absent)  \n- Omkar Jadhav – DBMS = **F**, TOC = **F**  \n\nThese are the only students in the provided result sheet who have a failing or absent grade.",
+      "input_tokens": 290,
+      "output_tokens": 232,
+      "reasoning_tokens": 135,
+      "total_tokens": 522,
+      "latency_ms": 494,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "Rohan Patil",
+        "Vedant Joshi",
+        "Omkar Jadhav"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     },
+     "optimized": {
+      "answer": "Rohan Patil  \nVedant Joshi  \nOmkar Jadhav",
+      "input_tokens": 328,
+      "output_tokens": 157,
+      "reasoning_tokens": 133,
+      "total_tokens": 485,
+      "latency_ms": 356,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "Rohan Patil",
+        "Vedant Joshi",
+        "Omkar Jadhav"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     }
+    },
+    "ie-05": {
+     "vague": {
+      "answer": "**Ingredients that contain dairy**\n\n| Ingredient | Why it’s considered dairy |\n|------------|---------------------------|\n| **Paneer** (250 g) | Fresh cheese made from milk |\n| **Butter** (2 Tbsp) | Made from churned cream |\n| **Fresh cream** (¼ cup) | Whipped or thickened cream |\n| **Curd** (2 Tbsp) | Yogurt – cultured milk |\n| **Ghee** (1 tsp) | Clarified butter (still a dairy fat) |\n\n**Non‑dairy ingredients** (for reference)\n\n- Oil, onions, tomatoes, cashew paste, ginger‑garlic paste, kasuri methi, salt, sugar, Kashmiri chilli powder.\n\nIf you need to make the dish safe for a lactose‑intolerant friend, you can replace the dairy items with suitable alternatives (e.g., tofu or soy paneer, plant‑based butter, coconut cream, dairy‑free yogurt, and a splash of oil instead of ghee).",
+      "input_tokens": 209,
+      "output_tokens": 242,
+      "reasoning_tokens": 18,
+      "total_tokens": 451,
+      "latency_ms": 560,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "butter",
+        "curd",
+        "fresh cream",
+        "ghee",
+        "paneer"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "Paneer (250 g)",
+        "Butter (2 Tbsp)",
+        "Fresh cream (¼ cup)",
+        "Curd (2 Tbsp)",
+        "Ghee (1 tsp)"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "- Paneer  \n- Butter  \n- Fresh cream  \n- Curd (whisked)  \n- Ghee (used for the tadka)",
+      "input_tokens": 231,
+      "output_tokens": 57,
+      "reasoning_tokens": 18,
+      "total_tokens": 288,
+      "latency_ms": 126,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "paneer",
+        "butter",
+        "fresh cream",
+        "curd",
+        "ghee"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     }
+    },
+    "ie-06": {
+     "vague": {
+      "answer": "**Confirmed passengers (seats allocated):**\n\n| Passenger | Age | Gender | Current status |\n|-----------|-----|--------|----------------|\n| Suresh Naik | 52 | M | **CNF** (S4/33) |\n| Arjun Naik | 21 | M | **CNF** (S6/18) |\n\nThe other two travelers are still on wait‑list (RAC 14 for Lata Naik and WL 3 for Meera Naik).",
+      "input_tokens": 238,
+      "output_tokens": 156,
+      "reasoning_tokens": 44,
+      "total_tokens": 394,
+      "latency_ms": 330,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "Arjun Naik",
+        "Suresh Naik"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "Suresh Naik | 52 | M | **CNF** (S4/33)",
+        "Arjun Naik | 21 | M | **CNF** (S6/18)"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "Suresh Naik (Seat 4/33) and Arjun Naik (Seat 6/18) have confirmed seats.",
+      "input_tokens": 272,
+      "output_tokens": 70,
+      "reasoning_tokens": 31,
+      "total_tokens": 342,
+      "latency_ms": 162,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "Suresh Naik",
+        "Arjun Naik"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     }
+    },
+    "ie-07": {
+     "vague": {
+      "answer": "**T2’s lab schedule for the week (CSE Div B – practical batches)**  \n\n| Day | Time | Lab (Subject) | Lab Location |\n|-----|------|----------------|--------------|\n| **Monday** | 10:00 – 12:00 | **CN Lab** | Lab 5 |\n| **Tuesday** | 14:00 – 16:00 | **OS Lab** | Lab 2 |\n| **Wednesday** | 10:00 – 12:00 | *No lab* – mini‑project hours (work on your project, not a designated lab) |\n| **Thursday** | 14:00 – 16:00 | **Web Technology Lab** (shared with T3) | Lab 4 |\n| **Friday** | — | No practical session scheduled | — |\n\n**Summary for T2**\n\n- **Monday:** CN (Computer Networks) – Lab 5  \n- **Tuesday:** OS (Operating Systems) – Lab 2  \n- **Wednesday:** No lab (focus on mini‑project)  \n- **Thursday:** Web Technology – Lab 4 (with T3)  \n- **Friday:** No lab scheduled  \n\nThat’s the complete list of labs (and non‑lab work) for T2 this week. Let me know if you need any other details!",
+      "input_tokens": 294,
+      "output_tokens": 302,
+      "reasoning_tokens": 15,
+      "total_tokens": 596,
+      "latency_ms": 650,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "extractor",
+      "detail": {
+       "precision": 0.6,
+       "recall": 1.0,
+       "f1": 0.75,
+       "found": [
+        "CN Lab",
+        "OS Lab",
+        "Web Technology Lab"
+       ],
+       "missed": [],
+       "extra": [
+        "Wednesday: No lab (focus on mini-project)",
+        "Friday: No lab scheduled"
+       ],
+       "extracted": [
+        "Monday: CN (Computer Networks) – Lab 5",
+        "Tuesday: OS (Operating Systems) – Lab 2",
+        "Wednesday: No lab (focus on mini-project)",
+        "Thursday: Web Technology – Lab 4 (with T3)",
+        "Friday: No lab scheduled"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "This week T2 has the following labs: Monday – CN Lab (Lab 5); Tuesday – OS Lab (Lab 2); Thursday – Web Technology Lab (Lab 4). (Wednesday is a mini‑project session and Friday has no practical for T2.)",
+      "input_tokens": 322,
+      "output_tokens": 120,
+      "reasoning_tokens": 48,
+      "total_tokens": 442,
+      "latency_ms": 265,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "CN Lab",
+        "OS Lab",
+        "Web Technology Lab"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "Monday – CN Lab (Lab 5)",
+        "Tuesday – OS Lab (Lab 2)",
+        "Thursday – Web Technology Lab (Lab 4)"
+       ]
+      }
+     }
+    },
+    "ie-08": {
+     "vague": {
+      "answer": "**Payments > ₹5,000 (debits) for September 2026**\n\n| Date | Description | Amount (Rs) |\n|------|-------------|-------------|\n| 03‑09 | NEFT – WCE Sangli Fees | **45,500.00** |\n| 05‑09 | UPI – Reliance Digital | **5,000.00** |\n| 10‑09 | UPI – Decathlon Sports | **6,299.00** |\n| 18‑09 | UPI – MakeMyTrip | **8,740.00** |\n\n*Only debit (Dr) entries above ₹5,000 are shown; credit entries and amounts ≤ ₹5,000 have been omitted.*",
+      "input_tokens": 305,
+      "output_tokens": 186,
+      "reasoning_tokens": 21,
+      "total_tokens": 491,
+      "latency_ms": 405,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "extractor",
+      "detail": {
+       "precision": 0.75,
+       "recall": 1.0,
+       "f1": 0.857,
+       "found": [
+        "Decathlon Sports",
+        "MakeMyTrip",
+        "WCE Sangli fees"
+       ],
+       "missed": [],
+       "extra": [
+        "05‑09 | UPI – Reliance Digital | **5,000.00**"
+       ],
+       "extracted": [
+        "03‑09 | NEFT – WCE Sangli Fees | **45,500.00**",
+        "05‑09 | UPI – Reliance Digital | **5,000.00**",
+        "10‑09 | UPI – Decathlon Sports | **6,299.00**",
+        "18‑09 | UPI – MakeMyTrip | **8,740.00**"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "```text\nDate  | Description          | Amount (Rs) | Dr/Cr\n03-09 | NEFT/WCE SANGLI FEES |   45,500.00 | Dr\n10-09 | UPI/Decathlon Sports |    6,299.00 | Dr\n18-09 | UPI/MakeMyTrip       |    8,740.00 | Dr\n```",
+      "input_tokens": 345,
+      "output_tokens": 242,
+      "reasoning_tokens": 147,
+      "total_tokens": 587,
+      "latency_ms": 517,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "WCE Sangli fees",
+        "Decathlon Sports",
+        "MakeMyTrip"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     }
+    },
+    "ie-09": {
+     "vague": {
+      "answer": "Here are the Python modules that appear in the stack‑traces for the failures you described:\n\n| Traceback location | File (relative to the project root) |\n|--------------------|--------------------------------------|\n| `upload_marks` → `parse_row` | **`erp/marks/views.py`** (line 142) |\n| `parse_row` (KeyError) | **`erp/marks/utils.py`** (line 58) |\n| Attendance upload → `parse_row` | **`erp/attendance/views.py`** (line 77) |\n| `parse_row` (KeyError) | **`erp/attendance/utils.py`** (line 31) |\n\n(You also mentioned a couple of other modules that are **not** part of the failing tracebacks: `erp/core/middleware.py` and `erp/timetable/views.py`.)",
+      "input_tokens": 254,
+      "output_tokens": 247,
+      "reasoning_tokens": 61,
+      "total_tokens": 501,
+      "latency_ms": 521,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "erp/attendance/utils.py",
+        "erp/attendance/views.py",
+        "erp/marks/utils.py",
+        "erp/marks/views.py"
+       ],
+       "missed": [],
+       "extra": [],
+       "extracted": [
+        "`erp/marks/views.py` (line 142)",
+        "`erp/marks/utils.py` (line 58)",
+        "`erp/attendance/views.py` (line 77)",
+        "`erp/attendance/utils.py` (line 31)"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "- `erp/marks/views.py`  \n- `erp/marks/utils.py`  \n- `erp/attendance/views.py`  \n- `erp/attendance/utils.py`",
+      "input_tokens": 276,
+      "output_tokens": 125,
+      "reasoning_tokens": 81,
+      "total_tokens": 401,
+      "latency_ms": 274,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "erp/marks/views.py",
+        "erp/marks/utils.py",
+        "erp/attendance/utils.py",
+        "erp/attendance/views.py"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     }
+    },
+    "ie-10": {
+     "vague": {
+      "answer": "Here’s a quick checklist of exactly what you need to upload for **renewal** of the Post‑Matric Scholarship (Maha DBT) for the 2026‑27 academic year:\n\n| Document | Why it’s needed | How to prepare / upload |\n|----------|----------------|--------------------------|\n| **Income certificate (FY 2025‑26)** | Confirms that your family’s annual income is still within the eligibility limit. | Obtain a fresh certificate from the Tahsildar/Revenue Department (or the online portal if your state offers it). Make sure the financial year shown is **2025‑26** (the same year you used for the original award). |\n| **Previous year’s marksheet** (SSC/HSC/Diploma + College‑level if applicable) | Shows you maintained the required academic performance. | Scan the **final consolidated marksheet** (or the latest semester/term result) in PDF or high‑resolution JPG/PNG. The document should be legible and include the university/board seal. |\n| **Fee receipt for 2026‑27** | Proves you have paid (or are about to pay) the tuition/fees for the current year. | Upload the **official receipt** from your college/university (or the online payment screenshot) that clearly shows: <br>• Your name & enrollment number <br>• Amount paid <br>• Academic year 2026‑27 <br>• Institution’s name and stamp/signature |\n| **Aadhaar‑seeded bank passbook (or passbook screenshot)** | Required for direct transfer of the scholarship amount. | Ensure your bank account is linked to your Aadhaar. Take a clear photo or PDF of the **first page of the passbook** (showing account number, bank name, and Aadhaar‑seeding confirmation) or a **bank statement** that displays the same details. |\n| **(Optional) Declaration/Signature** | Some portals ask you to tick a box or upload a signed declaration. | If prompted, type your name electronically or upload a scanned signature page. |\n\n### What **NOT** to upload (since you’re renewing)\n\n- Caste certificate / caste‑validity certificate  \n- Domicile certificate  \n- SSC marksheet (if you already submitted it last year and the portal doesn’t ask again)  \n\nThese were already verified during your 2025‑26 award, so you can skip them.\n\n### Step‑by‑step upload guide\n\n1. **Log in** to the Maha DBT scholarship portal with your registered username/password (or use the OTP‑based login if that’s the current method).  \n2. Navigate to **“Renewal – 2026‑27”** (usually under “My Applications” → “Renew”).  \n3. **Upload** each document in the order the portal asks:\n   - Income certificate → *PDF, ≤ 2 MB*  \n   - Previous year’s marksheet → *PDF/JPG, ≤ 2 MB*  \n   - Fee receipt → *PDF/JPG, ≤ 2 MB*  \n   - Aadhaar‑seeded bank passbook → *PDF/JPG, ≤ 2 MB*  \n4. **Review** the preview to ensure everything is legible.  \n5. **Submit** the application. You should receive an on‑screen confirmation number and an email/SMS acknowledgment.  \n6. **Save** the acknowledgment screenshot or PDF for your records; you may need it if there’s any follow‑up.\n\n### Important dates & tips\n\n- **Last date to submit:** **31 Oct 2026** (midnight). Aim to finish at least a week earlier to avoid last‑minute glitches.  \n- **Check your email** for any “missing document” alerts within 48 hours of submission.  \n- **Keep originals** handy; you may be asked to present them during a physical verification or audit.  \n- If your **income has changed** (e.g., increased above the eligibility limit), you must inform the scholarship office; otherwise the renewal will be rejected.  \n\nThat’s it! Gather those four documents, upload them before the deadline, and you should be all set for another year of support. Good luck with your studies!",
+      "input_tokens": 249,
+      "output_tokens": 897,
+      "reasoning_tokens": 4,
+      "total_tokens": 1146,
+      "latency_ms": 1955,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "extractor",
+      "detail": {
+       "precision": 0.8,
+       "recall": 1.0,
+       "f1": 0.889,
+       "found": [
+        "bank passbook",
+        "fee receipt",
+        "income certificate",
+        "previous year's marksheet"
+       ],
+       "missed": [],
+       "extra": [
+        "(Optional) Declaration/Signature"
+       ],
+       "extracted": [
+        "Income certificate (FY 2025‑26)",
+        "Previous year’s marksheet (SSC/HSC/Diploma + College‑level if applicable)",
+        "Fee receipt for 2026‑27",
+        "Aadhaar‑seeded bank passbook (or passbook screenshot)",
+        "(Optional) Declaration/Signature"
+       ]
+      }
+     },
+     "optimized": {
+      "answer": "For renewal you need to upload:\n\n1. Income certificate for FY 2025‑26.  \n2. Your previous year’s marksheet.  \n3. Fee receipt for the 2026‑27 academic year.  \n4. An Aadhaar‑seeded bank passbook.",
+      "input_tokens": 276,
+      "output_tokens": 74,
+      "reasoning_tokens": 8,
+      "total_tokens": 350,
+      "latency_ms": 169,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "precision": 1.0,
+       "recall": 1.0,
+       "f1": 1.0,
+       "found": [
+        "income certificate",
+        "previous year's marksheet",
+        "fee receipt",
+        "bank passbook"
+       ],
+       "missed": [],
+       "extra": []
+      }
+     }
+    },
+    "cls-01": {
+     "vague": {
+      "answer": "**R1:** Positive  \n**R2:** Negative  \n**R3:** Mixed  \n**R4:** Negative  \n**R5:** Positive  \n**R6:** Mixed  \n**R7:** Mixed  \n**R8:** Positive",
+      "input_tokens": 228,
+      "output_tokens": 134,
+      "reasoning_tokens": 78,
+      "total_tokens": 362,
+      "latency_ms": 365,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 8,
+       "items": 8,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "R1: pos  \nR2: neg  \nR3: mixed  \nR4: neg  \nR5: pos  \nR6: mixed  \nR7: mixed  \nR8: pos",
+      "input_tokens": 259,
+      "output_tokens": 191,
+      "reasoning_tokens": 143,
+      "total_tokens": 450,
+      "latency_ms": 416,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 8,
+       "items": 8,
+       "wrong": {}
+      }
+     }
+    },
+    "cls-02": {
+     "vague": {
+      "answer": "**Food**  \n- E1  Zomato – biryani order during exam week – Rs 289  \n- E6  Canteen thali – Rs 70  \n\n**Travel**  \n- E2  Ola auto to college – Rs 74  \n- E5  IRCTC – Sangli to Pune ticket (home visit) – Rs 335  \n- E9  Rapido bike to the movie theatre – Rs 45  \n\n**Education**  \n- E3  Udemy – Python for Data Science course – Rs 449  \n- E7  Xerox shop – assignment printouts – Rs 60  \n\n**Entertainment**  \n- E4  BookMyShow – movie tickets – Rs 520  \n- E8  Spotify Premium, monthly – Rs 119  ",
+      "input_tokens": 219,
+      "output_tokens": 198,
+      "reasoning_tokens": 16,
+      "total_tokens": 417,
+      "latency_ms": 418,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "- **Food**\n  - E1  Zomato – biryani order during exam week – Rs 289  \n  - E6  Canteen thali – Rs 70  \n\n- **Travel**\n  - E2  Ola auto to college – Rs 74  \n  - E5  IRCTC – Sangli to Pune ticket, home visit – Rs 335  \n  - E9  Rapido bike to the movie theatre – Rs 45  \n\n- **Education**\n  - E3  Udemy – Python for Data Science course – Rs 449  \n  - E7  Xerox shop – assignment printouts – Rs 60  \n\n- **Entertainment**\n  - E4  BookMyShow – movie tickets – Rs 520  \n  - E8  Spotify Premium, monthly – Rs 119  ",
+      "input_tokens": 243,
+      "output_tokens": 196,
+      "reasoning_tokens": 18,
+      "total_tokens": 439,
+      "latency_ms": 415,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     }
+    },
+    "cls-03": {
+     "vague": {
+      "answer": "- I1: **bug**  \n- I2: **feature**  \n- I3: **question**  \n- I4: **bug**  \n- I5: **feature**  \n- I6: **question**  \n- I7: **bug**  \n- I8: **feature**",
+      "input_tokens": 226,
+      "output_tokens": 159,
+      "reasoning_tokens": 87,
+      "total_tokens": 385,
+      "latency_ms": 346,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 8,
+       "items": 8,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "I1: bug  \nI2: feature  \nI3: question  \nI4: bug  \nI5: feature  \nI6: question  \nI7: bug  \nI8: feature",
+      "input_tokens": 257,
+      "output_tokens": 93,
+      "reasoning_tokens": 45,
+      "total_tokens": 350,
+      "latency_ms": 206,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 8,
+       "items": 8,
+       "wrong": {}
+      }
+     }
+    },
+    "cls-04": {
+     "vague": {
+      "answer": "**Hostel Mess Menu – Week 41 (Veg / Non‑Veg)**  \n\n| Dish | Veg / Non‑Veg* |\n|------|----------------|\n| D1 Paneer tikka | **Veg** |\n| D2 Egg bhurji | **Non‑Veg** (egg) |\n| D3 Chicken biryani | **Non‑Veg** |\n| D4 Dal tadka | **Veg** |\n| D5 Fish fry | **Non‑Veg** |\n| D6 Veg Manchurian | **Veg** |\n| D7 Omelette sandwich | **Non‑Veg** (egg) |\n| D8 Mushroom masala | **Veg** |\n| D9 Eggless chocolate cake | **Veg** |\n\n\\*According to the mess committee rule, any dish containing egg is classified as **non‑veg**. All other dishes are classified based on their primary ingredients.",
+      "input_tokens": 158,
+      "output_tokens": 226,
+      "reasoning_tokens": 22,
+      "total_tokens": 384,
+      "latency_ms": 474,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "```json\n[\n  { \"dish\": \"Paneer tikka\", \"label\": \"veg\" },\n  { \"dish\": \"Egg bhurji\", \"label\": \"non-veg\" },\n  { \"dish\": \"Chicken biryani\", \"label\": \"non-veg\" },\n  { \"dish\": \"Dal tadka\", \"label\": \"veg\" },\n  { \"dish\": \"Fish fry\", \"label\": \"non-veg\" },\n  { \"dish\": \"Veg Manchurian\", \"label\": \"veg\" },\n  { \"dish\": \"Omelette sandwich\", \"label\": \"non-veg\" },\n  { \"dish\": \"Mushroom masala\", \"label\": \"veg\" },\n  { \"dish\": \"Eggless chocolate cake\", \"label\": \"veg\" }\n]\n```",
+      "input_tokens": 191,
+      "output_tokens": 332,
+      "reasoning_tokens": 148,
+      "total_tokens": 523,
+      "latency_ms": 691,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     }
+    },
+    "cls-05": {
+     "vague": {
+      "answer": "**Categorisation (based only on the annual CTC – one‑time bonuses, joining or relocation payments are ignored):**\n\n| Offer | Stated CTC (annual) | CTC used for categorisation* | Category |\n|-------|--------------------|-----------------------------|----------|\n| O1 – Infosys | Rs 3.6 LPA | Rs 3.6 LPA | **Normal** |\n| O2 – Persistent Systems | Rs 6 LPA | Rs 6 LPA | **Dream** (lower bound inclusive) |\n| O3 – Barclays | Rs 12 LPA | Rs 12 LPA | **Super Dream** |\n| O4 – Finlytics (startup) | Rs 50,000 × 12 = Rs 6 LPA | Rs 6 LPA | **Dream** |\n| O5 – Deloitte | Rs 6.6 LPA CTC + Rs 1 Lakh joining bonus | Rs 6.6 LPA (bonus excluded) | **Dream** |\n| O6 – Amazon | Rs 10 LPA | Rs 10 LPA | **Dream** (upper bound inclusive) |\n| O7 – Zeus Learning | Rs 10.5 LPA | Rs 10.5 LPA | **Super Dream** |\n| O8 – Mphasis | Rs 4.2 LPA | Rs 4.2 LPA | **Normal** |\n| O9 – Cognizant | Rs 6.3 LPA CTC + Rs 0.5 Lakh relocation bonus | Rs 6.3 LPA (bonus excluded) | **Dream** |\n\n\\*Only the recurring annual CTC is considered; any one‑time payments (joining bonus, relocation allowance, etc.) are **not** part of the categorisation.",
+      "input_tokens": 304,
+      "output_tokens": 544,
+      "reasoning_tokens": 132,
+      "total_tokens": 848,
+      "latency_ms": 1143,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 0.889,
+       "right": 8,
+       "items": 9,
+       "wrong": {
+        "O9": {
+         "gold": "normal",
+         "got": "dream"
+        }
+       }
+      }
+     },
+     "optimized": {
+      "answer": "O1: Normal  \nO2: Dream  \nO3: Super Dream  \nO4: Dream  \nO5: Dream  \nO6: Dream  \nO7: Super Dream  \nO8: Normal  \nO9: Normal",
+      "input_tokens": 336,
+      "output_tokens": 261,
+      "reasoning_tokens": 206,
+      "total_tokens": 597,
+      "latency_ms": 555,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     }
+    },
+    "cls-06": {
+     "vague": {
+      "answer": "**Classification**\n\n| Message | Category | Why |\n|---------|----------|-----|\n| **M1** | **Legit** | Contains a one‑time password for a known service (college ERP). No request for money or personal data. |\n| **M2** | **Scam** | Claims a huge prize and asks for a “processing fee.” Classic lottery‑win scam. |\n| **M3** | **Legit** (but could be **promo** if it’s a marketing push) | Looks like a routine bill reminder from an electricity board. No link or money‑up‑front request, just a payment instruction. |\n| **M4** | **Scam** | Promises instant loan with “no documents” and a shortened link – typical loan‑advance fraud. |\n| **M5** | **Scam** | Threatens account blockage and forces the user to a suspicious domain for KYC – phishing. |\n| **M6** | **Legit** | Order‑status update from a food‑delivery service; no action beyond information. |\n| **M7** | **Promo** | Advertising a discount (“Flat 70% OFF”) – a legitimate promotional message (assuming it comes from the brand). |\n| **M8** | **Promo** | Offers a data‑top‑up deal; promotional in nature, not requesting personal info. |\n| **M9** | **Scam** | Claims a parcel is held and demands payment via an unfamiliar website – classic “customs release” scam. |\n\n**Summary**\n\n- **Legit (transactional/notification)**: M1, M3, M6  \n- **Promotional**: M7, M8  \n- **Scam/Phishing**: M2, M4, M5, M9  \n\n*Tip:* When in doubt, verify the sender’s official number/email, avoid clicking short links, and never pay fees to claim prizes or release parcels.",
+      "input_tokens": 333,
+      "output_tokens": 432,
+      "reasoning_tokens": 17,
+      "total_tokens": 765,
+      "latency_ms": 941,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "M1 – legit; M2 – scam; M3 – legit; M4 – scam; M5 – scam; M6 – legit; M7 – promo; M8 – promo; M9 – scam.",
+      "input_tokens": 360,
+      "output_tokens": 146,
+      "reasoning_tokens": 59,
+      "total_tokens": 506,
+      "latency_ms": 325,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     }
+    },
+    "cls-07": {
+     "vague": {
+      "answer": "**Office assignments**\n\n| Query | Office that should handle it |\n|-------|------------------------------|\n| Q1: My hall ticket for the end‑sem exam has not been generated. | **Exam Cell** |\n| Q2: I paid the tuition fee online but the receipt is not showing on ERP. | **Accounts** |\n| Q3: I lost my library card and need a duplicate. | **Library** |\n| Q4: The fan in room B‑214 has not been working for a week. | **Hostel Office** |\n| Q5: I need the revaluation form for the Compiler Design paper. | **Exam Cell** |\n| Q6: When will my hostel caution deposit be refunded? I left the hostel in May. | **Accounts** (refunds are processed by Accounts) |\n| Q7: I paid my overdue fine but the system still shows it as pending. | **Accounts** |\n| Q8: Complaint about the quality of mess food on weekends. | **Hostel Office** |",
+      "input_tokens": 240,
+      "output_tokens": 233,
+      "reasoning_tokens": 13,
+      "total_tokens": 473,
+      "latency_ms": 491,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 0.875,
+       "right": 7,
+       "items": 8,
+       "wrong": {
+        "Q7": {
+         "gold": "library",
+         "got": "accounts"
+        }
+       }
+      }
+     },
+     "optimized": {
+      "answer": "{\n  \"queries\": [\n    {\n      \"question\": \"My hall ticket for the end-sem exam has not been generated.\",\n      \"office\": \"Exam cell\"\n    },\n    {\n      \"question\": \"I paid the tuition fee online but the receipt is not showing on ERP.\",\n      \"office\": \"Accounts\"\n    },\n    {\n      \"question\": \"I lost my library card and need a duplicate.\",\n      \"office\": \"Library\"\n    },\n    {\n      \"question\": \"The fan in room B-214 has not been working for a week.\",\n      \"office\": \"Hostel office\"\n    },\n    {\n      \"question\": \"I need the revaluation form for the Compiler Design paper.\",\n      \"office\": \"Exam cell\"\n    },\n    {\n      \"question\": \"When will my hostel caution deposit be refunded? I left the hostel in May.\",\n      \"office\": \"Accounts\"\n    },\n    {\n      \"question\": \"I paid my overdue fine but the system still shows it as pending.\",\n      \"office\": \"Accounts\"\n    },\n    {\n      \"question\": \"Complaint about the quality of mess food on weekends.\",\n      \"office\": \"Hostel office\"\n    }\n  ]\n}",
+      "input_tokens": 267,
+      "output_tokens": 374,
+      "reasoning_tokens": 117,
+      "total_tokens": 641,
+      "latency_ms": 1012,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "extractor",
+      "detail": {
+       "accuracy": 0.875,
+       "right": 7,
+       "items": 8,
+       "wrong": {
+        "Q7": {
+         "gold": "library",
+         "got": "accounts"
+        }
+       }
+      }
+     }
+    },
+    "cls-08": {
+     "vague": {
+      "answer": "Below is the (average‑case) asymptotic running time for each snippet, expressed using the standard Big‑O notation.  \nFor the “dictionary / set” operations we assume the usual average‑case O(1) cost for look‑ups, insertions and membership tests.\n\n| # | Code (short description) | Dominant work | Time‑complexity |\n|---|---------------------------|---------------|-----------------|\n| **S1** | Return the middle element of a list | Direct indexing (`arr[i]`) | **O(1)** |\n| **S2** | Repeatedly halve `i` until it becomes ≤ 1 | Loop runs ⌊log₂ n⌋ + 1 times | **O(log n)** |\n| **S3** | Two nested loops: outer over `arr` (size n), inner runs a constant 10 times | `n · 10` operations | **O(n)** |\n| **S4** | `sorted(arr)` then take the first element | Sorting dominates; Python’s Timsort is O(n log n) on average | **O(n log n)** |\n| **S5** | Naïve duplicate‑search: for each `i` scan all later elements | ∑_{i=0}^{n‑1}(n‑i‑1) = n(n‑1)/2 ≈ n²/2 | **O(n²)** |\n| **S6** | Outer loop runs `n` times; inner loop doubles `j` each iteration → runs ≈ log₂ n times each outer iteration | n · log n | **O(n log n)** |\n| **S7** | Membership test in a dict (`key in d`) | Average‑case hash‑table lookup | **O(1)** |\n| **S8** | Scan `arr`; for each element do a set‑membership test and possibly an insertion | Each test/insertion is O(1) on average, performed `n` times | **O(n)** |\n\n**Summary**\n\n| Symbol | Snippets |\n|--------|----------|\n| **O(1)** | S1, S7 |\n| **O(log n)** | S2 |\n| **O(n)** | S3, S8 |\n| **O(n log n)** | S4, S6 |\n| **O(n²)** | S5 |\n\nThese complexities assume the usual Python list indexing, integer arithmetic, and hash‑table operations all run in constant time, and that the input size `n` is the length of the list/array (or the integer argument `n` where appropriate).",
+      "input_tokens": 365,
+      "output_tokens": 581,
+      "reasoning_tokens": 11,
+      "total_tokens": 946,
+      "latency_ms": 1226,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 8,
+       "items": 8,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "```python\ncomplexities = {\n    \"S1\": \"O(1)\",          # direct index access\n    \"S2\": \"O(log n)\",      # repeatedly halve i\n    \"S3\": \"O(n)\",          # outer loop over arr, inner loop constant (10)\n    \"S4\": \"O(n log n)\",    # sorting dominates\n    \"S5\": \"O(n^2)\",        # double loop over all pairs\n    \"S6\": \"O(n log n)\",    # outer loop n times, inner loop logarithmic\n    \"S7\": \"O(1)\",          # dict membership test average‑case\n    \"S8\": \"O(n)\",          # set membership/addition average‑case linear scan\n}\n```",
+      "input_tokens": 405,
+      "output_tokens": 309,
+      "reasoning_tokens": 139,
+      "total_tokens": 714,
+      "latency_ms": 657,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 8,
+       "items": 8,
+       "wrong": {}
+      }
+     }
+    },
+    "cls-09": {
+     "vague": {
+      "answer": "**Attendance percentages and status**\n\n| Roll | Name   | Attended | Conducted | Attendance % | Status |\n|------|--------|----------|-----------|--------------|--------|\n| 1    | Aarav  | 30       | 40        | 75 %         | **Safe** |\n| 2    | Bhakti | 29       | 40        | 72.5 %       | **Warning** |\n| 3    | Chinmay| 25       | 40        | 62.5 %       | **Detained** |\n| 4    | Diya   | 39       | 52        | 75 %         | **Safe** |\n| 5    | Eshan  | 33       | 52        | 63.46 %      | **Detained** |\n| 6    | Farhan | 34       | 52        | 65.38 %      | **Warning** |\n| 7    | Gauri  | 52       | 52        | 100 %        | **Safe** |\n| 8    | Harsh  | 26       | 40        | 65 %         | **Warning** |\n\n**Rule applied**\n\n- **Detained**: attendance < 65 %  \n- **Warning**: 65 % ≤ attendance < 75 %  \n- **Safe**: attendance ≥ 75 %  \n\nAll students have been classified accordingly.",
+      "input_tokens": 234,
+      "output_tokens": 347,
+      "reasoning_tokens": 21,
+      "total_tokens": 581,
+      "latency_ms": 732,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 8,
+       "items": 8,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "```python\n# Attendance classification script\n# Rule: \n#   < 65%   -> Detained\n#   65%–<75% -> Warning\n#   >=75%   -> Safe\n\nstudents = [\n    {\"roll\": 1, \"name\": \"Aarav\",   \"attended\": 30, \"conducted\": 40},\n    {\"roll\": 2, \"name\": \"Bhakti\",  \"attended\": 29, \"conducted\": 40},\n    {\"roll\": 3, \"name\": \"Chinmay\", \"attended\": 25, \"conducted\": 40},\n    {\"roll\": 4, \"name\": \"Diya\",    \"attended\": 39, \"conducted\": 52},\n    {\"roll\": 5, \"name\": \"Eshan\",   \"attended\": 33, \"conducted\": 52},\n    {\"roll\": 6, \"name\": \"Farhan\",  \"attended\": 34, \"conducted\": 52},\n    {\"roll\": 7, \"name\": \"Gauri\",   \"attended\": 52, \"conducted\": 52},\n    {\"roll\": 8, \"name\": \"Harsh\",   \"attended\": 26, \"conducted\": 40},\n]\n\ndef classify(attended, conducted):\n    percent = (attended / conducted) * 100\n    if percent < 65:\n        return \"Detained\"\n    elif percent < 75:\n        return \"Warning\"\n    else:\n        return \"Safe\"\n\n# Process and display results\nfor s in students:\n    status = classify(s[\"attended\"], s[\"conducted\"])\n    print(f\"Roll {s['roll']:>2} | {s['name']:<7} | {status}\")\n```",
+      "input_tokens": 274,
+      "output_tokens": 445,
+      "reasoning_tokens": 50,
+      "total_tokens": 719,
+      "latency_ms": 938,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 0.375,
+       "right": 3,
+       "items": 8,
+       "wrong": {
+        "Bhakti": {
+         "gold": "warning",
+         "got": "safe"
+        },
+        "Chinmay": {
+         "gold": "detained",
+         "got": "safe"
+        },
+        "Eshan": {
+         "gold": "detained",
+         "got": "safe"
+        },
+        "Farhan": {
+         "gold": "warning",
+         "got": "safe"
+        },
+        "Harsh": {
+         "gold": "warning",
+         "got": "safe"
+        }
+       }
+      }
+     }
+    },
+    "cls-10": {
+     "vague": {
+      "answer": "**Language identification**\n\n| Line | Text | Language |\n|------|------|----------|\n| L1 | उद्या कॉलेजला सुट्टी आहे का? | **Marathi** |\n| L2 | कल कॉलेज बंद रहेगा। | **Hindi** |\n| L3 | Tomorrow's lab is cancelled, inform everyone. | **English** |\n| L4 | मला परीक्षेची खूप भीती वाटते. | **Marathi** |\n| L5 | मुझे परीक्षा से बहुत डर लगता है। | **Hindi** |\n| L6 | Bhai kal ka lecture cancel hai kya? | **Mixed** (Hindi + English) |\n| L7 | आम्ही उद्या पुण्याला जाणार आहोत. | **Marathi** |\n| L8 | Submit kar de yaar assignment, deadline aaj hai. | **Mixed** (Hindi + English) |\n| L9 | आज मेस में पनीर बना है। | **Mixed** (Hindi with an English loan‑word “mes”) |",
+      "input_tokens": 199,
+      "output_tokens": 351,
+      "reasoning_tokens": 131,
+      "total_tokens": 550,
+      "latency_ms": 745,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "extractor",
+      "detail": {
+       "accuracy": 0.889,
+       "right": 8,
+       "items": 9,
+       "wrong": {
+        "L9": {
+         "gold": "hindi",
+         "got": "mixed"
+        }
+       }
+      }
+     },
+     "optimized": {
+      "answer": "L1: marathi  \nL2: hindi  \nL3: english  \nL4: marathi  \nL5: hindi  \nL6: mixed  \nL7: marathi  \nL8: mixed  \nL9: hindi",
+      "input_tokens": 223,
+      "output_tokens": 191,
+      "reasoning_tokens": 135,
+      "total_tokens": 414,
+      "latency_ms": 403,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     }
+    },
+    "sum-01": {
+     "vague": {
+      "answer": "**WALCHAND COLLEGE – Tuition Fee (2nd instalment) – A.Y. 2026‑27**\n\n1. **Extended deadline:** Pay the 2nd instalment by **25 Oct 2026** (originally 20 Oct).  \n2. **Online‑only payment:** Use the ERP portal; cash or demand drafts are **not accepted**.  \n3. **Late fee:** Payments after 25 Oct will incur a **₹500 penalty**.  \n4. **Scholarship & exam rule:**  \n   - Scholarship students (EBC/OBC/SC/ST) pay only the balance shown on their ERP fee page.  \n   - Anyone who hasn’t paid by **5 Nov 2026** cannot fill the end‑semester exam form.  ",
+      "input_tokens": 287,
+      "output_tokens": 185,
+      "reasoning_tokens": 12,
+      "total_tokens": 472,
+      "latency_ms": 392,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 79,
+       "max_words": 100,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states the extended deadline, online-only payment method, late fee, and exam form restriction, while explicitly noting that cash/DD are not accepted and identifying 20 Oct as the original date."
+      }
+     },
+     "optimized": {
+      "answer": "- **Extended deadline:** The second‑installment tuition fee deadline is now **25 Oct 2026** (originally 20 Oct).  \n- **Payment method:** Fees must be paid **online via the ERP portal**; cash or demand drafts are not accepted.  \n- **Late fee & exam restriction:** Payments after 25 Oct incur a **Rs 500 late fee**, and anyone who hasn’t paid by **5 Nov 2026** cannot submit the end‑semester exam form.  \n- **Scholarship students:** Those with government scholarships (EBC/OBC/SC/ST) pay only the **remaining amount shown on their ERP fee page**.",
+      "input_tokens": 308,
+      "output_tokens": 158,
+      "reasoning_tokens": 10,
+      "total_tokens": 466,
+      "latency_ms": 341,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 80,
+       "max_words": 100,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states the extended deadline, payment methods, late fee, and exam restriction without making any forbidden claims."
+      }
+     }
+    },
+    "sum-02": {
+     "vague": {
+      "answer": "**TL;DR:** Since v2.3 (1 Oct), faculty uploads of attendance CSVs >5 MB return 413 “Request Entity Too Large”. Nginx’s `client_max_body_size` was lowered to 5 M (was 20 M). Workaround: split files <5 MB. High priority – monthly report due 10 Oct.",
+      "input_tokens": 279,
+      "output_tokens": 97,
+      "reasoning_tokens": 9,
+      "total_tokens": 376,
+      "latency_ms": 211,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 43,
+       "max_words": 60,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects the required facts regarding the error, version, workaround, and cause, while correctly omitting any mention of data loss or student impact."
+      }
+     },
+     "optimized": {
+      "answer": "**TL;DR:** After v2.3 (1 Oct), faculty uploads of attendance CSVs >5 MB now hit a 413 “Request Entity Too Large” error because the new Nginx config set `client_max_body_size` to 5 M (down from 20 M). Split files <5 MB as a workaround; fix by raising the limit. (High priority).",
+      "input_tokens": 301,
+      "output_tokens": 102,
+      "reasoning_tokens": 9,
+      "total_tokens": 403,
+      "latency_ms": 227,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 52,
+       "max_words": 60,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states the error, cause, workaround, and start date, while explicitly limiting the issue to faculty and omitting any mention of data loss."
+      }
+     }
+    },
+    "sum-03": {
+     "vague": {
+      "answer": "**Vortex 14 (i5, 16 GB RAM, 512 GB SSD)**  \n\n**Pros (≈ 35 words)**  \n- Battery life 7‑8 hrs, enough for a full day of classes.  \n- Light, portable chassis.  \n- Fast boot‑up and solid performance for coding/work.  \n- Keyboard praised as comfortable and responsive.  \n\n**Cons (≈ 35 words)**  \n- Gets noticeably hot and the fan turns loud during gaming or long sessions.  \n- Display is dim, especially in bright sunlight.  \n- Speakers are weak and tinny.  \n- One buyer received the wrong colour (seller issue).  ",
+      "input_tokens": 264,
+      "output_tokens": 159,
+      "reasoning_tokens": 10,
+      "total_tokens": 423,
+      "latency_ms": 339,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 75,
+       "max_words": 80,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly includes all required facts regarding battery, keyboard, heat, and display, while accurately describing speakers as weak and omitting any price claims."
+      }
+     },
+     "optimized": {
+      "answer": "**Summary (78 words)**  \nThe Vortex 14’s standout strengths are its long‑lasting battery (≈7‑8 hours) and a highly praised, comfortable keyboard that makes typing and fast boot‑ups enjoyable. Users also like its lightweight portability. However, the laptop runs hot and the fan gets noisy during gaming or extended use, and the display is noticeably dim in bright or outdoor settings. Audio quality is weak and tinny, and one buyer received the wrong colour, though the hardware itself was fine.",
+      "input_tokens": 276,
+      "output_tokens": 124,
+      "reasoning_tokens": 9,
+      "total_tokens": 400,
+      "latency_ms": 269,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 78,
+       "max_words": 80,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly includes all required facts regarding battery, keyboard, heat, and display, while accurately describing the speakers as weak and omitting any price claims."
+      }
+     }
+    },
+    "sum-04": {
+     "vague": {
+      "answer": "🚀 Sahyadri Data Systems (Pune) seeks B.Tech CSE/IT 2027 grads (≥6.5 CGPA, no backlogs) for Graduate Engineer Trainee (Software). Aptitude & coding test: 22 Oct (on‑campus). Tech & HR interviews: 23 Oct. Register by 15 Oct 5 pm on T&P portal. Bring ID & 2 resumes. Package TBD (≈4.5 LPA last year).",
+      "input_tokens": 254,
+      "output_tokens": 120,
+      "reasoning_tokens": 7,
+      "total_tokens": 374,
+      "latency_ms": 260,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 48,
+       "max_words": 50,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states all required facts and explicitly attributes the 4.5 LPA figure to last year, avoiding the forbidden misrepresentation."
+      }
+     },
+     "optimized": {
+      "answer": "- Sahyadri Data Systems seeks B.Tech CSE/IT 2027 grads (≥6.5 CGPA, no backlogs).  \n- Online aptitude & coding test: 22 Oct (on‑campus), followed by technical & HR interviews on 23 Oct.  \n- Register via T&P portal by 15 Oct, 5 pm (no late entries).  \n- Bring college ID and two resume copies.",
+      "input_tokens": 274,
+      "output_tokens": 352,
+      "reasoning_tokens": 250,
+      "total_tokens": 626,
+      "latency_ms": 760,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 46,
+       "max_words": 50,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects all required eligibility, schedule, and registration details without making any forbidden claims about the package or other branches."
+      }
+     }
+    },
+    "sum-05": {
+     "vague": {
+      "answer": "**Kanda Poha (serves 4) – 7 quick steps**\n\n1. Rinse 2 cups thick poha in a strainer 30 s; drain 5 min.  \n2. Heat 1 Tbsp oil, add 1 tsp mustard seeds → splutter.  \n3. Toss in curry leaves, 2 chopped green chilies, ¼ cup peanuts; fry till crisp.  \n4. Add 1 chopped onion, sauté soft; stir in ½ tsp turmeric.  \n5. Mix in poha, salt, 1 tsp sugar; cover, low heat 2 min.  \n6. Turn off, squeeze lemon juice.  \n7. Garnish with coriander. Enjoy!",
+      "input_tokens": 265,
+      "output_tokens": 178,
+      "reasoning_tokens": 11,
+      "total_tokens": 443,
+      "latency_ms": 434,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 83,
+       "max_words": 70,
+       "within_length": false,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects all required steps and ingredients without including any forbidden instructions or items."
+      }
+     },
+     "optimized": {
+      "answer": "1. Rinse 2 cups thick poha in a strainer for 30 s; drain 5 min.  \n2. Heat 1 tbsp oil, add 1 tsp mustard seeds. When they splutter, add curry leaves, 2 green chillies, ¼ cup peanuts; fry until crisp.  \n3. Add 1 chopped onion, cook soft; stir in ½ tsp turmeric.  \n4. Add poha, salt, 1 tsp sugar; mix gently, cover 2 min on low heat.  \n5. Turn off, squeeze lemon juice, garnish with coriander.",
+      "input_tokens": 288,
+      "output_tokens": 163,
+      "reasoning_tokens": 19,
+      "total_tokens": 451,
+      "latency_ms": 353,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 76,
+       "max_words": 70,
+       "within_length": false,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects all required steps and ingredients without including any forbidden instructions or items."
+      }
+     }
+    },
+    "sum-06": {
+     "vague": {
+      "answer": "**Industrial Visit – Shree Engine Works, Kagal (T.Y. Mech)**  \n- New date: **Friday, 16 Oct** (originally 9 Oct, delayed due to plant audit).  \n- Bus departs **6:30 am** from the main gate – be there by **6:15 am**; return ≈ **7 pm**.  \n- Cost: **₹750 per person**, payable to the organizer by **Mon, 12 Oct** (UPI accepted).  \n- Dress code: **formals + safety shoes** (no sandals); bring college ID.  \n- Lunch not provided – bring your own or money for the plant canteen. Professors Patil and Desai will accompany the group.",
+      "input_tokens": 249,
+      "output_tokens": 180,
+      "reasoning_tokens": 12,
+      "total_tokens": 429,
+      "latency_ms": 381,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 81,
+       "max_words": 90,
+       "within_length": true,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states the new date as 16 Oct, mentions 9 Oct only as the original date, and explicitly states lunch is not provided."
+      }
+     },
+     "optimized": {
+      "answer": "- The industrial visit to Shree Engine Works, Kagal is now scheduled for **Friday, 16 Oct** (originally 9 Oct, postponed due to an audit).  \n- Meet at the main gate by **6:15 am**; the bus departs at **6:30 am** and you’ll return around **7 pm**.  \n- **Contribution:** Rs 750 per person, payable to the organizer by **Monday, 12 Oct** (UPI accepted).  \n- Dress code: **formal attire + safety shoes** (no sandals); bring your college ID.  \n- **Lunch is not provided** – bring your own meal or money for the plant canteen. Professors Patil and Desai will accompany the group.",
+      "input_tokens": 269,
+      "output_tokens": 181,
+      "reasoning_tokens": 12,
+      "total_tokens": 450,
+      "latency_ms": 387,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 92,
+       "max_words": 90,
+       "within_length": false,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states the new date, bus time, payment details, dress code, and lunch policy without making any forbidden claims."
+      }
+     }
+    },
+    "sum-07": {
+     "vague": {
+      "answer": "**Meeting Summary – Rangtarang 2027 Core Committee (3 Oct 2026)**  \nPresent: 14 members + faculty advisor Dr. Kulkarni.  \n\n1. Fest dates fixed for 14‑16 Feb 2027 (21‑23 Feb rejected due to mid‑sem exams).  \n2. Budget: Council asked for ₹3 Lakh; principal approved ₹2.4 Lakh. Sponsorship goal: raise an additional ₹1 Lakh.  \n3. DJ night cancelled after last year’s police‑permission issue; a live band will replace it.  \n4. Sponsorship team headed by Tanvi Shinde (T.Y. E&TC).  \n5. Next meeting: 17 Oct 2026, 5 pm, Seminar Hall.  ",
+      "input_tokens": 257,
+      "output_tokens": 186,
+      "reasoning_tokens": 7,
+      "total_tokens": 443,
+      "latency_ms": 450,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 83,
+       "max_words": 60,
+       "within_length": false,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects all required facts and correctly states that the DJ night was cancelled, avoiding the forbidden statements."
+      }
+     },
+     "optimized": {
+      "answer": "- **Date & Venue:** Rangtarang 2027 will be held 14‑16 Feb 2027 (the 21‑23 Feb slot was dropped due to mid‑semester exams).  \n- **Budget:** Student council requested ₹3 lakh; principal approved ₹2.4 lakh. Additional sponsorship of ₹1 lakh is targeted.  \n- **Entertainment:** DJ night cancelled after last year’s police‑permission issue; a live band will perform instead.  \n- **Sponsorship Lead:** Tanvi Shinde (T.Y. E&TC) will head the sponsorship team.  \n- **Next Meeting:** 17 Oct 2026, 5 pm, Seminar Hall.  ",
+      "input_tokens": 277,
+      "output_tokens": 170,
+      "reasoning_tokens": 9,
+      "total_tokens": 447,
+      "latency_ms": 371,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 72,
+       "max_words": 60,
+       "within_length": false,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects all required facts from the source text and does not contain any forbidden statements."
+      }
+     }
+    },
+    "sum-08": {
+     "vague": {
+      "answer": "**Water Cut Notice (≤50 words)**  \nDue to urgent repairs on the main pipeline near Vishrambag, water will be shut off in Vishrambag, Vijaynagar and the college campus on Tue 13 Oct 2026, 6 am–6 pm. Service resumes Wed 14 Oct (low pressure) and returns to normal Thu 15 Oct. Miraj & Kupwad are unaffected. Store water; tankers available on request at the ward office.",
+      "input_tokens": 203,
+      "output_tokens": 121,
+      "reasoning_tokens": 7,
+      "total_tokens": 324,
+      "latency_ms": 261,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 63,
+       "max_words": 50,
+       "within_length": false,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately includes all required facts and explicitly states that Miraj and Kupwad are unaffected, avoiding the forbidden statements."
+      }
+     },
+     "optimized": {
+      "answer": "**Water Cut Notice (≤50 words)**  \nUrgent repairs on the main pipeline near Vishrambag will halt water supply to Vishrambag, Vijaynagar and the college campus on Tuesday 13 Oct 2026, 6 am–6 pm. Service resumes Wednesday 14 Oct at low pressure, normal pressure by Thursday 15 Oct. Miraj & Kupwad unaffected. Store water; tankers available on request at the ward office.",
+      "input_tokens": 214,
+      "output_tokens": 116,
+      "reasoning_tokens": 7,
+      "total_tokens": 330,
+      "latency_ms": 253,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 59,
+       "max_words": 50,
+       "within_length": false,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately includes all required facts and explicitly states that Miraj and Kupwad are unaffected, avoiding the forbidden statements."
+      }
+     }
+    },
+    "sum-09": {
+     "vague": {
+      "answer": "- Collected 12.4 K Marathi/Hindi product reviews (plus 2.1 K hand‑labeled) and fine‑tuned MuRIL (multilingual BERT) to detect fake vs. genuine reviews.  \n- Achieved 91.2 % accuracy and 0.89 F1 on a 1.86 K‑review test set, outperforming a TF‑IDF + logistic‑regression baseline (84 % accuracy).  \n- Performance drops to 78 % on code‑mixed (Hinglish) reviews; deployment (e.g., browser extension) is planned for future work.",
+      "input_tokens": 254,
+      "output_tokens": 152,
+      "reasoning_tokens": 6,
+      "total_tokens": 406,
+      "latency_ms": 330,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 57,
+       "max_words": 70,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states the goal, method, results, and limitations, and explicitly notes that deployment is future work rather than current."
+      }
+     },
+     "optimized": {
+      "answer": "- Collected ≈ 12.4 k Marathi/Hindi product reviews (plus 2.1 k manually labeled) and fine‑tuned the multilingual BERT model MuRIL for fake‑review detection.  \n- Achieved 91.2 % accuracy (F1 = 0.89) on a held‑out test set of 1.86 k reviews, outperforming a TF‑IDF + logistic‑regression baseline (84 % accuracy).  \n- Performance drops to ~78 % on code‑mixed (Hinglish) reviews; the system is not yet deployed, with a browser‑extension planned for future work.",
+      "input_tokens": 265,
+      "output_tokens": 158,
+      "reasoning_tokens": 7,
+      "total_tokens": 423,
+      "latency_ms": 342,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 63,
+       "max_words": 70,
+       "within_length": true,
+       "key_facts_covered": 4,
+       "key_facts": 4,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary correctly states the goal, method, results, and limitations, and explicitly notes that the model is not yet deployed, avoiding the forbidden claims."
+      }
+     }
+    },
+    "sum-10": {
+     "vague": {
+      "answer": "**Sai Krupa PG – Key Rules (≤80 words)**  \n\n- **Rent:** ₹7,500/month per bed (twin sharing); due by the 5th. Late fee ₹50/day.  \n- **Deposit:** ₹15,000 (2 months’ rent), refundable after deducting any damage.  \n- **Notice:** 1 month written notice; otherwise ₹7,500 is taken from deposit.  \n- **Electricity:** Billed separately from sub‑meter, split between the two occupants.  \n- **Food:** Not included; tiffin service ₹3,000/month if desired.  \n- **Rules:** No overnight guests; gate closes 10:30 pm; no cooking in rooms.  ",
+      "input_tokens": 256,
+      "output_tokens": 173,
+      "reasoning_tokens": 8,
+      "total_tokens": 429,
+      "latency_ms": 372,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "judge",
+      "detail": {
+       "words": 71,
+       "max_words": 80,
+       "within_length": true,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects all required facts regarding rent, deposit, notice, electricity, and food, while correctly stating that the deposit is refundable and food is not included."
+      }
+     },
+     "optimized": {
+      "answer": "**Sai Krupa PG – key points (under 80 words)**  \n\n- Rent: ₹7,500 / month per bed (twin sharing); due by the 5th. Late fee ₹50 per day.  \n- Security deposit: ₹15,000 (two months’ rent); refundable after deducting any damage.  \n- Notice: 1 month written notice to vacate; otherwise one month’s rent is taken from the deposit.  \n- Electricity: billed separately from the room’s sub‑meter, split between the two occupants.  \n- Food: not included; optional tiffin service ₹3,000 / month.  \n- Rules: no overnight guests, gate closes 10:30 pm, no cooking in rooms.  ",
+      "input_tokens": 267,
+      "output_tokens": 181,
+      "reasoning_tokens": 7,
+      "total_tokens": 448,
+      "latency_ms": 385,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "judge",
+      "detail": {
+       "words": 83,
+       "max_words": 80,
+       "within_length": false,
+       "key_facts_covered": 5,
+       "key_facts": 5,
+       "missed": [],
+       "forbidden_present": [],
+       "judge_reason": "The summary accurately reflects all required facts regarding rent, deposit, notice, electricity, and food, while correctly stating the deposit is refundable and food is not included."
+      }
+     }
+    },
+    "cod-01": {
+     "vague": {
+      "answer": "Here’s a clean, well‑documented implementation that follows the specification exactly.  \nIt handles upper‑ or lower‑case grade strings, includes failed courses (FF) in the denominator, returns `0.0` when the input list is empty, and rounds the result to two decimal places.\n\n```python\ndef sgpa(courses):\n    \"\"\"\n    Compute the Semester Grade Point Average (SGPA).\n\n    Parameters\n    ----------\n    courses : list[tuple[str, (int | float)]]\n        A list of (grade, credits) tuples.\n        * grade  – one of \"AA\", \"AB\", \"BB\", \"BC\", \"CC\", \"CD\", \"DD\", \"FF\"\n                   (case‑insensitive).\n        * credits – numeric credit value for the course (int or float).\n\n    Returns\n    -------\n    float\n        The SGPA rounded to two decimal places.\n        If ``courses`` is empty the function returns 0.0.\n\n    Example\n    -------\n    >>> sgpa([(\"AA\", 4), (\"bc\", 3), (\"FF\", 2)])\n    7.33\n    \"\"\"\n    # Mapping from grade (upper‑case) to grade‑point value\n    GRADE_POINTS = {\n        \"AA\": 10,\n        \"AB\": 9,\n        \"BB\": 8,\n        \"BC\": 7,\n        \"CC\": 6,\n        \"CD\": 5,\n        \"DD\": 4,\n        \"FF\": 0,\n    }\n\n    # No courses → SGPA is defined as 0.0\n    if not courses:\n        return 0.0\n\n    total_weighted_points = 0.0   # Σ (credits × grade‑points)\n    total_credits = 0.0          # Σ credits (including failed courses)\n\n    for grade, credits in courses:\n        # Normalise grade string to upper case to accept lower‑case input\n        grade = grade.upper()\n\n        # Defensive programming: raise a clear error if an unknown grade appears\n        if grade not in GRADE_POINTS:\n            raise ValueError(f\"Invalid grade '{grade}'. Expected one of {list(GRADE_POINTS)}\")\n\n        # Convert credits to float in case the caller passes an int or a decimal string\n        try:\n            credits = float(credits)\n        except (TypeError, ValueError) as exc:\n            raise TypeError(f\"Credits must be numeric, got {credits!r}\") from exc\n\n        # Accumulate\n        total_weighted_points += credits * GRADE_POINTS[grade]\n        total_credits += credits\n\n    # Guard against division by zero (should not happen because we checked for empty list,\n    # but a caller could pass courses with 0 credits only)\n    if total_credits == 0:\n        return 0.0\n\n    sgpa_value = total_weighted_points / total_credits\n    # Round to two decimal places as required\n    return round(sgpa_value, 2)\n```\n\n### How it works\n1. **Grade‑point lookup** – A dictionary maps each allowed grade (upper‑case) to its numeric point value.\n2. **Normalization** – The input grade string is converted to upper case so `\"aa\"` or `\"Aa\"` are accepted.\n3. **Validation** – If a grade isn’t in the dictionary, a `ValueError` is raised, making debugging easier.\n4. **Credit handling** – Credits are cast to `float` to support both integer and fractional credit values.\n5. **Computation** – The weighted sum of points and the total credits (including failed courses) are accumulated.\n6. **Edge cases** –  \n   * Empty list → `0.0`.  \n   * All courses have zero credits → also `0.0` (avoids division‑by‑zero).  \n7. **Rounding** – The final SGPA is rounded to two decimal places with Python’s built‑in `round`.\n\nYou can now drop this function into any Python module or script and call it with a list of `(grade, credits)` pairs.",
+      "input_tokens": 208,
+      "output_tokens": 867,
+      "reasoning_tokens": 7,
+      "total_tokens": 1075,
+      "latency_ms": 1833,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 6,
+       "total": 6,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\ndef sgpa(courses):\n    \"\"\"courses: list of (grade, credits) tuples, e.g. [(\"AA\", 4), (\"BC\", 3)]\"\"\"\n    points = {\"aa\":10,\"ab\":9,\"bb\":8,\"bc\":7,\"cc\":6,\"cd\":5,\"dd\":4,\"ff\":0}\n    total_credits = sum(c for _,c in courses)\n    if total_credits == 0: return 0.0\n    weighted = sum(points.get(g.lower(),0)*c for g,c in courses)\n    return round(weighted/total_credits, 2)\n```",
+      "input_tokens": 235,
+      "output_tokens": 160,
+      "reasoning_tokens": 16,
+      "total_tokens": 395,
+      "latency_ms": 383,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 6,
+       "total": 6,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-02": {
+     "vague": {
+      "answer": "Here’s a clean, robust implementation that does exactly what you described:\n\n```python\ndef attendance_pct(attended: int, total: int) -> float:\n    \"\"\"\n    Return the attendance percentage rounded to one decimal place.\n\n    * If `total` is 0 (no lectures have been conducted yet) the function returns 0.0.\n    * The result is always a float with one decimal digit (e.g. 75.0, 92.3).\n\n    Parameters\n    ----------\n    attended : int\n        Number of lectures the student attended.\n    total : int\n        Total number of lectures that have been held.\n\n    Returns\n    -------\n    float\n        Attendance percentage rounded to one decimal place.\n    \"\"\"\n    # Guard against division‑by‑zero\n    if total == 0:\n        return 0.0\n\n    # Compute the raw percentage as a float\n    raw_pct = (attended / total) * 100\n\n    # Round to one decimal place and return\n    return round(raw_pct, 1)\n```\n\n### What was wrong with the original code?\n\n```python\ndef attendance_pct(attended, total):\n    return attended // total * 100\n```\n\n1. **Integer division (`//`)** – This discards the fractional part, so anything less than a full‑attendance ratio becomes `0`.  \n2. **No handling of `total == 0`** – Dividing by zero raises a `ZeroDivisionError`.  \n3. **No rounding** – The function returns an integer, not a float with one decimal place.\n\n### How the new version fixes it\n\n| Issue | Fix |\n|-------|-----|\n| Integer division | Use true division (`/`) to keep the fractional part. |\n| Division by zero | Return `0.0` immediately when `total` is `0`. |\n| Rounding to 1 decimal | Apply `round(..., 1)` before returning. |\n| Return type | Explicitly return a `float` (the result of `round` is already a float). |\n\n### Quick sanity check\n\n```python\nassert attendance_pct(0, 0)   == 0.0   # no lectures yet\nassert attendance_pct(0, 10)  == 0.0   # 0% attendance\nassert attendance_pct(5, 10)  == 50.0  # 50%\nassert attendance_pct(7, 9)   == 77.8  # 77.777… → 77.8\nassert attendance_pct(9, 9)   == 100.0 # full attendance\n```\n\nAll tests pass, and the function now behaves exactly as required.",
+      "input_tokens": 146,
+      "output_tokens": 575,
+      "reasoning_tokens": 7,
+      "total_tokens": 721,
+      "latency_ms": 1204,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 6,
+       "total": 6,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\ndef attendance_pct(attended, total):\n    \"\"\"\n    Calculate the attendance percentage.\n\n    Parameters:\n    attended (int or float): Number of lectures attended.\n    total (int or float): Total number of lectures conducted.\n\n    Returns:\n    float: Attendance percentage rounded to one decimal place.\n           Returns 0.0 when total is zero (no lectures conducted).\n    \"\"\"\n    if total == 0:\n        return 0.0\n    return round((attended / total) * 100, 1)\n```",
+      "input_tokens": 185,
+      "output_tokens": 156,
+      "reasoning_tokens": 38,
+      "total_tokens": 341,
+      "latency_ms": 382,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 6,
+       "total": 6,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-03": {
+     "vague": {
+      "answer": "Here is a compact, well‑documented implementation that follows exactly the rules you described.\n\n```python\nfrom datetime import date\n\ndef library_fine(due: date, returned: date, reference: bool = False) -> int:\n    \"\"\"\n    Calculate the library fine for a single book.\n\n    Parameters\n    ----------\n    due : datetime.date\n        The date the book was supposed to be returned.\n    returned : datetime.date\n        The actual return date.\n    reference : bool, optional\n        ``True`` if the book is a reference book, ``False`` otherwise.\n        Reference books have their fine *doubled* (the 100‑rupee cap is applied\n        after the doubling).  The default is ``False``.\n\n    Returns\n    -------\n    int\n        The fine in rupees.  Zero if the book is returned on or before the due\n        date.\n\n    Rules (as given in the problem statement)\n    -----------------------------------------\n    * No fine if ``returned`` ≤ ``due``.\n    * For the first 7 days of delay the charge is Rs 2 per day.\n    * From day 8 onward the charge is Rs 5 per day.\n    * The total fine for a normal book is capped at Rs 100.\n    * For a reference book the computed fine is doubled, then the same Rs 100\n      cap is applied (i.e. the maximum a patron can ever pay is Rs 100).\n\n    Examples\n    --------\n    >>> from datetime import date\n    >>> library_fine(date(2023, 5, 1), date(2023, 5, 5))\n    0                         # returned early\n    >>> library_fine(date(2023, 5, 1), date(2023, 5, 10))\n    18                        # 9 days late → 7*2 + 2*5 = 24, capped at 100 → 24\n    >>> library_fine(date(2023, 5, 1), date(2023, 6, 20))\n    100                       # huge delay, capped\n    >>> library_fine(date(2023, 5, 1), date(2023, 5, 10), reference=True)\n    36                        # double of 18, still below cap\n    >>> library_fine(date(2023, 5, 1), date(2023, 6, 20), reference=True)\n    100                       # double would be 200, but cap brings it back to 100\n    \"\"\"\n    # ------------------------------------------------------------------\n    # 1. No fine if the book is returned on time or early.\n    # ------------------------------------------------------------------\n    if returned <= due:\n        return 0\n\n    # ------------------------------------------------------------------\n    # 2. Compute the number of days late.\n    # ------------------------------------------------------------------\n    days_late = (returned - due).days\n\n    # ------------------------------------------------------------------\n    # 3. Apply the piece‑wise daily rate.\n    #    * first 7 days → Rs 2 / day\n    #    * thereafter   → Rs 5 / day\n    # ------------------------------------------------------------------\n    first_week = min(days_late, 7)          # days that fall in the first week\n    after_week = max(days_late - 7, 0)      # days beyond the first week\n\n    fine = first_week * 2 + after_week * 5\n\n    # ------------------------------------------------------------------\n    # 4. Double the fine for reference books.\n    # ------------------------------------------------------------------\n    if reference:\n        fine *= 2\n\n    # ------------------------------------------------------------------\n    # 5. Enforce the maximum cap of Rs 100.\n    # ------------------------------------------------------------------\n    return min(fine, 100)\n```\n\n### How it works\n1. **Early/On‑time return** – the function returns `0` immediately.\n2. **Days late** – calculated with simple subtraction of two `date` objects.\n3. **Piece‑wise rate** – the first 7 days are charged at `2` rupees per day, any\n   remaining days at `5` rupees per day.\n4. **Reference books** – the whole amount is multiplied by `2`.\n5. **Cap** – `min(fine, 100)` guarantees the final fine never exceeds Rs 100,\n   even after the doubling for reference books.\n\nThe function is pure (no side‑effects), type‑annotated, and includes a\ndocstring with usage examples, making it ready to drop into any library‑management\ncodebase.",
+      "input_tokens": 185,
+      "output_tokens": 964,
+      "reasoning_tokens": 7,
+      "total_tokens": 1149,
+      "latency_ms": 2030,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 8,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\nfrom datetime import date\n\ndef library_fine(due: date, returned: date, reference: bool = False) -> int:\n    \"\"\"\n    Calculate the library fine.\n\n    Parameters\n    ----------\n    due : datetime.date\n        The due date of the book.\n    returned : datetime.date\n        The date the book was actually returned.\n    reference : bool, optional\n        True if the book is a reference book (fine is doubled). Default is False.\n\n    Returns\n    -------\n    int\n        The fine amount in rupees.\n    \"\"\"\n    # No fine if returned on or before the due date\n    if returned <= due:\n        return 0\n\n    # Number of days late\n    days_late = (returned - due).days\n\n    # First 7 days: Rs 2 per day\n    first_week_days = min(days_late, 7)\n    fine = first_week_days * 2\n\n    # Remaining days (if any): Rs 5 per day\n    if days_late > 7:\n        fine += (days_late - 7) * 5\n\n    # Double fine for reference books\n    if reference:\n        fine *= 2\n\n    # Apply the Rs 100 cap\n    return min(fine, 100)\n```\n",
+      "input_tokens": 212,
+      "output_tokens": 286,
+      "reasoning_tokens": 7,
+      "total_tokens": 498,
+      "latency_ms": 618,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 8,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-04": {
+     "vague": {
+      "answer": "Here is a compact, well‑documented implementation that follows the specification exactly.  \nIt works for any iterable of slots where each slot is a 3‑tuple  \n\n```python\n(day, start_time, end_time)          # e.g. (\"Mon\", \"10:00\", \"11:00\")\n```\n\nThe function returns a **sorted** list of index pairs `(i, j)` (`i < j`) for every pair of slots that clash (same day **and** overlapping time).  \nA slot that ends at the exact moment another one starts is **not** considered a clash.\n\n```python\nfrom typing import List, Tuple, Iterable\n\nSlot = Tuple[str, str, str]          # (day, start, end)\nIndexPair = Tuple[int, int]          # (i, j) with i < j\n\n\ndef _to_minutes(t: str) -> int:\n    \"\"\"\n    Convert a HH:MM string to minutes since midnight.\n    Assumes a valid, zero‑padded 24‑hour time.\n    \"\"\"\n    hour, minute = map(int, t.split(\":\"))\n    return hour * 60 + minute\n\n\ndef _overlap(a_start: int, a_end: int, b_start: int, b_end: int) -> bool:\n    \"\"\"\n    Return True if the half‑open intervals [a_start, a_end) and\n    [b_start, b_end) intersect.\n    The end point is exclusive, which implements the “ends exactly when the other starts → no clash”\n    rule.\n    \"\"\"\n    return a_start < b_end and b_start < a_end\n\n\ndef find_clashes(slots: Iterable[Slot]) -> List[IndexPair]:\n    \"\"\"\n    Return a sorted list of (i, j) index pairs, i < j, of slots that clash.\n\n    Parameters\n    ----------\n    slots : iterable of (day, start, end)\n        * day   – any hashable identifier (e.g. \"Mon\", \"Tue\", …)\n        * start – string \"HH:MM\"\n        * end   – string \"HH:MM\"\n\n    Returns\n    -------\n    List[Tuple[int, int]]\n        Sorted list of index pairs (i, j) where slots[i] and slots[j] clash.\n    \"\"\"\n    # Convert the input to a list so we can index it multiple times\n    slots = list(slots)\n\n    # Pre‑process each slot: keep the day and the numeric start/end minutes.\n    # This makes the inner loop cheap.\n    processed = [\n        (day, _to_minutes(start), _to_minutes(end))\n        for day, start, end in slots\n    ]\n\n    clashes: List[IndexPair] = []\n\n    n = len(processed)\n    for i in range(n):\n        day_i, start_i, end_i = processed[i]\n        for j in range(i + 1, n):\n            day_j, start_j, end_j = processed[j]\n\n            # Different days can never clash\n            if day_i != day_j:\n                continue\n\n            # Check time overlap using half‑open intervals\n            if _overlap(start_i, end_i, start_j, end_j):\n                clashes.append((i, j))\n\n    # The loops already generate pairs in increasing order, but we sort\n    # explicitly to guarantee the contract even if the input iterable is\n    # not a list (e.g. a generator that yields out‑of‑order).\n    clashes.sort()\n    return clashes\n```\n\n### How it works\n1. **Normalization** – each `\"HH:MM\"` string is turned into an integer number of minutes since midnight (`_to_minutes`).  \n2. **Half‑open intervals** – we treat a slot as `[start, end)`. This automatically makes a slot that ends exactly when another starts *non‑overlapping* (`_overlap`).  \n3. **Pairwise comparison** – we only compare slots that share the same day, then test the numeric intervals for overlap.  \n4. **Result ordering** – pairs are collected with `i < j` and finally sorted, guaranteeing a deterministic output.\n\n### Example usage\n\n```python\nif __name__ == \"__main__\":\n    timetable = [\n        (\"Mon\", \"09:00\", \"10:30\"),\n        (\"Mon\", \"10:30\", \"11:30\"),   # touches previous slot → no clash\n        (\"Mon\", \"10:00\", \"11:00\"),   # overlaps both first and second\n        (\"Tue\", \"09:00\", \"10:00\"),\n        (\"Tue\", \"09:30\", \"10:30\"),\n    ]\n\n    print(find_clashes(timetable))\n    # Output: [(0, 2), (1, 2), (3, 4)]\n```\n\nThe function runs in **O(n²)** time, which is optimal for the naïve pairwise‑check approach.  \nIf you need to handle thousands of slots more efficiently, you could first group by day and then sweep‑line each day's intervals – but for typical class‑schedule sizes the above solution is simple, clear, and fast enough.",
+      "input_tokens": 183,
+      "output_tokens": 1081,
+      "reasoning_tokens": 10,
+      "total_tokens": 1264,
+      "latency_ms": 2268,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 7,
+       "total": 7,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\ndef _to_minutes(t: str) -> int:\n    \"\"\"Convert a HH:MM string to minutes since midnight.\"\"\"\n    h, m = map(int, t.split(\":\"))\n    return h * 60 + m\n\n\ndef find_clashes(slots):\n    \"\"\"\n    Return a sorted list of (i, j) index pairs, i < j, of slots that clash.\n\n    Each slot is a tuple (day, start, end) where start and end are \"HH:MM\".\n    A clash occurs when two slots are on the same day and their time intervals\n    overlap (end == start is NOT a clash).\n    \"\"\"\n    # Pre‑process slots: convert times to minutes for easy comparison\n    processed = [\n        (day, _to_minutes(start), _to_minutes(end))\n        for day, start, end in slots\n    ]\n\n    clashes = []\n    n = len(processed)\n    for i in range(n):\n        day_i, s_i, e_i = processed[i]\n        for j in range(i + 1, n):\n            day_j, s_j, e_j = processed[j]\n            if day_i != day_j:\n                continue\n            # Overlap exists if the later start is before the earlier end\n            if max(s_i, s_j) < min(e_i, e_j):\n                clashes.append((i, j))\n\n    # The loops already generate pairs in increasing order, but sort to guarantee\n    return sorted(clashes)\n```",
+      "input_tokens": 222,
+      "output_tokens": 329,
+      "reasoning_tokens": 12,
+      "total_tokens": 551,
+      "latency_ms": 699,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 7,
+       "total": 7,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-05": {
+     "vague": {
+      "answer": "**Solution Overview**\n\nThe Indian numbering system groups the right‑most three digits together and then groups the remaining digits in pairs of two:\n\n```\n   1 234 567 890  →  1,23,45,67,890\n   45 00 000      →  45,00,000\n   4 550 000      →  45,50,000\n```\n\nThe task is to write a small, pure‑Rust helper:\n\n```rust\nfn format_inr(amount: i64) -> String\n```\n\n* `amount` is a signed integer that represents a whole number of rupees.  \n* The function must return a string with the correctly placed commas.  \n* A negative value keeps the leading `-` sign (e.g. `-12345 → \"-12,345\"`).\n\nThe implementation works in **O(n)** time where *n* is the number of decimal digits and uses **O(n)** auxiliary memory for the output string.\n\n---\n\n## Algorithm\n\n1. **Separate sign** – remember whether the number is negative and work with its absolute value (`u64`).  \n2. **Convert to decimal string** – `abs_val.to_string()` gives us the digits in the natural order (most‑significant first).  \n3. **Iterate from the right** – walk the digit slice backwards, inserting commas:\n   * The first group (the right‑most three digits) is always size 3.  \n   * After that, every subsequent group has size 2.  \n   * While walking, push the current digit onto a temporary `Vec<char>` (which builds the result **reversed**).  \n   * When the current group is finished, push a comma (unless we are at the very leftmost digit).\n4. **Reverse** the temporary buffer to obtain the final order.  \n5. **Add sign** – prepend `'-'` if the original number was negative.  \n\nBecause we only need to look at each digit once, the algorithm is linear and does not allocate any intermediate strings besides the final result.\n\n---\n\n## Correctness Proof  \n\nWe prove that `format_inr` returns exactly the Indian‑grouped representation of the input integer.\n\n### Lemma 1  \nDuring the backward scan the algorithm inserts a comma **iff** the next digit to the left belongs to a new group according to the Indian grouping rule.\n\n*Proof.*  \nThe algorithm keeps a counter `group_len` that starts at `0`.  \n* For the first three digits (`group_len < 3`) the counter is incremented and no comma is inserted.  \n* After three digits have been processed, `group_len` is reset to `0` and the next group size is set to `2`.  \n* For every subsequent digit, `group_len` is incremented; when it reaches `2` the algorithm inserts a comma, resets `group_len` to `0`, and continues.  \n\nThus commas are placed exactly after the 3‑rd digit from the right, then after every 2‑digit block, which matches the Indian rule. ∎\n\n\n\n### Lemma 2  \nThe sequence of digits produced (ignoring commas) is identical to the decimal representation of `|amount|`.\n\n*Proof.*  \nThe algorithm iterates over the digit slice obtained from `abs_val.to_string()`, which is precisely the decimal digits of `|amount|` in left‑to‑right order. The backward walk visits each digit exactly once and copies it unchanged into the output buffer. No digit is added, removed, or reordered. ∎\n\n\n\n### Lemma 3  \nIf `amount < 0` the output string begins with a single `'-'`; otherwise it contains no sign character.\n\n*Proof.*  \nThe sign is examined before any processing. If `amount < 0` the function stores `sign = true` and works with `abs_val = (-amount) as u64`. After the digit/comma buffer is built and reversed, the function prepends `'-'` only when `sign` is true. No other code adds a sign. ∎\n\n\n\n### Theorem  \nFor any integer `amount` the function `format_inr(amount)` returns the exact Indian‑comma formatted representation of `amount`.\n\n*Proof.*  \nConsider two cases.\n\n*Case 1 – `amount ≥ 0`.*  \nBy Lemma 2 the digits in the result are exactly those of `amount`. By Lemma 1 commas are inserted precisely at the positions required by the Indian grouping rule. No sign is added (Lemma 3). Hence the output matches the specification.\n\n*Case 2 – `amount < 0`.*  \nThe absolute value part follows the same reasoning as Case 1, giving a correctly grouped representation of `|amount|`. Lemma 3 guarantees a leading `'-'`. Therefore the whole string is the required representation of the negative amount.\n\nBoth cases cover all possible inputs, completing the proof. ∎\n\n\n\n---\n\n## Complexity Analysis  \n\n*Let* `d = number of decimal digits of |amount|` ( `d = ⌊log10|amount|⌋ + 1` for non‑zero, `d = 1` for zero).\n\n* **Time:** The algorithm scans the digit slice once → **O(d)**.  \n* **Space:** It stores the output characters (digits + commas) → at most `d + d/2` characters → **O(d)** auxiliary space (the final `String` itself).\n\nBoth bounds are optimal because any correct formatter must at least look at each digit.\n\n---\n\n## Reference Implementation (Rust 1.56+)\n\n```rust\n/// Formats a signed integer as an Indian‑rupee amount with commas.\n///\n/// # Examples\n///\n/// ```\n/// assert_eq!(format_inr(4550000), \"45,50,000\");\n/// assert_eq!(format_inr(-12345678), \"-1,23,45,678\");\n/// assert_eq!(format_inr(0), \"0\");\n/// ```\npub fn format_inr(amount: i64) -> String {\n    // 1. Remember the sign and work with the absolute value.\n    let negative = amount < 0;\n    // `i64::MIN` cannot be negated directly, so we cast to u64 first.\n    let abs_val: u64 = if negative {\n        // Two's complement trick: -(i64::MIN) overflows, but as u64 it is fine.\n        amount.wrapping_abs() as u64\n    } else {\n        amount as u64\n    };\n\n    // 2. Decimal representation of the absolute value.\n    let digits: Vec<char> = abs_val.to_string().chars().collect();\n\n    // 3. Build the result backwards.\n    let mut out_rev: Vec<char> = Vec::with_capacity(digits.len() + digits.len() / 2);\n    let mut i = digits.len(); // index of the next digit to process (exclusive)\n    let mut group_len = 0;    // how many digits we have placed in the current group\n    let mut first_group = true; // the right‑most group is size 3, others size 2\n\n    while i > 0 {\n        // Take the next digit from the right.\n        i -= 1;\n        out_rev.push(digits[i]);\n        group_len += 1;\n\n        // Determine when a comma is needed.\n        let needed_len = if first_group { 3 } else { 2 };\n        if group_len == needed_len && i != 0 {\n            out_rev.push(',');          // insert comma after the group\n            group_len = 0;              // start a new group\n            first_group = false;        // after the first group we always use size 2\n        }\n    }\n\n    // 4. Reverse to obtain the correct order.\n    out_rev.reverse();\n    let mut result: String = out_rev.iter().collect();\n\n    // 5. Prepend minus sign if needed.\n    if negative {\n        result.insert(0, '-');\n    }\n    result\n}\n\n// ---------------------------------------------------------------------------\n// Unit tests (run with `cargo test`)\n\n#[cfg(test)]\nmod tests {\n    use super::format_inr;\n\n    #[test]\n    fn basic_examples() {\n        assert_eq!(format_inr(0), \"0\");\n        assert_eq!(format_inr(5), \"5\");\n        assert_eq!(format_inr(123), \"123\");\n        assert_eq!(format_inr(1234), \"1,234\");\n        assert_eq!(format_inr(12345), \"12,345\");\n        assert_eq!(format_inr(123456), \"1,23,456\");\n        assert_eq!(format_inr(1234567), \"12,34,567\");\n        assert_eq!(format_inr(12345678), \"1,23,45,678\");\n        assert_eq!(format_inr(4550000), \"45,50,000\");\n    }\n\n    #[test]\n    fn negatives() {\n        assert_eq!(format_inr(-1), \"-1\");\n        assert_eq!(format_inr(-12345), \"-12,345\");\n        assert_eq!(format_inr(-12345678), \"-1,23,45,678\");\n    }\n\n    #[test]\n    fn edge_cases() {\n        // i64::MIN = -9_223_372_036_854_775_808\n        // Its absolute value cannot be represented as i64, but we handle it via u64.\n        let min = i64::MIN;\n        let formatted = format_inr(min);\n        // Verify that the formatted string, when we strip commas and sign,\n        // equals the decimal representation of i64::MIN.\n        let stripped",
+      "input_tokens": 145,
+      "output_tokens": 2048,
+      "reasoning_tokens": 11,
+      "total_tokens": 2193,
+      "latency_ms": 4268,
+      "finish_reason": "length",
+      "cached": true,
+      "correct": false,
+      "method": "sandbox",
+      "detail": {
+       "status": "no_function",
+       "passed": 0,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "`format_inr` not defined; top-level functions: []",
+       "sandbox": ""
+      }
+     },
+     "optimized": {
+      "answer": "```python\ndef format_inr(amount: int) -> str:\n    \"\"\"\n    Format an integer amount of rupees in the Indian numbering system.\n\n    Example:\n        >>> format_inr(4550000)\n        '45,50,000'\n        >>> format_inr(-12345678)\n        '-1,23,45,678'\n\n    Parameters\n    ----------\n    amount : int\n        The amount in rupees (can be negative).\n\n    Returns\n    -------\n    str\n        The amount formatted with commas according to Indian conventions.\n    \"\"\"\n    # Preserve sign and work with absolute value\n    sign = '-' if amount < 0 else ''\n    n = abs(amount)\n\n    # Convert to string for easier manipulation\n    s = str(n)\n\n    # If the number has 3 or fewer digits, no commas are needed\n    if len(s) <= 3:\n        return f\"{sign}{s}\"\n\n    # Split the string into the last three digits and the remaining prefix\n    last_three = s[-3:]\n    prefix = s[:-3]\n\n    # Process the prefix in groups of two digits from right to left\n    groups = []\n    while len(prefix) > 2:\n        groups.append(prefix[-2:])   # take last two digits\n        prefix = prefix[:-2]        # remove them\n    # Whatever is left (1 or 2 digits) is the most‑significant group\n    groups.append(prefix)\n\n    # The groups were collected from right to left, so reverse them\n    groups.reverse()\n\n    # Join all parts with commas\n    formatted = ','.join(groups + [last_three])\n\n    return f\"{sign}{formatted}\"\n```",
+      "input_tokens": 183,
+      "output_tokens": 390,
+      "reasoning_tokens": 34,
+      "total_tokens": 573,
+      "latency_ms": 816,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 8,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-06": {
+     "vague": {
+      "answer": "Here is a compact, well‑documented implementation that follows the specification exactly:\n\n```python\nimport re\n\n# ----------------------------------------------------------------------\n# Regular‑expression that describes a valid PRN\n# ----------------------------------------------------------------------\n#  ^\\s*                     – optional leading whitespace (will be ignored)\n#  (201[8-9]|202[0-6])      – admission year 2018‑2026 (4 digits)\n#  (BT|MT)                  – programme code\n#  (CS|IT|EN|ME|CV|EL)      – branch code\n#  (?!0{5})\\d{5}            – 5‑digit serial that is NOT 00000\n#  \\s*$                     – optional trailing whitespace (will be ignored)\n# ----------------------------------------------------------------------\n_PRN_PATTERN = re.compile(\n    r\"\"\"^\\s*\n        (201[8-9]|202[0-6])      # year 2018‑2026\n        (BT|MT)                  # programme\n        (CS|IT|EN|ME|CV|EL)      # branch\n        (?!0{5})\\d{5}            # serial, not all zeros\n        \\s*$\"\"\",\n    re.VERBOSE,\n)\n\ndef is_valid_prn(prn: str) -> bool:\n    \"\"\"\n    Validate a Programme Registration Number (PRN).\n\n    The PRN must satisfy **all** of the following rules:\n\n    1. May contain leading or trailing whitespace – these are ignored.\n    2. Starts with a 4‑digit admission year between 2018 and 2026 inclusive.\n    3. Followed by the programme code ``BT`` or ``MT``.\n    4. Followed by a branch code chosen from\n       ``CS, IT, EN, ME, CV, EL``.\n    5. Ends with a 5‑digit serial number that is **not** ``00000``.\n    6. All alphabetic characters are upper‑case.\n\n    Parameters\n    ----------\n    prn: str\n        The PRN string to validate. It may contain surrounding spaces.\n\n    Returns\n    -------\n    bool\n        ``True`` if the string conforms to the format, ``False`` otherwise.\n    \"\"\"\n    # The compiled regex already strips leading/trailing spaces via ^\\s* … \\s*$\n    # and checks every rule in one pass.\n    return bool(_PRN_PATTERN.match(prn))\n\n\n# ----------------------------------------------------------------------\n# Simple sanity‑check (can be removed or placed under a `if __name__ == \"__main__\":` guard)\n# ----------------------------------------------------------------------\nif __name__ == \"__main__\":\n    test_cases = {\n        \"2022BTCS00041\": True,\n        \" 2022BTCS00041 \": True,   # leading/trailing spaces are ignored\n        \"2018MTEL12345\": True,\n        \"2026BTME54321\": True,\n        \"2027BTCS00001\": False,    # year out of range\n        \"2020ATCS00001\": False,    # invalid programme\n        \"2020BTXX00001\": False,    # invalid branch\n        \"2020BTCS00000\": False,    # serial cannot be all zeros\n        \"2020btcs00041\": False,    # lower‑case letters not allowed\n        \"2020BTCS041\":   False,    # serial not 5 digits\n    }\n\n    for prn, expected in test_cases.items():\n        result = is_valid_prn(prn)\n        print(f\"{prn!r:20} → {result} (expected {expected})\")\n```\n\n### How it works\n* **Whitespace handling** – `^\\s*` and `\\s*$` allow any amount of leading/trailing spaces, which are effectively ignored.\n* **Year check** – `(201[8-9]|202[0-6])` matches exactly the years 2018‑2026.\n* **Programme & branch** – simple alternations enforce the allowed upper‑case codes.\n* **Serial number** – `(?!0{5})\\d{5}` first asserts that the next five digits are **not** all zeros (negative look‑ahead) and then consumes exactly five digits.\n* The compiled regex is reused for every call, making the function fast even when invoked many times.\n\nFeel free to drop the function into any module; the test harness at the bottom demonstrates typical usage.",
+      "input_tokens": 174,
+      "output_tokens": 949,
+      "reasoning_tokens": 7,
+      "total_tokens": 1123,
+      "latency_ms": 1968,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 8,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\nimport re\n\n# Pre‑compiled pattern for performance and readability\n_PRN_PATTERN = re.compile(\n    r\"\"\"\n    ^                                   # start of string\n    (?:201[8-9]|202[0-6])               # admission year 2018‑2026\n    (?:BT|MT)                           # programme code\n    (?:CS|IT|EN|ME|CV|EL)               # branch code\n    (?!00000)                           # serial must not be 00000\n    \\d{5}                               # 5‑digit serial\n    $                                   # end of string\n    \"\"\",\n    re.VERBOSE,\n)\n\ndef is_valid_prn(prn: str) -> bool:\n    \"\"\"\n    Validate a PRN according to the specification:\n    - 4‑digit year between 2018 and 2026 inclusive\n    - Programme code: \"BT\" or \"MT\"\n    - Branch code: one of CS, IT, EN, ME, CV, EL\n    - 5‑digit serial that is not \"00000\"\n    - Upper‑case letters only\n    - Leading/trailing whitespace is ignored\n    \"\"\"\n    # Strip any surrounding whitespace before validation\n    prn = prn.strip()\n    return bool(_PRN_PATTERN.match(prn))\n```",
+      "input_tokens": 213,
+      "output_tokens": 415,
+      "reasoning_tokens": 131,
+      "total_tokens": 628,
+      "latency_ms": 867,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 8,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-07": {
+     "vague": {
+      "answer": "Here’s a robust implementation that:\n\n* **Ignores** the `\"AB\"` entries (absent students) instead of treating them as 0.  \n* Returns **`None`** when the list is empty **or** when every entry is `\"AB\"`.  \n* Rounds the result to **two decimal places** (as a `float`).  \n* Includes a small test harness so you can see it work.\n\n```python\ndef class_average(marks):\n    \"\"\"\n    Compute the average of a class’s marks, ignoring absent students.\n\n    Parameters\n    ----------\n    marks : list\n        A list containing either integers (0‑100) or the string \"AB\"\n        for an absent student.\n\n    Returns\n    -------\n    float or None\n        The average of the present students rounded to 2 decimal places,\n        or None if the list is empty or all students are absent.\n    \"\"\"\n    # Filter out the absent entries\n    present_marks = [m for m in marks if m != \"AB\"]\n\n    # If nobody is present, return None\n    if not present_marks:\n        return None\n\n    # Compute the average and round to 2 decimal places\n    avg = sum(present_marks) / len(present_marks)\n    return round(avg, 2)\n\n\n# ----------------------------------------------------------------------\n# Simple sanity‑check tests (you can delete or expand them as needed)\n# ----------------------------------------------------------------------\nif __name__ == \"__main__\":\n    test_cases = [\n        ([80, 90, 70], 80.0),                     # no absences\n        ([80, \"AB\", 70, 90], 80.0),               # one absent\n        ([\"AB\", \"AB\"], None),                    # all absent\n        ([], None),                              # empty list\n        ([100, 95, \"AB\", 85, 90], 92.5),          # mixed\n    ]\n\n    for i, (inp, expected) in enumerate(test_cases, 1):\n        result = class_average(inp)\n        assert result == expected, f\"Test {i} failed: got {result}, expected {expected}\"\n        print(f\"Test {i} passed → {result}\")\n```\n\n### What changed compared to the original version?\n\n```python\ndef class_average(marks):\n    return sum(marks) / len(marks)\n```\n\n* The original code tried to sum the whole list, which raises a `TypeError` when `\"AB\"` is present because you can’t add a string to an integer.\n* It also counted absent students as `0`, which is not what the specification requires.\n* No handling for the “all absent” or “empty list” edge‑cases.\n\nThe new version filters out `\"AB\"` entries first, checks for the empty‑result case, then safely computes and rounds the average.",
+      "input_tokens": 155,
+      "output_tokens": 602,
+      "reasoning_tokens": 8,
+      "total_tokens": 757,
+      "latency_ms": 1266,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 7,
+       "total": 7,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\ndef class_average(marks):\n    \"\"\"\n    Calculate the average of a list of marks, ignoring absent students.\n\n    Parameters\n    ----------\n    marks : list\n        A list containing integers (0‑100) or the string \"AB\" for an absent student.\n\n    Returns\n    -------\n    float or None\n        The average of the present students rounded to two decimal places,\n        or None if the list is empty or all students are absent.\n    \"\"\"\n    # Filter out absent entries\n    present_marks = [m for m in marks if m != \"AB\"]\n\n    # If there are no present marks, return None\n    if not present_marks:\n        return None\n\n    # Compute the average and round to 2 decimal places\n    avg = sum(present_marks) / len(present_marks)\n    return round(avg, 2)\n```",
+      "input_tokens": 181,
+      "output_tokens": 216,
+      "reasoning_tokens": 31,
+      "total_tokens": 397,
+      "latency_ms": 463,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 7,
+       "total": 7,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-08": {
+     "vague": {
+      "answer": "**Solution Overview**\n\nWe need a function `balances(expenses, members)` that:\n\n1. Validates that every payer appearing in `expenses` is also present in `members`.  \n   If not, raise `ValueError` with a helpful message.\n2. Computes the *fair share* for each member:  \n   `total_spent / len(members)`.\n3. Calculates each member’s net balance = *amount they actually paid* – *fair share*.  \n   The result must be a dictionary mapping every member (including those who never paid) to a\n   balance rounded to **two decimal places**. Positive balances mean the member is owed money,\n   negative balances mean they owe money.\n\nThe implementation is straightforward:\n\n* Use a `defaultdict(float)` to accumulate how much each member paid.\n* After the validation step, sum all amounts, compute the per‑person share, and then build the\n  final dictionary, rounding each value with `round(..., 2)`.\n\nBelow is clean, well‑documented Python code that follows the specification and includes a few\nunit‑tests to illustrate the expected behaviour.\n\n```python\nfrom collections import defaultdict\nfrom typing import List, Tuple, Dict, Iterable\n\n\ndef balances(\n    expenses: Iterable[Tuple[str, float]],\n    members: Iterable[str],\n) -> Dict[str, float]:\n    \"\"\"\n    Compute how much each member of a trip should receive or pay back.\n\n    Parameters\n    ----------\n    expenses : iterable of (payer, amount)\n        Each tuple records who paid and how much they paid.\n    members : iterable of str\n        All people who participated in the trip.  The list may contain names that never\n        appear as a payer.\n\n    Returns\n    -------\n    dict\n        Mapping ``member -> balance`` where ``balance = amount_paid - fair_share``.\n        The balance is rounded to two decimal places.  Positive means the member is\n        owed money, negative means they owe money.\n\n    Raises\n    ------\n    ValueError\n        If any payer in ``expenses`` is not present in ``members``.\n    \"\"\"\n    # Convert members to a set for O(1) membership tests and to keep a stable order later.\n    member_set = set(members)\n\n    # 1️⃣ Validate payers\n    for payer, _ in expenses:\n        if payer not in member_set:\n            raise ValueError(f\"Payer '{payer}' is not listed among the trip members.\")\n\n    # 2️⃣ Accumulate how much each member actually paid\n    paid = defaultdict(float)          # member -> total amount they paid\n    total_spent = 0.0\n\n    for payer, amount in expenses:\n        # Guard against negative or non‑numeric amounts (optional, but nice)\n        if not isinstance(amount, (int, float)):\n            raise TypeError(f\"Amount for payer '{payer}' must be a number, got {type(amount)}.\")\n        if amount < 0:\n            raise ValueError(f\"Amount for payer '{payer}' cannot be negative ({amount}).\")\n        paid[payer] += amount\n        total_spent += amount\n\n    # 3️⃣ Compute the fair share (split equally among *all* members)\n    n_members = len(member_set)\n    if n_members == 0:\n        raise ValueError(\"The members list cannot be empty.\")\n    fair_share = total_spent / n_members\n\n    # 4️⃣ Build the result dictionary, ensuring every member appears\n    result: Dict[str, float] = {}\n    for member in member_set:\n        net = paid.get(member, 0.0) - fair_share\n        # Round to 2 decimal places as required\n        result[member] = round(net, 2)\n\n    return result\n\n\n# ----------------------------------------------------------------------\n# Example usage & simple tests\n# ----------------------------------------------------------------------\nif __name__ == \"__main__\":\n    # Example 1 – the classic case\n    expenses1 = [\n        (\"Alice\", 120.0),\n        (\"Bob\",  60.0),\n        (\"Alice\", 30.0),\n    ]\n    members1 = [\"Alice\", \"Bob\", \"Charlie\"]\n    # Total = 210, fair share = 70 each\n    # Alice paid 150 → +80, Bob paid 60 → -10, Charlie paid 0 → -70\n    print(balances(expenses1, members1))\n    # Expected: {'Alice': 80.0, 'Bob': -10.0, 'Charlie': -70.0}\n\n    # Example 2 – payer not in members → raises ValueError\n    try:\n        balances([(\"Dave\", 50)], [\"Alice\", \"Bob\"])\n    except ValueError as e:\n        print(\"Caught expected error:\", e)\n\n    # Example 3 – members with no expenses at all\n    print(balances([], [\"A\", \"B\", \"C\"]))   # all balances are -0.0 (i.e. 0.0)\n\n    # Example 4 – rounding check\n    expenses4 = [(\"A\", 10), (\"B\", 20)]\n    members4 = [\"A\", \"B\", \"C\"]\n    # total = 30, share = 10.0 → A: 0, B: +10, C: -10\n    print(balances(expenses4, members4))\n    # Expected: {'A': 0.0, 'B': 10.0, 'C': -10.0}\n```\n\n### How the code satisfies the requirements\n\n| Requirement | How it’s met |\n|-------------|--------------|\n| **Validate payers** | Loop over `expenses` and raise `ValueError` if a payer isn’t in `members`. |\n| **Split equally among *all* members** | `fair_share = total_spent / len(member_set)`. |\n| **Return a dict with every member** | The final loop iterates over `member_set`, inserting a key for each member, even if they never paid. |\n| **Balance = paid – fair share** | `net = paid.get(member, 0.0) - fair_share`. |\n| **Round to 2 decimals** | `round(net, 2)` before storing in the result. |\n| **Positive = should get money back** | By definition `paid - fair_share` is positive when the member over‑paid. |\n| **Raise `ValueError` for unknown payer** | Implemented in the validation step. |\n\nFeel free to drop the function into any project, import it, and use it directly. The included `if __name__ == \"__main__\":` block demonstrates typical usage and serves as a quick sanity‑check.",
+      "input_tokens": 168,
+      "output_tokens": 1404,
+      "reasoning_tokens": 7,
+      "total_tokens": 1572,
+      "latency_ms": 2956,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 7,
+       "total": 7,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\ndef balances(expenses, members):\n    \"\"\"\n    Calculate each member's balance for a trip expense split.\n\n    Parameters\n    ----------\n    expenses : list of tuple\n        Each tuple is (payer, amount) where `payer` is a string and `amount` is a number.\n    members : iterable\n        All members who participated in the trip.\n\n    Returns\n    -------\n    dict\n        Mapping of member -> balance (rounded to 2 decimals). Positive balance means the member\n        should receive money back, negative means they owe money.\n\n    Raises\n    ------\n    ValueError\n        If any payer in `expenses` is not present in `members`.\n    \"\"\"\n    # Ensure members is a set for fast lookup and to preserve unique entries\n    members_set = set(members)\n\n    # Validate payers\n    for payer, _ in expenses:\n        if payer not in members_set:\n            raise ValueError(f\"Payer '{payer}' is not a member of the trip\")\n\n    # Total amount spent\n    total_spent = sum(amount for _, amount in expenses)\n\n    # Number of members (split among all members)\n    n_members = len(members_set)\n    if n_members == 0:\n        # No members – return empty dict (nothing to split)\n        return {}\n\n    # Fair share per member\n    fair_share = total_spent / n_members\n\n    # Initialize balances with zero for every member\n    balances_dict = {member: 0.0 for member in members_set}\n\n    # Add amounts paid by each payer\n    for payer, amount in expenses:\n        balances_dict[payer] += amount\n\n    # Subtract the fair share for each member\n    for member in balances_dict:\n        balances_dict[member] = round(balances_dict[member] - fair_share, 2)\n\n    return balances_dict\n```\n",
+      "input_tokens": 207,
+      "output_tokens": 402,
+      "reasoning_tokens": 8,
+      "total_tokens": 609,
+      "latency_ms": 835,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 7,
+       "total": 7,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-09": {
+     "vague": {
+      "answer": "**What went wrong**\n\n```python\ndef second_highest(marks):\n    marks.sort()          # mutates the caller’s list\n    return marks[-2]      # just picks the penultimate element\n```\n\n* It **modifies** the list that the caller passed in – the problem statement explicitly forbids that.  \n* It returns the *penultimate* element, not the *second‑distinct* element.  \n  When the highest mark occurs more than once (`[95, 95, 80]`) the function returns `95` again.  \n* If the list has fewer than two elements (`[]` or `[73]`) the slice `marks[-2]` raises an `IndexError`.\n\n---\n\n## Fixed implementation\n\n```python\nfrom typing import List, Optional, Any\n\ndef second_highest(marks: List[int]) -> Optional[int]:\n    \"\"\"\n    Return the second highest **distinct** mark in *marks*.\n    If there is no such mark (empty list, only one distinct value, etc.) return None.\n    The input list is never modified.\n    \"\"\"\n    # Guard against empty / single‑element input early\n    if not marks:\n        return None\n\n    # Use a set to keep only distinct values, then sort them.\n    # Converting to a set also guarantees we don’t touch the original list.\n    distinct = sorted(set(marks))\n\n    # After sorting, the highest distinct mark is at -1, the second highest at -2.\n    # If there is only one distinct value, return None.\n    if len(distinct) < 2:\n        return None\n\n    return distinct[-2]\n```\n\n### Why this works\n\n| Situation                               | `set(marks)` | `sorted(...)` | Result (`distinct[-2]`) |\n|----------------------------------------|--------------|---------------|--------------------------|\n| `[]`                                    | `set()`      | `[]`          | `len < 2` → `None`       |\n| `[73]`                                  | `{73}`       | `[73]`        | `len < 2` → `None`       |\n| `[85, 85, 85]`                          | `{85}`       | `[85]`        | `len < 2` → `None`       |\n| `[92, 78, 92, 61]`                      | `{92,78,61}` | `[61,78,92]`  | `78`                     |\n| `[100, 99, 99, 98]`                     | `{100,99,98}`| `[98,99,100]` | `99`                     |\n| `[55, 70, 70, 70, 80]`                  | `{55,70,80}` | `[55,70,80]`  | `70`                     |\n\n* **No mutation** – we never call `list.sort()` or any in‑place method on the original list.\n* **Distinctness** – converting to a `set` removes duplicates before we look for the second highest.\n* **Safety** – we explicitly check the length of the distinct list and return `None` when a second distinct mark does not exist, avoiding `IndexError`.\n\n---\n\n### One‑liner alternative (if you prefer brevity)\n\n```python\ndef second_highest(marks: List[int]) -> Optional[int]:\n    d = sorted(set(marks))\n    return d[-2] if len(d) > 1 else None\n```\n\nBoth versions satisfy the requirements:\n\n* **Do not modify** the caller’s list.\n* Return the **second highest distinct** mark.\n* Return **`None`** when a second distinct mark cannot be determined.",
+      "input_tokens": 173,
+      "output_tokens": 792,
+      "reasoning_tokens": 10,
+      "total_tokens": 965,
+      "latency_ms": 1654,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "sandbox",
+      "detail": {
+       "status": "failed",
+       "passed": 3,
+       "total": 8,
+       "renamed": null,
+       "failed": [
+        {
+         "test": "assert second_highest([92, 92, 85]) == 85",
+         "error": "AssertionError"
+        },
+        {
+         "test": "assert second_highest([50]) is None",
+         "error": "IndexError: list index out of range"
+        },
+        {
+         "test": "assert second_highest([]) is None",
+         "error": "IndexError: list index out of range"
+        },
+        {
+         "test": "assert second_highest([70, 70, 70]) is None",
+         "error": "AssertionError"
+        }
+       ],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\ndef second_highest(marks):\n    \"\"\"\n    Return the second highest distinct mark from the given list.\n    If there is no such distinct mark (empty list, only one distinct value, etc.),\n    return None. The original list is not modified.\n    \"\"\"\n    # Use a set to get distinct marks, then sort them.\n    distinct = sorted(set(marks))\n    # Need at least two distinct values.\n    if len(distinct) < 2:\n        return None\n    # The second highest is the penultimate element.\n    return distinct[-2]\n```",
+      "input_tokens": 212,
+      "output_tokens": 161,
+      "reasoning_tokens": 32,
+      "total_tokens": 373,
+      "latency_ms": 398,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 8,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    },
+    "cod-10": {
+     "vague": {
+      "answer": "**`scale_quantity` – a pure‑Python helper for the Hostel recipe app**\n\n```python\nfrom __future__ import annotations\nimport math\nimport re\nfrom fractions import Fraction\nfrom typing import Tuple\n\n# ----------------------------------------------------------------------\n# Helper functions\n# ----------------------------------------------------------------------\ndef _parse_amount(amount_str: str) -> Fraction:\n    \"\"\"\n    Convert a string that may be an integer, decimal, simple fraction or mixed\n    number into a ``Fraction`` (exact rational value).\n\n    Supported forms:\n        \"2\"          → 2\n        \"0.5\"        → 1/2\n        \"1/2\"        → 1/2\n        \"1 1/2\"      → 3/2\n        \"  3  3/4 \"  → 15/4   (extra whitespace is ignored)\n    \"\"\"\n    amount_str = amount_str.strip()\n    # Mixed number: \"<whole> <num>/<den>\"\n    if \" \" in amount_str:\n        whole, frac = amount_str.split(maxsplit=1)\n        whole = int(whole)\n        frac = Fraction(frac)          # Fraction can parse \"1/2\"\n        return Fraction(whole) + frac\n\n    # Simple fraction or decimal or integer\n    if \"/\" in amount_str:               # \"3/4\"\n        return Fraction(amount_str)\n    if \".\" in amount_str:               # \"0.75\"\n        # Use Fraction.from_float to keep the exact binary representation,\n        # then limit denominator to a reasonable size (we only need 1/8 steps).\n        return Fraction(float(amount_str)).limit_denominator(1000)\n    # plain integer\n    return Fraction(int(amount_str))\n\n\ndef _format_fraction(frac: Fraction) -> str:\n    \"\"\"\n    Turn a ``Fraction`` that is already reduced to the nearest 1/8 into a\n    human‑readable string:\n\n        1/2   → \"1/2\"\n        3/2   → \"1 1/2\"\n        2     → \"2\"\n    The fraction part is always a proper fraction (numerator < denominator)\n    and is expressed in lowest terms.\n    \"\"\"\n    # Whole part\n    whole = frac.numerator // frac.denominator\n    remainder = frac - whole\n\n    if remainder == 0:\n        return str(whole)                     # pure integer\n    if whole == 0:\n        # proper fraction only\n        return f\"{remainder.numerator}/{remainder.denominator}\"\n    # mixed number\n    return f\"{whole} {remainder.numerator}/{remainder.denominator}\"\n\n\ndef _round_to_nearest_eighth(frac: Fraction) -> Fraction:\n    \"\"\"\n    Round a ``Fraction`` to the nearest 1/8 (i.e. denominator 8) and then\n    reduce it to lowest terms.  ``Fraction`` automatically reduces, so we\n    only need to quantise the value.\n    \"\"\"\n    # Multiply by 8, round to nearest integer, then divide back by 8\n    eighths = round(frac * 8)\n    return Fraction(eighths, 8)   # automatically reduced\n\n\n# ----------------------------------------------------------------------\n# Main public function\n# ----------------------------------------------------------------------\ndef scale_quantity(qty: str, from_servings: int | float, to_servings: int | float) -> str:\n    \"\"\"\n    Scale a quantity string from one serving size to another.\n\n    Parameters\n    ----------\n    qty : str\n        The original quantity, e.g. ``\"1 1/2 cups thick poha\"``.\n        The *amount* part (everything up to the first whitespace) may be:\n            * integer      – ``\"2\"``\n            * decimal      – ``\"0.5\"``\n            * simple fraction – ``\"1/2\"``\n            * mixed number – ``\"1 1/2\"``\n        The *unit* part is everything after the amount (including any extra\n        words) and is returned unchanged.\n\n    from_servings : int | float\n        Original number of servings the recipe is written for.\n\n    to_servings : int | float\n        Desired number of servings.\n\n    Returns\n    -------\n    str\n        The scaled quantity, rounded to the nearest 1/8, expressed as a\n        whole number, a proper fraction or a mixed number in lowest terms,\n        followed by a single space and the original unit.\n\n    Example\n    -------\n    >>> scale_quantity(\"1 1/2 cups thick poha\", 2, 5)\n    '3 3/4 cups thick poha'\n    \"\"\"\n    # ------------------------------------------------------------------\n    # 1️⃣  Split the input into amount and unit\n    # ------------------------------------------------------------------\n    # The amount is the first token(s) that form a number; the rest is the unit.\n    # A simple regex that captures the amount (including a possible space for\n    # mixed numbers) and the remainder:\n    match = re.match(r'\\s*([^\\s]+(?:\\s+[^\\s/]+/[^\\s/]+)?)\\s+(.*)', qty)\n    if not match:\n        raise ValueError(f'Unable to parse quantity: \"{qty}\"')\n    amount_str, unit = match.groups()\n\n    # ------------------------------------------------------------------\n    # 2️⃣  Convert the amount to a Fraction (exact rational)\n    # ------------------------------------------------------------------\n    amount = _parse_amount(amount_str)\n\n    # ------------------------------------------------------------------\n    # 3️⃣  Apply the scaling factor\n    # ------------------------------------------------------------------\n    factor = Fraction(to_servings, from_servings)   # exact rational factor\n    scaled = amount * factor\n\n    # ------------------------------------------------------------------\n    # 4️⃣  Round to the nearest 1/8\n    # ------------------------------------------------------------------\n    rounded = _round_to_nearest_eighth(scaled)\n\n    # ------------------------------------------------------------------\n    # 5️⃣  Format back to a string (whole / proper fraction / mixed)\n    # ------------------------------------------------------------------\n    formatted_amount = _format_fraction(rounded)\n\n    # ------------------------------------------------------------------\n    # 6️⃣  Return the final string\n    # ------------------------------------------------------------------\n    return f\"{formatted_amount} {unit.strip()}\"\n```\n\n### How it works, step‑by‑step\n\n| Step | What we do | Why |\n|------|------------|-----|\n| **Parse** | Split the input into *amount* and *unit* using a regex. | Keeps the unit untouched (it may contain several words). |\n| **Convert** | Turn the amount into a `Fraction`. Handles integers, decimals, simple fractions, and mixed numbers. | `Fraction` gives exact arithmetic, avoiding floating‑point drift. |\n| **Scale** | Multiply by `to_servings / from_servings` (also a `Fraction`). | Exact scaling, even for non‑integer serving ratios. |\n| **Round** | Quantise to the nearest 1/8 (`round(frac * 8) / 8`). | Recipes usually work with 1/8‑cup, 1/8‑tsp, etc. |\n| **Reduce & format** | Reduce to lowest terms and output as whole, proper fraction, or mixed number. | Human‑readable, matches the required format. |\n| **Combine** | Append the original unit. | The unit stays exactly as the user wrote it. |\n\n### Quick sanity‑check\n\n```python\ntests = [\n    (\"2 cups flour\", 4, 6, \"3 cups flour\"),\n    (\"0.5 tsp salt\", 2, 5, \"1 1/4 tsp salt\"),\n    (\"1/3 cup oil\", 1, 2, \"2/3 cup oil\"),\n    (\"1 1/2 tbsp sugar\", 3, 2, \"1 tsp sugar\"),\n    (\"3 3/4 liters broth\", 5, 3, \"2 1/4 liters broth\"),\n]\n\nfor qty, frm, to, expected in tests:\n    result = scale_quantity(qty, frm, to)\n    assert result == expected, f\"{qty} → {result} (expected {expected})\"\nprint(\"All demo tests passed!\")\n```\n\nRunning the snippet prints **“All demo tests passed!”**, confirming that the function behaves as specified.\n\nFeel free to drop `scale_quantity` into any module of the Hostel recipe app – it has no external dependencies beyond the Python standard library. Happy cooking!",
+      "input_tokens": 220,
+      "output_tokens": 1753,
+      "reasoning_tokens": 7,
+      "total_tokens": 1973,
+      "latency_ms": 3689,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "sandbox",
+      "detail": {
+       "status": "passed",
+       "passed": 8,
+       "total": 8,
+       "renamed": null,
+       "failed": [],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     },
+     "optimized": {
+      "answer": "```python\nfrom fractions import Fraction\nimport re\nfrom typing import Tuple\n\ndef _parse_quantity(qty: str) -> Tuple[Fraction, str]:\n    \"\"\"\n    Split a quantity string into a numeric Fraction and the unit string.\n\n    The numeric part may be:\n        - an integer:          \"2\"\n        - a decimal:           \"0.5\"\n        - a simple fraction:   \"1/2\"\n        - a mixed number:      \"1 1/2\"\n    The unit is everything after the numeric part (including leading spaces trimmed).\n\n    Returns:\n        (amount_as_fraction, unit_string)\n    \"\"\"\n    # Regex to capture the numeric part (including optional mixed number) at the start\n    match = re.match(r'\\s*([0-9]+(?:\\s+[0-9]+/[0-9]+)?|[0-9]+/[0-9]+|[0-9]*\\.[0-9]+)\\s*(.*)', qty)\n    if not match:\n        raise ValueError(f\"Unable to parse quantity: {qty!r}\")\n\n    num_str, unit = match.groups()\n    unit = unit.strip()\n\n    # Convert the numeric string to a Fraction\n    if ' ' in num_str:                     # mixed number, e.g. \"1 1/2\"\n        whole, frac = num_str.split()\n        amount = Fraction(int(whole)) + Fraction(frac)\n    elif '/' in num_str:                   # simple fraction, e.g. \"3/4\"\n        amount = Fraction(num_str)\n    elif '.' in num_str:                   # decimal, e.g. \"0.75\"\n        amount = Fraction(str(float(num_str)))   # go via float to keep precision\n    else:                                  # integer\n        amount = Fraction(int(num_str))\n\n    return amount, unit\n\n\ndef _round_to_nearest_eighth(frac: Fraction) -> Fraction:\n    \"\"\"\n    Round a Fraction to the nearest 1/8 (i.e. nearest 0.125).\n    \"\"\"\n    # Multiply by 8, round to nearest integer, then divide back\n    eighths = round(frac * 8)\n    return Fraction(eighths, 8)\n\n\ndef _format_fraction(frac: Fraction) -> str:\n    \"\"\"\n    Convert a Fraction (already rounded to 1/8) into a string:\n        - whole number: \"3\"\n        - proper fraction: \"3/4\"\n        - mixed number: \"1 1/2\"\n    The fraction part is always in lowest terms.\n    \"\"\"\n    # Ensure denominator is positive\n    if frac.denominator < 0:\n        frac = -frac\n\n    whole = frac.numerator // frac.denominator\n    remainder = frac - whole\n\n    if remainder == 0:\n        return str(whole)\n    elif whole == 0:\n        # proper fraction\n        return f\"{remainder.numerator}/{remainder.denominator}\"\n    else:\n        # mixed number\n        return f\"{whole} {remainder.numerator}/{remainder.denominator}\"\n\n\ndef scale_quantity(qty: str, from_servings: int, to_servings: int) -> str:\n    \"\"\"\n    Scale a quantity string from one serving size to another.\n\n    Parameters\n    ----------\n    qty : str\n        Quantity string in the form \"<amount> <unit>\", where <amount> can be an integer,\n        decimal, simple fraction, or mixed number.\n    from_servings : int\n        Original number of servings the quantity corresponds to.\n    to_servings : int\n        Desired number of servings.\n\n    Returns\n    -------\n    str\n        Scaled quantity, rounded to the nearest 1/8, expressed as a whole number,\n        proper fraction, or mixed number (lowest terms), followed by a space and the unit.\n        Example: \"1 1/4 tsp\".\n    \"\"\"\n    if from_servings == 0:\n        raise ValueError(\"from_servings must be non‑zero\")\n    if to_servings < 0:\n        raise ValueError(\"to_servings must be non‑negative\")\n\n    amount, unit = _parse_quantity(qty)\n\n    # Scale\n    scaled = amount * Fraction(to_servings, from_servings)\n\n    # Round to nearest 1/8\n    rounded = _round_to_nearest_eighth(scaled)\n\n    # Format the numeric part\n    numeric_str = _format_fraction(rounded)\n\n    # Combine with unit (if unit is empty we just return the number)\n    return f\"{numeric_str} {unit}\" if unit else numeric_str\n```",
+      "input_tokens": 245,
+      "output_tokens": 1024,
+      "reasoning_tokens": 61,
+      "total_tokens": 1269,
+      "latency_ms": 2164,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": false,
+      "method": "sandbox",
+      "detail": {
+       "status": "failed",
+       "passed": 4,
+       "total": 8,
+       "renamed": null,
+       "failed": [
+        {
+         "test": "assert scale_quantity(\"1/2 tsp\", 4, 10) == \"1 1/4 tsp\"",
+         "error": "AssertionError"
+        },
+        {
+         "test": "assert scale_quantity(\"0.5 kg\", 1, 3) == \"1 1/2 kg\"",
+         "error": "AssertionError"
+        },
+        {
+         "test": "assert scale_quantity(\"1/4 cup\", 4, 2) == \"1/8 cup\"",
+         "error": "AssertionError"
+        },
+        {
+         "test": "assert scale_quantity(\"1/3 cup\", 1, 1) == \"3/8 cup\"",
+         "error": "AssertionError"
+        }
+       ],
+       "error": "",
+       "sandbox": "bwrap"
+      }
+     }
+    }
+   }
+  },
+  "cerebras/gpt-oss-120b": {
+   "label": "gpt-oss-120b on Cerebras (prompt rendered for GPT)",
+   "target_rendering": "gpt",
+   "cases": {
+    "cqa-01": {
+     "vague": {
+      "answer": "**Total amount you’ll need to pay on 18 July 2026**\n\n| Fee | Amount |\n|-----|--------|\n| Room rent (boys’ hostel) | ₹ 38,000 |\n| Mess charges | ₹ 42,000 |\n| **Subtotal** | **₹ 80,000** |\n| Late fee (3 days × ₹ 100) | ₹ 300 |\n| **Grand total** | **₹ 80,300** |\n\n**Why the late fee?**  \n- The due date is **15 July 2026**.  \n- Paying on **18 July** is **3 days** late, so the penalty is **3 × ₹ 100 = ₹ 300**.\n\n**Note:** The caution deposit of ₹ 5,000 is only collected once, at the time of first admission to the hostel. Since you’re already in the boys’ hostel (2nd year), you would have paid that earlier and do **not** need to pay it again.\n\nSo, when you make the payment through the ERP portal on 18 July, the amount to be transferred is **₹ 80,300**.",
+      "input_tokens": 250,
+      "output_tokens": 369,
+      "reasoning_tokens": 115,
+      "total_tokens": 619,
+      "latency_ms": 704,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "₹ 80,300"
+      }
+     },
+     "optimized": {
+      "answer": "The hostel fee for a boy is ₹38,000 (room) + ₹42,000 (mess) = ₹80,000. Paying on 18 July is 3 days after the 15 July deadline, so a late fee of 3 × ₹100 = ₹300 is added. Hence the total amount due is **₹80,300**.",
+      "input_tokens": 277,
+      "output_tokens": 183,
+      "reasoning_tokens": 88,
+      "total_tokens": 460,
+      "latency_ms": 427,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "₹80,300"
+      }
+     }
+    },
+    "cqa-02": {
+     "vague": {
+      "answer": "Your **Compiler Design (CD)** paper was originally slated for **10 November 2026**, but the corrigendum issued on 28 October 2026 moved it because of the Diwali holiday.\n\n**New date:** **17 November 2026**  \n**Time:** 10:00 am – 1:00 pm (same as the other exams)  \n\nSo mark **17 Nov 2026** on your calendar for the Compiler Design exam. Good luck!",
+      "input_tokens": 216,
+      "output_tokens": 148,
+      "reasoning_tokens": 36,
+      "total_tokens": 364,
+      "latency_ms": 1016,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "17 November 2026"
+      }
+     },
+     "optimized": {
+      "answer": "Your Compiler Design (CD) paper is scheduled for **17 November 2026** (rescheduled from 10 Nov 2026 due to the Diwali holiday).",
+      "input_tokens": 243,
+      "output_tokens": 92,
+      "reasoning_tokens": 46,
+      "total_tokens": 335,
+      "latency_ms": 378,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "17 November 2026"
+      }
+     }
+    },
+    "cqa-03": {
+     "vague": {
+      "answer": "The CSE side made **153 runs** in total (runs off the bat = 142 + extras = 11).  \n\nIn a one‑innings match the chasing team must score **one run more than the first innings total** to win, so the Mechanical team’s target was:\n\n**154 runs** (to win) – 153 runs would be a tie.",
+      "input_tokens": 285,
+      "output_tokens": 155,
+      "reasoning_tokens": 66,
+      "total_tokens": 440,
+      "latency_ms": 429,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "154 runs"
+      }
+     },
+     "optimized": {
+      "answer": "The CSE side scored 142 runs from the bat plus 11 extras, totalling **153 runs**.  \nTherefore the Mechanical team’s target was **154 runs** to win.",
+      "input_tokens": 312,
+      "output_tokens": 139,
+      "reasoning_tokens": 91,
+      "total_tokens": 451,
+      "latency_ms": 482,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "154 runs"
+      }
+     }
+    },
+    "cqa-04": {
+     "vague": {
+      "answer": "**Kanda Poha – scaled for 10 people (≈ 2½ × the original recipe)**  \n\n| Ingredient | Original (serves 4) | × 2.5 (serves 10) | How to measure / notes |\n|------------|--------------------|------------------|------------------------|\n| Thick poha (raw, flattened rice) | 2 cups | **5 cups** | Rinse in a strainer; do **not** soak. |\n| Onion, large | 1 | **2½ onions** (≈ 1 ½ medium‑large onions) | Peel and chop finely. |\n| Green chilies | 2 | **5 chilies** | Slice thinly; adjust to heat preference. |\n| Turmeric powder | ½ tsp | **1 ¼ tsp** | (≈ 1 ½ tsp, you can round to 1 ½ tsp for ease). |\n| Mustard seeds | 1 tsp | **2½ tsp** | About ½ Tbsp. |\n| Curry leaves | 10‑12 | **25‑30 leaves** | Fresh leaves give the best aroma. |\n| Peanuts (raw or roasted) | ¼ cup | **⅝ cup** (≈ ½ cup + 2 Tbsp) | Roughly 70 g; lightly toasted if you like extra crunch. |\n| Oil (vegetable or mustard) | 1 Tbsp | **2½ Tbsp** (≈ ½ fl oz) | Use a neutral oil; you can add a splash more if the pan looks dry. |\n| Salt | to taste | to taste | Start with about **1 ½ tsp** and adjust. |\n| Sugar | to taste | to taste | Start with **½ tsp** (optional) and adjust. |\n| Lemon (for serving) | wedges | **½ – 1 lemon**, cut into wedges | Serve on the side; guests can squeeze to taste. |\n\n### Quick “How‑to” Reminder (same as the original)\n\n1. **Rinse the poha** in a fine‑mesh strainer under running water until it’s just damp. Set aside in the strainer to drain – **do not soak** it, otherwise it will become mushy.  \n2. Heat the oil in a large skillet or wok over medium heat. Add mustard seeds; when they pop, toss in the curry leaves and sliced green chilies.  \n3. Add the chopped onion and sauté until it turns translucent (about 3‑4 min).  \n4. Sprinkle the turmeric, then stir in the peanuts and give everything a quick mix.  \n5. Add the drained poha, salt, and a pinch of sugar. Toss gently to coat the poha evenly with the spices and oil. Cook for 2‑3 min, just until the poha is heated through.  \n6. Taste and adjust seasoning. Remove from heat, squeeze fresh lemon juice over the top, and serve immediately.\n\n### Portioning Tip for a Hostel Setting\n- A **5‑cup** volume of poha (after rinsing) yields roughly **10‑12 cups** of cooked poha, which comfortably feeds 10 hungry hostel‑mates (about 1 cup per person).  \n- If you have a big, shallow pan, you can spread the poha out to keep it from steaming too much and to maintain the distinct texture of each grain.\n\nEnjoy your Kanda Poha feast! 🌾🥄",
+      "input_tokens": 176,
+      "output_tokens": 790,
+      "reasoning_tokens": 22,
+      "total_tokens": 966,
+      "latency_ms": 870,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "5 cups"
+      }
+     },
+     "optimized": {
+      "answer": "{\n  \"amount\": {\n    \"poha\": \"5 cups thick poha\",\n    \"onion\": \"2.5 large onions (≈ 2 to 3 onions)\",\n    \"green_chillies\": \"5 green chillies\",\n    \"turmeric\": \"1.25 tsp (≈ 1¼ tsp)\",\n    \"mustard_seeds\": \"2.5 tsp\",\n    \"curry_leaves\": \"25‑30 leaves\",\n    \"peanuts\": \"0.625 cup (≈ 5/8 cup)\",\n    \"oil\": \"2.5 tbsp\",\n    \"salt_and_sugar\": \"to taste\",\n    \"lemon\": \"to serve\"\n  }\n}",
+      "input_tokens": 200,
+      "output_tokens": 346,
+      "reasoning_tokens": 191,
+      "total_tokens": 546,
+      "latency_ms": 477,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-05": {
+     "vague": {
+      "answer": "**Infosys – Minimum CGPA Requirement for B.Tech Candidates**\n\n- **Program:** Infosys Specialist Programmer (Campus Drive)  \n- **Eligible Branches:** CSE, IT, E&TC (B.Tech)  \n- **Minimum CGPA:** **6.5** (or **60 % aggregate**) throughout the degree.  \n- **Backlog Policy:** You may have **at most one dead backlog** (i.e., a backlog that has not been cleared). No active backlogs are allowed.  \n\nSo, to be eligible for the Infosys campus drive, a B.Tech student needs a CGPA of **6.5 / 60 %** and can have no more than one unresolved backlog.",
+      "input_tokens": 214,
+      "output_tokens": 189,
+      "reasoning_tokens": 32,
+      "total_tokens": 403,
+      "latency_ms": 430,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     },
+     "optimized": {
+      "answer": "Infosys requires a minimum CGPA of **6.5** for B.Tech students (CSE, IT, or E&TC). This is the threshold for the Specialist Programmer campus drive.",
+      "input_tokens": 241,
+      "output_tokens": 96,
+      "reasoning_tokens": 47,
+      "total_tokens": 337,
+      "latency_ms": 379,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-06": {
+     "vague": {
+      "answer": "**Cheapest plan that still gives you ≥ 2 GB per day**\n\n| Plan | Price (Rs) | Validity | Data per day | Cost per day (Rs) |\n|------|------------|----------|--------------|-------------------|\n| **P5** | 2,999 | 365 days | **2.5 GB** | **≈ 8.22** |\n| P3 | 719 | 84 days | 2 GB | ≈ 8.56 |\n| P2 | 349 | 28 days | 2 GB | ≈ 12.46 |\n| P4 | 859 | 84 days | 2.5 GB | ≈ 10.23 |\n| P1 | 299 | 28 days | 1.5 GB (insufficient) | — |\n| P6 | 1,799 | 365 days | 24 GB total → 0.066 GB / day (insufficient) | — |\n\n### Why **P5** is the best choice\n- **Data requirement:** You need at least **2 GB per day**.  \n  - P5 provides **2.5 GB per day**, comfortably meeting the requirement.  \n- **Cost efficiency:** Its **cost per day** (Rs ≈ 8.22) is lower than any other plan that satisfies the 2 GB/day threshold.  \n- **Long‑term convenience:** A 1‑year validity means you won’t have to renew or worry about running out of days for the next 12 months.\n\n### Quick check\nIf you were to compare the total cost for a full year:\n\n- **P5:** Rs 2,999 for the whole year → 2.5 GB × 365 ≈ 912.5 GB total.\n- **P3 (3‑month cycles):** 4 × 719 = Rs 2,876 for 12 months → 2 GB × 365 ≈ 730 GB total.\n- **P2 (monthly cycles):** 12 × 349 = Rs 4,188 for 12 months → 2 GB × 365 ≈ 730 GB total.\n\nEven though P3’s total yearly price is slightly lower than P5, its **cost per day** is higher (≈ 8.56 Rs vs 8.22 Rs) and it gives you less total data. Since you asked for the cheapest *per‑day* rate that meets the 2 GB/day need, **P5** wins.\n\n---\n\n**Bottom line:** Choose **Plan P5** (Rs 2,999 for 365 days, 2.5 GB per day) – it’s the most economical way to get at least 2 GB each day.",
+      "input_tokens": 214,
+      "output_tokens": 819,
+      "reasoning_tokens": 199,
+      "total_tokens": 1033,
+      "latency_ms": 1072,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "P5"
+      }
+     },
+     "optimized": {
+      "answer": "The plan that meets the ≥ 2 GB‑per‑day requirement at the lowest daily cost is **P5** (Rs 2,999 for 365 days, giving 2.5 GB/day). Its cost per day is about **Rs 8.2**, which is cheaper than P3 (≈Rs 8.6/day) and the other qualifying plans.",
+      "input_tokens": 242,
+      "output_tokens": 273,
+      "reasoning_tokens": 182,
+      "total_tokens": 515,
+      "latency_ms": 778,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "P5"
+      }
+     }
+    },
+    "cqa-07": {
+     "vague": {
+      "answer": "**Step‑by‑step calculation**\n\n| Period | Days late | Rate per day | Fine |\n|--------|-----------|--------------|------|\n| First 7 days of delay | 7 | Rs 2 | 7 × 2 = Rs 14 |\n| After the first 7 days | 11 – 7 = 4 | Rs 5 | 4 × 5 = Rs 20 |\n| **Total fine** | – | – | **Rs 14 + Rs 20 = Rs 34** |\n\n**Explanation**\n\n- The book was due on **3 Oct 2026** and was returned on **14 Oct 2026**.  \n- That is **11 days** overdue.\n- The library’s fine schedule is:\n  - Rs 2 per day for the first 7 days of delay,\n  - Rs 5 per day for each subsequent day.\n- Since this is a regular lending book (not a reference book), the rates apply as‑is.\n- Sundays are counted as days of delay, but they do not change the rate, so the calculation above already includes them.\n\n**Result:** You owe **Rs 34** as the fine for the overdue “Operating System Concepts” book.",
+      "input_tokens": 203,
+      "output_tokens": 334,
+      "reasoning_tokens": 58,
+      "total_tokens": 537,
+      "latency_ms": 703,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     },
+     "optimized": {
+      "answer": "The book was returned 11 days after the due date (October 4 – October 14).  \nFor the first 7 days the fine is 7 × Rs 2 = Rs 14, and for the remaining 4 days it is 4 × Rs 5 = Rs 20.  \nThus the total fine is Rs 14 + Rs 20 = Rs 34.",
+      "input_tokens": 230,
+      "output_tokens": 165,
+      "reasoning_tokens": 62,
+      "total_tokens": 395,
+      "latency_ms": 570,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cqa-08": {
+     "vague": {
+      "answer": "**Earliest bus you can catch after arriving at 08:10 am**\n\n| Departure | Type      | Travel time | Arrival (approx.) |\n|-----------|-----------|-------------|-------------------|\n| 08:30 am  | Ordinary  | 1 h 50 min  | **10:20 am** |\n| 09:00 am  | Shivshahi | 1 h 25 min  | 10:25 am |\n| 09:30 am  | Ordinary  | 1 h 50 min  | 11:20 am |\n\nThe 08:30 am **Ordinary** bus is the first service that departs after you reach the stand at 08:10 am, and it will get you to Kolhapur at **approximately 10:20 am**.  \n\nSo, **take the 08:30 am Ordinary bus** for the earliest arrival on Sunday.",
+      "input_tokens": 212,
+      "output_tokens": 290,
+      "reasoning_tokens": 76,
+      "total_tokens": 502,
+      "latency_ms": 665,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "extractor",
+      "detail": {
+       "extracted": "08:30 am Ordinary bus"
+      }
+     },
+     "optimized": {
+      "answer": "You can catch the **08:30 Ordinary** bus, which departs after you arrive and reaches Kolhapur at **10:20** (journey = 1 h 50 min). This is the earliest possible arrival on Sunday.",
+      "input_tokens": 240,
+      "output_tokens": 145,
+      "reasoning_tokens": 83,
+      "total_tokens": 385,
+      "latency_ms": 515,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {}
+     }
+    },
+    "cls-04": {
+     "vague": {
+      "answer": "**Hostel Mess Menu – Week 41**\n\n| Dish | Veg / Non‑veg* |\n|------|----------------|\n| D1 Paneer tikka | **Veg** |\n| D2 Egg bhurji | **Non‑veg** (contains egg) |\n| D3 Chicken biryani | **Non‑veg** |\n| D4 Dal tadka | **Veg** |\n| D5 Fish fry | **Non‑veg** |\n| D6 Veg Manchurian | **Veg** |\n| D7 Omelette sandwich | **Non‑veg** (contains egg) |\n| D8 Mushroom masala | **Veg** |\n| D9 Eggless chocolate cake | **Veg** |\n\n\\*According to the mess committee rule, any dish that includes egg is classified as **non‑veg**. All other dishes are classified based on their primary ingredients.",
+      "input_tokens": 154,
+      "output_tokens": 225,
+      "reasoning_tokens": 24,
+      "total_tokens": 379,
+      "latency_ms": 917,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     },
+     "optimized": {
+      "answer": "```json\n[\n  {\"dish\":\"Paneer tikka\",\"type\":\"veg\"},\n  {\"dish\":\"Egg bhurji\",\"type\":\"nonveg\"},\n  {\"dish\":\"Chicken biryani\",\"type\":\"nonveg\"},\n  {\"dish\":\"Dal tadka\",\"type\":\"veg\"},\n  {\"dish\":\"Fish fry\",\"type\":\"nonveg\"},\n  {\"dish\":\"Veg Manchurian\",\"type\":\"veg\"},\n  {\"dish\":\"Omelette sandwich\",\"type\":\"nonveg\"},\n  {\"dish\":\"Mushroom masala\",\"type\":\"veg\"},\n  {\"dish\":\"Eggless chocolate cake\",\"type\":\"veg\"}\n]\n```",
+      "input_tokens": 187,
+      "output_tokens": 174,
+      "reasoning_tokens": 38,
+      "total_tokens": 361,
+      "latency_ms": 523,
+      "finish_reason": "stop",
+      "cached": true,
+      "correct": true,
+      "method": "deterministic",
+      "detail": {
+       "accuracy": 1.0,
+       "right": 9,
+       "items": 9,
+       "wrong": {}
+      }
+     }
+    }
+   }
+  }
+ }
+}
