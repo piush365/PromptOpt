@@ -246,6 +246,16 @@ def report(results: dict, cases: list[dict], prompts: dict) -> str:
         L.append("In progress (reported once every case is answered): " + "; ".join(
             f"`{m}` {k}/{len(cases)}" for m, k in partial.items()) + ".\n")
     complete = [m for m in results["models"] if m not in partial]
+    if len(complete) > 1:
+        L += ["## Summary across models\n",
+              "| model | vague correct | optimized correct | only optimized | only vague | McNemar p | total tokens (aggregate) |",
+              "|---|---|---|---|---|---|---|"]
+        for i, mid in enumerate(complete):
+            s = summarize([(None, r) for r in results["models"][mid]["cases"].values()])
+            L.append(f"| {results['models'][mid]['label']}{' (primary)' if i == 0 else ''} | {s['vague']}/{s['n']} | "
+                     f"{s['optimized']}/{s['n']} | {s['only_optimized']} | {s['only_vague']} | {_p(s['mcnemar_p'])} | "
+                     f"{-s['aggregate_reduction']:+.1f}% |")
+        L.append("")
     for i, mid in enumerate(complete):
         res = results["models"][mid]
         rows = [(byid[k], r) for k, r in res["cases"].items()]
