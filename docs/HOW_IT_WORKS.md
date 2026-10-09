@@ -208,7 +208,7 @@ Each detector is a separate pure function. The examples below are real outputs.
   [FR §3]
 * **Macro-F1** = the plain average of the five F1 values, so every category counts equally = **0.746** [FR §1].
 * **Confusion matrix:** rows = true category, columns = predicted category. The full matrix is printed in
-  `evaluation/stage_a_test_final.md`; FINAL_RESULTS only gives its summary. In plain words, **precision** reads down
+  `evaluation/stage_a/stage_a_test_final.md`; FINAL_RESULTS only gives its summary. In plain words, **precision** reads down
   a column: "of everything I called summarization, how much really was?" **Recall** reads along a row: "of all real
   summarization prompts, how many did I find?" The errors sit almost entirely between closed_qa,
   information_extraction and summarization, because a degraded prompt like "what is this about?" fits all three

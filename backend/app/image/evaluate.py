@@ -1,7 +1,7 @@
 """Image mode on the hand-written prompt set: attribute coverage before/after, per attribute and per target.
 
-    python -m app.image.evaluate --out ../evaluation/image_mode.md
-    python -m app.image.evaluate --blind ../evaluation/image/blind_test.csv --out ../evaluation/image_blind_test.md
+    python -m app.image.evaluate --out ../evaluation/image/image_mode.md
+    python -m app.image.evaluate --blind ../evaluation/image/blind_test.csv --out ../evaluation/image/image_blind_test.md
 
 Coverage = the attribute detectors (app.image.attributes) find the attribute in the text: before = the user's
 request (scaffolding and filler removed), after = each rendering (with the Stable Diffusion negative prompt). The
@@ -197,8 +197,8 @@ def generation_section() -> list[str]:
         for r in res:
             if r["id"] in thumbs:
                 a, b = thumbs[r["id"]]
-                lines.append(f"| {r['id']}: `{r['prompt']}` | ![](image/examples/{a}) {r['original']['clip']:.1f} | "
-                             f"![](image/examples/{b}) {r['optimized']['clip']:.1f} |")
+                lines.append(f"| {r['id']}: `{r['prompt']}` | ![](examples/{a}) {r['original']['clip']:.1f} | "
+                             f"![](examples/{b}) {r['optimized']['clip']:.1f} |")
         lines.append("")
     drops = sorted(res, key=lambda r: r["optimized"]["clip"] - r["original"]["clip"])[:3]
     drop_thumbs = thumbnails(res, tuple(r["id"] for r in drops))
@@ -212,8 +212,8 @@ def generation_section() -> list[str]:
     for r in drops:
         if r["id"] in drop_thumbs:
             a, b = drop_thumbs[r["id"]]
-            lines.append(f"| {r['id']}: `{r['prompt']}` | {r['optimized']['prompt']} | ![](image/examples/{a}) "
-                         f"{r['original']['clip']:.1f} | ![](image/examples/{b}) {r['optimized']['clip']:.1f} |")
+            lines.append(f"| {r['id']}: `{r['prompt']}` | {r['optimized']['prompt']} | ![](examples/{a}) "
+                         f"{r['original']['clip']:.1f} | ![](examples/{b}) {r['optimized']['clip']:.1f} |")
     lines.append("")
     lines.append("Per prompt (CLIP vs original prompt): " + "; ".join(
         f"{r['id']} {r['original']['clip']:.1f} -> {r['optimized']['clip']:.1f}" for r in res) + ".\n")
@@ -332,7 +332,7 @@ def heldout_examples() -> list[str]:
                 img = Image.open(gen[it["id"]][v]["path"]).convert("RGB")
                 img.thumbnail((256, 256))
                 img.save(EXAMPLE_DIR / name, quality=85)
-            cells.append(f"![](image/examples/{name}) CLIP {sc[it['id']][v]['clip']:.1f}, P(style) "
+            cells.append(f"![](examples/{name}) CLIP {sc[it['id']][v]['clip']:.1f}, P(style) "
                          f"{sc[it['id']][v]['p_style']:.2f}" if (EXAMPLE_DIR / name).exists() else "-")
         lines.append(f"| {it['id']}: `{it['prompt']}` ({it['style']}) | " + " | ".join(cells) + " |")
     return lines + [""]
@@ -383,7 +383,7 @@ def blind_report(res: list[dict]) -> str:
         return "\n".join(lines + ["**Future work.** A blind set written by people outside the development team "
                                    "(`evaluation/image/blind_test.csv`, 10 rows) was planned but not collected. Image "
                                    "results are on developer-written prompts only (dev set and the held-out set "
-                                   "written before v2, `image_mode.md`)."]) + "\n"
+                                   "written before v2, `image/image_mode.md`)."]) + "\n"
     lines += ["| id | prompt | target | stated by user | optimized prompt (v2) | suggestions offered | expected behaviour "
               "(team) | meets expectation |", "|---|---|---|---|---|---|---|---|"]
     for r in res:

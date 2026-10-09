@@ -1,4 +1,4 @@
-"""Image optimizer v2 (the app's default). Lesson from v1 (evaluation/image_mode.md): default lighting / palette /
+"""Image optimizer v2 (the app's default). Lesson from v1 (evaluation/image/image_mode.md): default lighting / palette /
 detail keywords are not neutral for Stable Diffusion; they pull stylised requests toward photographs. So v2 adds
 only what cannot conflict with the request and turns every other missing attribute into a suggestion the user may
 accept.
@@ -14,7 +14,7 @@ Rules (each change logged, like Stage B):
 Missing style / composition / lighting / palette / mood / background / aspect ratio / usual negatives ->
 `suggestions` (chips in the UI, never inserted automatically); missing subject detail -> a hint only.
 
-Decided on the dev set (evaluation/image_mode.md, 3b): a draft also added the usual negatives (I14, filtered for
+Decided on the dev set (evaluation/image/image_mode.md, 3b): a draft also added the usual negatives (I14, filtered for
 conflicts) and the quality term "high quality" (I15) automatically. Both still pulled Stable Diffusion images away
 from the request (dev CLIP vs original 29.21 vs 29.95; the watercolor fox lost its style), so they are no longer
 automatic: the negatives are an "avoid" suggestion (I14's conflict filter decides which are offered), and the quality

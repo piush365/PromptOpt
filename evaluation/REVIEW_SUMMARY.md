@@ -9,7 +9,7 @@ stand-ins for the target LLMs.
 PromptOpt Dataset **v1.2 final**: 5,184 degraded -> optimized prompt pairs over five categories (from Dolly-15k and
 CodeAlpaca-20k). Built from v1.2 (5,228 rows) by leaving out the rows the team rejected (35) and the rows removed by
 the automatic LLM-assisted filter (9). Details: `docs/DATASET_CARD.md`; every left-out row with its reason:
-`evaluation/final_dataset_merge_log.csv`.
+`evaluation/dataset/final_dataset_merge_log.csv`.
 
 | category | train | val | test | benchmark | total |
 |---|---|---|---|---|---|
@@ -26,7 +26,7 @@ Rows left out, by split: human rejection train 11, val 1, test 17, benchmark 6; 
 
 Three team members (Nirzara Manade, Siddhi Bolaikar, Piush Gogi) rated 170 rows each: 90 shared **overlap** rows
 (18 per category), 60 extra rows and 20 v1.2 rows alone. 330 distinct rows rated; every sheet is complete. Full
-report: `evaluation/validation_report.md`.
+report: `evaluation/dataset/validation_report.md`.
 
 **Acceptance rule.** Overlap rows are decided per question by majority vote (at least 2 of 3); a row is accepted
 only if the majority says Y on all five questions. Extra and v1.2 rows take their single rater's answers (accepted
@@ -124,8 +124,8 @@ raised task success from 77% to 96% on the checkable items.
 ## 6. Test-split results (run once, offline, no API calls)
 
 Stage A retrained on the final train split (4,509 rows -> 9,018 texts, plus 500 Dolly out-of-scope examples: 9,518), then the
-482 test prompts run once through Stage A and Stage B. Full reports: `evaluation/stage_a_test.md`,
-`evaluation/stage_b_test.md`.
+482 test prompts run once through Stage A and Stage B. Full reports: `evaluation/stage_a/stage_a_test.md`,
+`evaluation/stage_b/stage_b_test.md`.
 
 **Stage A task category (degraded prompts): accuracy 74.7%, macro-F1 0.746** (5 categories)
 
@@ -167,7 +167,7 @@ routed: missing label set 27, missing output format 24.
 `final-benchmark`, run 2026-09-28 20:24-21:20 (one pass; a second pass found nothing left to do): all 44 benchmark
 rows of v1.2 final x 3 variants, target `cerebras/gpt-oss-120b` (temperature 0, max 2,048 tokens, reasoning low),
 judge Groq `qwen/qwen3.8-27b`, blind to the variant. 132 of 132 items recorded, 0 judge failures, **no exclusions**
-(no benchmark row is in `wrong_references.csv`). Full table: `evaluation/final_benchmark_summary.md`.
+(no benchmark row is in `dataset/wrong_references.csv`). Full table: `evaluation/tokens/final_benchmark_summary.md`.
 
 | variant | n | quality (0-10) | task success | input tok | output tok | total tok | latency ms |
 |---|---|---|---|---|---|---|---|

@@ -30,7 +30,7 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   pre-selecting it); its format/constraints are applied (`contract.category_decision`; plan section 6).
   Runtime + contract: `app/stage_c/runtime.py`, `app/stage_c/contract.py`; the app uses Stage C when the adapter is in
   `backend/artifacts/stage_c_adapter` and peft/transformers are installed (run the app from `.venv-gpu` for that).
-  Evaluation: `python -m app.stage_c.evaluate --adapter artifacts/stage_c_adapter --out ../evaluation/stage_c_eval.md`.
+  Evaluation: `python -m app.stage_c.evaluate --adapter artifacts/stage_c_adapter --out ../evaluation/stage_c/stage_c_eval.md`.
 - **IR + rendering:** the result becomes a model-agnostic intermediate representation (`app/stage_b/ir.py`: task,
   context, context_ref, constraints, requirements, output_format, attachment, target_llm, category_source, unresolved),
   rendered per target LLM by `app/rendering.py` with four sections, same content everywhere (Claude: XML tags, context
@@ -40,7 +40,7 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   labelled). A user-selected category overrides Stage A (`optimize(..., category=...)`); `app/pipeline.py` runs one
   request end to end, saves the renderings and returns Stage A's own category and `category_disagreement`.
   Per-category templates: `docs/CATEGORY_TEMPLATES.md` (`python -m app.templates_doc`). Attachment rules on 30
-  hand-made prompts: `evaluation/attachment_test.md` (`python -m app.attachment_eval`); a blind set written by
+  hand-made prompts: `evaluation/attachments/attachment_test.md` (`python -m app.attachment_eval`); a blind set written by
   others (`evaluation/attachments/blind_test.csv`, `--blind`) is future work: attachment and image results are on
   developer-written prompts only. Named Stage C cases: `evaluation/stage_c/named_cases.json`.
 - **Groq usage:** every Groq call records its tokens and cached tokens (failed JSON calls estimated) in
@@ -111,12 +111,12 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 1 | Dataset v1.1 repair, then send rater sheets | Done: team 3 x 170 and faculty 20 rated; 295 of 330 accepted; v1.2 final = 5,184 rows (35 human-rejected + 9 LLM-assisted-filter rows left out); `evaluation/REVIEW_SUMMARY.md` |
 | 2 | Expand dataset to ~1,000 per category (frozen splits) | Done: v1.2 = 5,228 rows (1,009-1,093 per category); test 100 per category (extra rows only from new v1.2 rows), val 30, benchmark 10; `docs/DATASET_CARD.md`. The default dataset is now v1.2 final (`config.DATASET_DIR` / `DATASET_CSV`), so no command needs `--dataset` |
 | 3 | IR + renderers for GPT/Gemini/Claude, user-selected category + attachment modifier | Done (started early, in parallel with step 2) |
-| 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Done (finish phase 4): `app/coding/` (bwrap sandbox, Cerebras-generated asserts validated on the reference, naming discovery); method `docs/CODING_TESTS.md`, results `evaluation/coding_tests.md` |
-| 5 | Evaluation on val with Groq stand-in models | Done: `dev-val-n10` (Stage B tuned on val; `evaluation/REVIEW_SUMMARY.md` section 5) and the Stage C val evaluation (`evaluation/stage_c_eval.md`) |
-| 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c_eval.md` |
+| 4 | Coding test-case generation, validated against the reference solution, plus a sandboxed runner | Done (finish phase 4): `app/coding/` (bwrap sandbox, Cerebras-generated asserts validated on the reference, naming discovery); method `docs/CODING_TESTS.md`, results `evaluation/coding/coding_tests.md` |
+| 5 | Evaluation on val with Groq stand-in models | Done: `dev-val-n10` (Stage B tuned on val; `evaluation/REVIEW_SUMMARY.md` section 5) and the Stage C val evaluation (`evaluation/stage_c/stage_c_eval.md`) |
+| 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c/stage_c_eval.md` |
 | 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Done: final test run once on 2026-10-02, tag `final-for-test`; `evaluation/FINAL_RESULTS.md` (Stage A 74.7%; Stage B format 3.1% -> 95.0%, 6.4% routed; Stage C ablation: helps on routed prompts only; benchmark: quality 8.2 -> 9.0, task success 67% -> 85%, tokens -57%) |
 | 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`, plain HTML/JS in `app/static/`; Compare: finish phase 6 |
-| 9 | Phase 2: image generation | Done as finish phase 5: separate, explicitly selected image mode (`app/image/`); `evaluation/image_mode.md` |
+| 9 | Phase 2: image generation | Done as finish phase 5: separate, explicitly selected image mode (`app/image/`); `evaluation/image/image_mode.md` |
 
 ### Finish phase (started 2026-10-02; due Sunday 2026-10-04, buffer to Thursday 2026-10-08)
 Product goal unchanged: prompt + target LLM + category (auto/5) + optional attachment type -> optimized, model-specific
@@ -129,11 +129,11 @@ offline identical to the frozen ones). Tune new things on val only; the test spl
 |---|---|---|
 | 1 | Stage C data (parser coverage: task 100%, format 94.0%, constraints 75.0%, accepted), Colab notebook, `docs/STAGE_C_PLAN.md` | Done; trained locally (`.venv-gpu`, RTX 3050, micro-batch 1 x 16, bf16, 51 min); adapter in `backend/artifacts/stage_c_adapter` (git-ignored); Colab not needed |
 | 2 | Renderers per target + token counts, category override with disagreement shown, attachment types (image, pdf, pptx, docx, spreadsheet, code file) with a 30-prompt hand-made test set, category templates | Done: attachments 30/30 correct; Stage B on test byte-identical to frozen-for-test (482 prompts) |
-| 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | Done: LoRA passes validation 98.3% vs zero-shot 3.4%; routed prompts: format stated 10% -> 90%, task intent 0.911 -> 0.885; forced routing lowers task intent (0.855 -> 0.773), so Stage C stays routed-only; GPU 0.72 s median, CPU 5.0 s; `evaluation/stage_c_eval.md`. Final test run done: `evaluation/FINAL_RESULTS.md`, tag `final-for-test` |
-| 4 | Coding test cases (Cerebras-generated asserts validated on the CodeAlpaca reference) + bwrap sandbox runner; pass@1 degraded vs Stage B | Done: test pass@1 strict 20.7% -> 34.5%, lenient 37.9% -> 41.4% (n=29, Python only; JS skipped); `evaluation/coding_tests.md`, `docs/CODING_TESTS.md` |
-| 5 | Image-generation mode (separate, explicitly selected): v1 rules + renderers, then v2 (user's words first, suggestions instead of default keywords); SD 1.5 + CLIP on dev and a held-out set | Done: held-out CLIP vs original: original 33.08, v1 30.78 (p=0.043), v2 32.77 (no sig. diff, style kept 12/12); `evaluation/image_mode.md` |
-| 6 | Compare: original vs optimized prompt on a real model (Groq, Cerebras now; Gemini if `GEMINI_API_KEY`; GPT/Claude disabled until keys), tokens / latency / sandbox tests / optional blind judge, honest provider labels | Done: `app/compare/`, live examples `evaluation/compare_examples.md` (coding -67.7% total tokens, both 6/6 tests; closed_qa +17%) |
-| 6b | Token evaluation on the FULL test split (482): degraded vs A+B (+ A+B+C on routed), Cerebras gpt-oss-120b, no judge, bootstrap CI + Wilcoxon (`python -m app.evaluation.tokens`) | <!-- TOKEN:status:start -->Done (2026-10-08 00:50): Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482); `evaluation/token_test.md`<!-- TOKEN:status:end --> |
+| 3 | Integrate Stage C under the routing contract; val eval (base vs LoRA, ablation A+B / A+B+C / C-only, routed + forced); FastAPI + plain HTML/JS UI (Compare button disabled) | Done: LoRA passes validation 98.3% vs zero-shot 3.4%; routed prompts: format stated 10% -> 90%, task intent 0.911 -> 0.885; forced routing lowers task intent (0.855 -> 0.773), so Stage C stays routed-only; GPU 0.72 s median, CPU 5.0 s; `evaluation/stage_c/stage_c_eval.md`. Final test run done: `evaluation/FINAL_RESULTS.md`, tag `final-for-test` |
+| 4 | Coding test cases (Cerebras-generated asserts validated on the CodeAlpaca reference) + bwrap sandbox runner; pass@1 degraded vs Stage B | Done: test pass@1 strict 20.7% -> 34.5%, lenient 37.9% -> 41.4% (n=29, Python only; JS skipped); `evaluation/coding/coding_tests.md`, `docs/CODING_TESTS.md` |
+| 5 | Image-generation mode (separate, explicitly selected): v1 rules + renderers, then v2 (user's words first, suggestions instead of default keywords); SD 1.5 + CLIP on dev and a held-out set | Done: held-out CLIP vs original: original 33.08, v1 30.78 (p=0.043), v2 32.77 (no sig. diff, style kept 12/12); `evaluation/image/image_mode.md` |
+| 6 | Compare: original vs optimized prompt on a real model (Groq, Cerebras now; Gemini if `GEMINI_API_KEY`; GPT/Claude disabled until keys), tokens / latency / sandbox tests / optional blind judge, honest provider labels | Done: `app/compare/`, live examples `evaluation/compare/compare_examples.md` (coding -67.7% total tokens, both 6/6 tests; closed_qa +17%) |
+| 6b | Token evaluation on the FULL test split (482): degraded vs A+B (+ A+B+C on routed), Cerebras gpt-oss-120b, no judge, bootstrap CI + Wilcoxon (`python -m app.evaluation.tokens`) | <!-- TOKEN:status:start -->Done (2026-10-08 00:50): Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482); `evaluation/tokens/token_test.md`<!-- TOKEN:status:end --> |
 | 7 | `evaluation/FINAL_RESULTS.md` updated with phases 4-6 and the token headline; README "how to run the app" | Done: FINAL_RESULTS sections 7-9 + token headline; README tested from a fresh clone |
 
 Future work (decided 2026-10-07): the blind sets (`evaluation/attachments/blind_test.csv` 15 rows,
@@ -141,7 +141,7 @@ Future work (decided 2026-10-07): the blind sets (`evaluation/attachments/blind_
 developer-written prompts only. API keys for GPT/Claude: future work.
 
 - **Coding tests (phase 4):** `python -m app.coding.testgen` (items + validated tests, Cerebras, cached in
-  `data/coding/`), `python -m app.coding.evaluate --out ../evaluation/coding_tests.md` (pass@1 degraded vs Stage B).
+  `data/coding/`), `python -m app.coding.evaluate --out ../evaluation/coding/coding_tests.md` (pass@1 degraded vs Stage B).
   Code only ever runs through `app.coding.sandbox.run_python` (bwrap: no network, read-only system; refuses to run
   without bwrap unless `SANDBOX_REQUIRE_BWRAP=0`).
 
@@ -151,9 +151,9 @@ developer-written prompts only. API keys for GPT/Claude: future work.
   Diffusion), their "no X" list as the avoid list / negative prompt, a ratio only when implied; every other missing
   attribute (and the usual negatives) is a clickable suggestion, never inserted automatically. v1 (`optimizer.py`
   rules I01-I11 + `render.py`, default keywords for every gap) is kept only for the evaluation: its defaults pulled
-  Stable Diffusion images away from the request (lesson in `evaluation/image_mode.md`). Dev prompts
+  Stable Diffusion images away from the request (lesson in `evaluation/image/image_mode.md`). Dev prompts
   `evaluation/image/image_prompts.json` (tuning only), held-out `heldout_prompts.json` (committed before v2, run
-  once). `python -m app.image.evaluate --out ../evaluation/image_mode.md`; local SD 1.5 + CLIP:
+  once). `python -m app.image.evaluate --out ../evaluation/image/image_mode.md`; local SD 1.5 + CLIP:
   `python -m app.image.generate --set dev|heldout` in `.venv-gpu`.
 
 ### Close-out (2026-10-07): project complete, tag `v1.0`

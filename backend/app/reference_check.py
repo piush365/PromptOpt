@@ -9,7 +9,7 @@ Those are logic errors, which a static check cannot see. What it can see:
 * not_code         a code-writing instruction whose reference contains no code
 * missing_name     the instruction names a function/class/variable ("called X", "named X") that the code lacks
 
-    python -m app.reference_check --splits test benchmark      # writes evaluation/reference_suspects.csv
+    python -m app.reference_check --splits test benchmark      # writes evaluation/dataset/reference_suspects.csv
 """
 import argparse
 import ast
@@ -20,8 +20,8 @@ from pathlib import Path
 from app.config import BACKEND_DIR
 
 EVAL_DOCS = BACKEND_DIR.parent / "evaluation"
-SUSPECTS_CSV = EVAL_DOCS / "reference_suspects.csv"
-WRONG_REFERENCES_CSV = EVAL_DOCS / "wrong_references.csv"
+SUSPECTS_CSV = EVAL_DOCS / "dataset" / "reference_suspects.csv"
+WRONG_REFERENCES_CSV = EVAL_DOCS / "dataset" / "wrong_references.csv"
 
 LANG_IN_INSTRUCTION = [      # (language, pattern in the instruction); order matters (JavaScript before Java)
     ("javascript", r"\b(?:javascript|js|node\.?js|jquery|react|typescript)\b"),

@@ -116,9 +116,9 @@ CLIP measures agreement with the request text, not aesthetic quality, and ViT-B/
 
 | prompt | original (CLIP) | optimized (CLIP) |
 |---|---|---|
-| img-01: `a dog` | ![](image/examples/img-01_original.jpg) 23.9 | ![](image/examples/img-01_optimized.jpg) 25.2 |
-| img-06: `can you make me a picture of a cat on a windowsill, no text` | ![](image/examples/img-06_original.jpg) 30.4 | ![](image/examples/img-06_optimized.jpg) 27.1 |
-| img-13: `a futuristic city without cars and people for my phone wallpaper` | ![](image/examples/img-13_original.jpg) 31.2 | ![](image/examples/img-13_optimized.jpg) 30.3 |
+| img-01: `a dog` | ![](examples/img-01_original.jpg) 23.9 | ![](examples/img-01_optimized.jpg) 25.2 |
+| img-06: `can you make me a picture of a cat on a windowsill, no text` | ![](examples/img-06_original.jpg) 30.4 | ![](examples/img-06_optimized.jpg) 27.1 |
+| img-13: `a futuristic city without cars and people for my phone wallpaper` | ![](examples/img-13_original.jpg) 31.2 | ![](examples/img-13_optimized.jpg) 30.3 |
 
 #### Finding: the Stable Diffusion defaults are not neutral for stylised requests
 
@@ -126,9 +126,9 @@ The three largest drops (below) are all prompts that state a style. Their words 
 
 | prompt | Stable Diffusion prompt | original (CLIP) | optimized (CLIP) |
 |---|---|---|---|
-| img-14: `watercolor painting of a fox in a forest` | Watercolor painting of a fox in a forest, detailed subject, centered composition, subject fully in frame, natural lighting, natural balanced color palette, mood matching the subject, high quality | ![](image/examples/img-14_original.jpg) 38.6 | ![](image/examples/img-14_optimized.jpg) 26.7 |
-| img-36: `a minimalist poster of a whale` | A minimalist poster of a whale, detailed subject, centered composition, subject fully in frame, natural lighting, natural balanced color palette, mood matching the subject, uncluttered background, high quality | ![](image/examples/img-36_original.jpg) 36.2 | ![](image/examples/img-36_optimized.jpg) 25.8 |
-| img-37: `a snowy village at night` | A snowy village at night, detailed subject, realistic, detailed, centered composition, subject fully in frame, natural balanced color palette, mood matching the subject, uncluttered background, high quality | ![](image/examples/img-37_original.jpg) 32.2 | ![](image/examples/img-37_optimized.jpg) 27.4 |
+| img-14: `watercolor painting of a fox in a forest` | Watercolor painting of a fox in a forest, detailed subject, centered composition, subject fully in frame, natural lighting, natural balanced color palette, mood matching the subject, high quality | ![](examples/img-14_original.jpg) 38.6 | ![](examples/img-14_optimized.jpg) 26.7 |
+| img-36: `a minimalist poster of a whale` | A minimalist poster of a whale, detailed subject, centered composition, subject fully in frame, natural lighting, natural balanced color palette, mood matching the subject, uncluttered background, high quality | ![](examples/img-36_original.jpg) 36.2 | ![](examples/img-36_optimized.jpg) 25.8 |
+| img-37: `a snowy village at night` | A snowy village at night, detailed subject, realistic, detailed, centered composition, subject fully in frame, natural balanced color palette, mood matching the subject, uncluttered background, high quality | ![](examples/img-37_original.jpg) 32.2 | ![](examples/img-37_optimized.jpg) 27.4 |
 
 Per prompt (CLIP vs original prompt): img-01 23.9 -> 25.2; img-02 27.1 -> 26.6; img-03 26.3 -> 26.0; img-04 27.2 -> 27.6; img-05 28.7 -> 26.8; img-06 30.4 -> 27.1; img-07 29.6 -> 27.8; img-08 27.4 -> 25.5; img-09 28.4 -> 26.4; img-10 29.4 -> 29.2; img-11 28.1 -> 29.5; img-12 29.6 -> 31.5; img-13 31.2 -> 30.3; img-14 38.6 -> 26.7; img-15 29.5 -> 28.8; img-16 30.1 -> 29.8; img-17 29.0 -> 29.7; img-18 29.8 -> 29.2; img-19 29.3 -> 27.7; img-20 32.8 -> 34.7; img-21 32.4 -> 31.5; img-22 29.9 -> 27.8; img-23 38.0 -> 35.6; img-24 26.8 -> 27.9; img-25 32.7 -> 28.6; img-26 30.1 -> 28.9; img-27 29.9 -> 25.7; img-28 28.2 -> 29.3; img-29 30.4 -> 27.7; img-30 30.7 -> 28.9; img-31 29.7 -> 27.2; img-32 32.2 -> 28.0; img-33 23.2 -> 23.9; img-34 28.9 -> 28.9; img-35 33.5 -> 32.6; img-36 36.2 -> 25.8; img-37 32.2 -> 27.4; img-38 30.3 -> 28.5; img-39 29.2 -> 29.5; img-40 27.0 -> 27.9.
 
@@ -170,9 +170,9 @@ Per prompt, CLIP vs original prompt (original / v1 / v2 / v2_suggested): held-01
 
 | held-out prompt | original | v1 | v2 |
 |---|---|---|---|
-| held-03: `oil painting of a sailboat in a storm` (oil painting) | ![](image/examples/held-03_original.jpg) CLIP 31.0, P(style) 1.00 | ![](image/examples/held-03_v1.jpg) CLIP 33.0, P(style) 1.00 | ![](image/examples/held-03_v2.jpg) CLIP 31.0, P(style) 1.00 |
-| held-07: `anime style girl with a sword` (anime) | ![](image/examples/held-07_original.jpg) CLIP 30.2, P(style) 0.98 | ![](image/examples/held-07_v1.jpg) CLIP 29.6, P(style) 0.92 | ![](image/examples/held-07_v2.jpg) CLIP 30.2, P(style) 0.98 |
-| held-09: `a children's book illustration of a bear having a picnic` (children's book illustration) | ![](image/examples/held-09_original.jpg) CLIP 33.9, P(style) 1.00 | ![](image/examples/held-09_v1.jpg) CLIP 36.4, P(style) 1.00 | ![](image/examples/held-09_v2.jpg) CLIP 33.9, P(style) 1.00 |
+| held-03: `oil painting of a sailboat in a storm` (oil painting) | ![](examples/held-03_original.jpg) CLIP 31.0, P(style) 1.00 | ![](examples/held-03_v1.jpg) CLIP 33.0, P(style) 1.00 | ![](examples/held-03_v2.jpg) CLIP 31.0, P(style) 1.00 |
+| held-07: `anime style girl with a sword` (anime) | ![](examples/held-07_original.jpg) CLIP 30.2, P(style) 0.98 | ![](examples/held-07_v1.jpg) CLIP 29.6, P(style) 0.92 | ![](examples/held-07_v2.jpg) CLIP 30.2, P(style) 0.98 |
+| held-09: `a children's book illustration of a bear having a picnic` (children's book illustration) | ![](examples/held-09_original.jpg) CLIP 33.9, P(style) 1.00 | ![](examples/held-09_v1.jpg) CLIP 36.4, P(style) 1.00 | ![](examples/held-09_v2.jpg) CLIP 33.9, P(style) 1.00 |
 
 ## 4. Lesson learned
 

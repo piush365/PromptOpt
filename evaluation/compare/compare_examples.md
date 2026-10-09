@@ -1,6 +1,6 @@
 # Compare: two live examples (2026-10-02)
 
-Run through the app's API (`POST /api/compare`) on Groq's free tier, model `openai/gpt-oss-120b`, temperature 0, max 2048 tokens, reasoning "low", blind judge `qwen/qwen3.8-27b` (scores each answer against the user's original request, never told which prompt produced it). Raw responses: `evaluation/compare/live_examples.json`. These are illustrations of the feature, not evidence; the measured result is `token_test.md`.
+Run through the app's API (`POST /api/compare`) on Groq's free tier, model `openai/gpt-oss-120b`, temperature 0, max 2048 tokens, reasoning "low", blind judge `qwen/qwen3.8-27b` (scores each answer against the user's original request, never told which prompt produced it). Raw responses: `evaluation/compare/live_examples.json`. These are illustrations of the feature, not evidence; the measured result is `tokens/token_test.md`.
 
 ## Coding: `write code to get all permutations of a string` (test item codealpaca-4815, 6 validated tests)
 

@@ -203,7 +203,7 @@ def _fmt(x: Any, digits: int = 1) -> str:
 def summary(db: Session, run_name: str, cache: Cache, target_model: str = TARGET_MODEL,
             wrong_references: dict[str, str] | None = None) -> str:
     """The results table. Items excluded after the run are not counted as failures: an item whose reference answer is
-    wrong (evaluation/wrong_references.csv) or that the judge could not score for some variant is left out for ALL
+    wrong (evaluation/dataset/wrong_references.csv) or that the judge could not score for some variant is left out for ALL
     variants (so every variant is compared on the same items), listed with its reason, and the headline numbers are
     shown with and without the exclusions, with a warning when an exclusion moves one by more than 1 point."""
     from app.reference_check import load_wrong_references

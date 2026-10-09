@@ -1,7 +1,7 @@
 """Evaluate Stage B on a dataset split and print a markdown report.
 
     python -m app.stage_b.evaluate --split val     # while tuning; never tune on test
-    python -m app.stage_b.evaluate --out ../evaluation/stage_b_test.md
+    python -m app.stage_b.evaluate --out ../evaluation/stage_b/stage_b_test.md
 
 Inputs are the *degraded* prompts run through the real Stage A. This measures what Stage B does on its own (which
 rules fire, what reaches Stage C, whether format and constraints end up stated, how many words it adds), not whether

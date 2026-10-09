@@ -192,5 +192,5 @@ A's confidence is < 0.3) was checked on val and dropped:
 
 On the 10 naturally routed val prompts the first policy accepted 3 guesses, all wrong. Stage C's guess is worse than
 Stage A's in this range, and the rule did not pick out better guesses, so asking the user is the only part worth
-keeping. Implemented in `contract.category_decision`; reported in `evaluation/stage_c_eval.md` and
+keeping. Implemented in `contract.category_decision`; reported in `evaluation/stage_c/stage_c_eval.md` and
 `evaluation/FINAL_RESULTS.md`.

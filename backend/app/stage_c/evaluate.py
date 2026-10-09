@@ -1,6 +1,6 @@
 """Stage C evaluation on the val split (docs/STAGE_C_PLAN.md, section 4). Run in backend/.venv-gpu:
 
-    python -m app.stage_c.evaluate --adapter artifacts/stage_c_adapter --out ../evaluation/stage_c_eval.md
+    python -m app.stage_c.evaluate --adapter artifacts/stage_c_adapter --out ../evaluation/stage_c/stage_c_eval.md
 
 (a) base model vs LoRA on every val example (routed, forced subsets, forced_all): JSON validity, exact keys, field
     accuracy vs the target.

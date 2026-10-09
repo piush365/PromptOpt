@@ -9,7 +9,7 @@ Every number below is copied from an evaluation file in this repository, cited n
 given. Code at tag `v1.0`; the final test numbers come from tag `final-for-test`.
 
 <!-- TOKEN:headline:start -->
-**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/token_test.md`): input grows, the saving comes from shorter answers.
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/tokens/token_test.md`): input grows, the saving comes from shorter answers.
 <!-- TOKEN:headline:end -->
 
 ---
@@ -128,11 +128,11 @@ the answer, set an impossible constraint or change the task were removed: **9 ro
 **Category accuracy 74.7%** (macro-F1 0.746; val 75.8%). Coding F1 0.98, classification 0.94; closed_qa 0.65,
 information_extraction 0.63, summarization 0.51: degraded prompts in this group are genuinely hard to tell apart.
 Out-of-scope prompts (held-out Dolly brainstorming / creative writing): 68.5% classified as `other`
-[`FINAL_RESULTS.md` sections 1, 3; `stage_a_test_final.md`].
+[`FINAL_RESULTS.md` sections 1, 3; `stage_a/stage_a_test_final.md`].
 
 ## 7. Stage B results
 
-**Test, 482 prompts** [`FINAL_RESULTS.md` section 4; `stage_b_test_final.md`]:
+**Test, 482 prompts** [`FINAL_RESULTS.md` section 4; `stage_b/stage_b_test_final.md`]:
 
 | metric | result |
 |---|---|
@@ -142,7 +142,7 @@ Out-of-scope prompts (held-out Dolly brainstorming / creative writing): 68.5% cl
 | wrong-category additions | 5.2% (25 of 482; partly Dolly label noise) |
 
 **With a real LLM** (benchmark split, 44 prompts, target Cerebras gpt-oss-120b, blind judge qwen3.8-27b)
-[`FINAL_RESULTS.md` section 4; `final_benchmark_summary.md`]:
+[`FINAL_RESULTS.md` section 4; `tokens/final_benchmark_summary.md`]:
 
 | variant | quality (0-10) | task success | input tok | output tok | total tok |
 |---|---|---|---|---|---|
@@ -152,11 +152,11 @@ Out-of-scope prompts (held-out Dolly brainstorming / creative writing): 68.5% cl
 
 **Freeze:** Stage A and B are byte-identical to tag `frozen-for-test` on all 482 test prompts without an attachment
 (`python -m app.freeze_check`, sha256 `35f7d4dc...`); later rules (B14, B15, B05 for data attachments) act only with
-an attachment [`FINAL_RESULTS.md` section 2; `phase2_freeze_check.md`].
+an attachment [`FINAL_RESULTS.md` section 2; `stage_b/phase2_freeze_check.md`].
 
-**Attachments:** 30/30 hand-made prompts correct [`attachment_test.md`]. **Attachment and image results are on
+**Attachments:** 30/30 hand-made prompts correct [`attachments/attachment_test.md`]. **Attachment and image results are on
 developer-written prompts only**; blind sets written by people outside the development team are future work
-[`attachment_blind_test.md`, `image_blind_test.md`].
+[`attachments/attachment_blind_test.md`, `image/image_blind_test.md`].
 
 ## 8. Stage C results and ablation
 
@@ -168,7 +168,7 @@ train examples; **best val loss 0.7047 at step 550**, early stop at 700, 51 min 
 | answers that pass validation | 5.0% | **98.2%** |
 | JSON valid | 93.5% | 100% |
 
-**Ablation** (test) [`FINAL_RESULTS.md` section 5.2; `stage_c_test.md`]:
+**Ablation** (test) [`FINAL_RESULTS.md` section 5.2; `stage_c/stage_c_test.md`]:
 
 | set | system | n | task intent | format stated |
 |---|---|---|---|---|
@@ -190,7 +190,7 @@ train examples; **best val loss 0.7047 at step 550**, early stop at 700, 51 min 
 
 Do the answers' programs work? Python test-split items, 3-6 assert tests per item written by Cerebras gpt-oss-120b
 and **kept only if they pass on the CodeAlpaca reference solution**; code runs only in a bubblewrap sandbox (no
-network, read-only system) [`FINAL_RESULTS.md` section 7; `coding_tests.md`; `docs/CODING_TESTS.md`].
+network, read-only system) [`FINAL_RESULTS.md` section 7; `coding/coding_tests.md`; `docs/CODING_TESTS.md`].
 
 | test split, 29 tested items | pass@1 strict | pass@1 lenient |
 |---|---|---|
@@ -202,7 +202,7 @@ mostly interface (function naming, one solution, Python), not algorithmic correc
 
 ## 10. Image mode: v1 -> v2
 
-[`FINAL_RESULTS.md` section 8; `image_mode.md`]
+[`FINAL_RESULTS.md` section 8; `image/image_mode.md`]
 
 * **v1** filled every missing attribute (style, lighting, palette, ...) with "neutral" defaults. Attribute coverage
   rose to 9.0 of 9, but Stable Diffusion images matched the user's request **worse** (dev, 40 prompts: CLIP vs
@@ -222,7 +222,7 @@ Lesson: coverage is the wrong target; the image model's output against the user'
 ## 11. Token results (full test split)
 
 <!-- TOKEN:section:start -->
-**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** [`token_test.md`]: mean of the per-prompt changes in total tokens (input + output, output including hidden reasoning tokens), degraded prompt vs Stage A + B, on `cerebras/gpt-oss-120b`, temperature 0, the final benchmark's settings, frozen pipeline. Summed over all prompts: -55.4%; Wilcoxon signed-rank p < 0.001.
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** [`tokens/token_test.md`]: mean of the per-prompt changes in total tokens (input + output, output including hidden reasoning tokens), degraded prompt vs Stage A + B, on `cerebras/gpt-oss-120b`, temperature 0, the final benchmark's settings, frozen pipeline. Summed over all prompts: -55.4%; Wilcoxon signed-rank p < 0.001.
 
 **Input grows; the saving comes from output.** Input tokens 226 -> 241 per prompt (+11.1% per prompt); output tokens 682 -> 165 (-52.7% per prompt): a stated format and length stop long, unrequested answers.
 
@@ -237,12 +237,12 @@ Lesson: coverage is the wrong target; the image model's output against the user'
 
 **No category shows a net increase** in total tokens; the smallest saving is information_extraction (-24.2% per prompt). **Limitation:** input grows in every category, and **87 of 482 prompts (18.0%) individually cost more** in total, because their answer was already short: information_extraction 35/93, classification 23/98, closed_qa 11/99, summarization 10/94, coding 8/98. Future work: a **lean mode** that adds less (only the output-format line, or nothing) when the expected answer is short.
 
-Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: `token_test.md`.
+Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: `tokens/token_test.md`.
 <!-- TOKEN:section:end -->
 
 ## 12. Compare: live examples
 
-[`FINAL_RESULTS.md` section 9; `compare_examples.md`] Groq gpt-oss-120b, temperature 0; illustrations, not evidence.
+[`FINAL_RESULTS.md` section 9; `compare/compare_examples.md`] Groq gpt-oss-120b, temperature 0; illustrations, not evidence.
 
 | prompt | original total tokens | optimized total tokens | change | quality |
 |---|---|---|---|---|
@@ -262,7 +262,7 @@ cannot pay for itself. Savings come from long, unrequested answers.
   On the full test split no category increases total tokens on average, but prompts whose answer is already short
   can cost more (87 of 482; the live closed_qa example: +17.2%).
 <!-- TOKEN:limitation:start -->
-* **Token cost:** input tokens grow in every category; no category increases total tokens on average, but 87 of 482 test prompts (18.0%) individually cost more, most in information_extraction (35/93). Future work: lean mode (`token_test.md`).
+* **Token cost:** input tokens grow in every category; no category increases total tokens on average, but 87 of 482 test prompts (18.0%) individually cost more, most in information_extraction (35/93). Future work: lean mode (`tokens/token_test.md`).
 <!-- TOKEN:limitation:end -->
 * Stage A: 74.7% category accuracy; the closed_qa / extraction / summarization group is the weak spot.
 * Stage B's "format stated" is measured with Stage A's own A02 detector; quality and task success come from the

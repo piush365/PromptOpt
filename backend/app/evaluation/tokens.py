@@ -1,7 +1,7 @@
 """Token evaluation on the FULL test split: degraded prompt vs PromptOpt (A+B, and A+B+C on routed prompts).
 
     python -m app.evaluation.tokens                    # run (resumable; stops at the daily budget, rerun later)
-    python -m app.evaluation.tokens --report-only --out ../evaluation/token_test.md
+    python -m app.evaluation.tokens --report-only --out ../evaluation/tokens/token_test.md
 
 A measurement on the frozen pipeline (Stage A/B at `final-for-test`, Stage C adapter as evaluated): nothing is tuned.
 Target: cerebras/gpt-oss-120b, temperature 0, max 2048 tokens, reasoning "low", one user message: the settings of
@@ -222,7 +222,7 @@ def report(rows: list[dict]) -> tuple[str, dict]:
         if n:
             lines.append(f"| {c} | {a}/{n} ({100 * a / n:.0f}%) | {b}/{n} ({100 * b / n:.0f}%) | {n} |")
     lines += ["", "classification: every item gets the reference label; coding: a code block is present and Python "
-                  "code in it parses (functional tests: `coding_tests.md`). closed_qa needs the judge and is not "
+                  "code in it parses (functional tests: `coding/coding_tests.md`). closed_qa needs the judge and is not "
                   "checked here; extraction and summarization are not checkable automatically.\n"]
     routed = [r for r in rows if cache.get(r["source_id"], "stage_c").get("response") is not None]
     if routed:

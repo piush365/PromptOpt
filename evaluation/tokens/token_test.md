@@ -38,7 +38,7 @@ Reasoning tokens (part of output): 26 -> 36 per prompt. Answers cut off at the 2
 | classification | 20/48 (42%) | 34/48 (71%) | 48 |
 | coding | 85/98 (87%) | 97/98 (99%) | 98 |
 
-classification: every item gets the reference label; coding: a code block is present and Python code in it parses (functional tests: `coding_tests.md`). closed_qa needs the judge and is not checked here; extraction and summarization are not checkable automatically.
+classification: every item gets the reference label; coding: a code block is present and Python code in it parses (functional tests: `coding/coding_tests.md`). closed_qa needs the judge and is not checked here; extraction and summarization are not checkable automatically.
 
 ## Routed prompts: A+B vs A+B+C
 

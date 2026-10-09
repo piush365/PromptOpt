@@ -8,11 +8,11 @@ after seeing test numbers; the only edit afterwards was a wording fix in the Sta
 `final-for-test` in finish phases 4-6: they add measurements and features and change nothing in sections 1-6.
 
 Dataset: PromptOpt Dataset v1.2 final (`docs/DATASET_CARD.md`): train 4,509 / val 149 / test 482 / benchmark 44
-prompts, five categories. Detailed reports: `stage_a_test_final.md`, `stage_b_test_final.md`, `stage_c_eval.md` (val),
-`stage_c_test.md` (test), `attachment_test.md`, `final_benchmark_summary.md`.
+prompts, five categories. Detailed reports: `stage_a/stage_a_test_final.md`, `stage_b/stage_b_test_final.md`, `stage_c/stage_c_eval.md` (val),
+`stage_c/stage_c_test.md` (test), `attachments/attachment_test.md`, `tokens/final_benchmark_summary.md`.
 
 <!-- TOKEN:headline:start -->
-**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/token_test.md`): input grows, the saving comes from shorter answers.
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/tokens/token_test.md`): input grows, the saving comes from shorter answers.
 <!-- TOKEN:headline:end -->
 
 ## 1. Headline numbers (test)
@@ -34,7 +34,7 @@ prompts, five categories. Detailed reports: `stage_a_test_final.md`, `stage_b_te
 * Stage A and Stage B are byte-identical to `frozen-for-test` on prompts without an attachment:
   `python -m app.freeze_check` gives the same sha256 for both (`35f7d4dc...`, all Stage A features, IR, text, steps,
   routing and confidence of the 482 test prompts). Changes after the freeze only act with an attachment
-  (B14 spreadsheet, B15 code file, B05 for data attachments; `phase2_freeze_check.md`).
+  (B14 spreadsheet, B15 code file, B05 for data attachments; `stage_b/phase2_freeze_check.md`).
 * The Stage A test report is identical to the frozen one (except the timing line). The Stage B test report differs
   only by two rule rows, B14 and B15, each fired on 0 test prompts.
 
@@ -84,7 +84,7 @@ hard to tell apart; Stage B's B08 handles that group without picking one of them
 Routed to Stage C: 24 for the task category, 7 for an ambiguous reference. Wrong-category additions: 25 of 482
 (5.2%), partly Dolly label noise.
 
-**With a real LLM** (benchmark split, 44 prompts; run before this phase, `final_benchmark_summary.md`): target
+**With a real LLM** (benchmark split, 44 prompts; run before this phase, `tokens/final_benchmark_summary.md`): target
 `cerebras/gpt-oss-120b`, blind judge `qwen/qwen3.8-27b`.
 
 | variant | quality (0-10) | task success | input tokens | output tokens | total tokens | latency ms |
@@ -95,7 +95,7 @@ Routed to Stage C: 24 for the task category, 7 for an ambiguous reference. Wrong
 
 ### 4.1 Per-rule accuracy, B01-B08 (test, 482 prompts; added after `final-for-test`, measurement only)
 
-Frozen rules, nothing tuned (`stage_b_rule_accuracy.md`, `python -m app.stage_b.rule_accuracy`). **Expected** = the
+Frozen rules, nothing tuned (`stage_b/stage_b_rule_accuracy.md`, `python -m app.stage_b.rule_accuracy`). **Expected** = the
 dataset's optimized prompt fixes the rule's defect while the degraded prompt has it, judged with the Stage A detectors
 (B01 filler, B02 repetition, B03 format, B04 length, B05 programming language, B06 labels listed explicitly, B07 data
 put in its own block, B08 answer grounded in the provided text). **Fired** = the rule's change-log entry.
@@ -209,9 +209,9 @@ Requirement under 3 s per prompt on the laptop GPU: **met**.
 ## 6. Attachments, rendering, app
 
 * **Attachment rules** (B09-B15): 30/30 hand-made prompts correct (own rule fired, no other, requirements and the
-  attachment note in all three renderings, ambiguous references resolved; `attachment_test.md`). **Attachment and image results are on developer-written prompts only.** Blind sets
+  attachment note in all three renderings, ambiguous references resolved; `attachments/attachment_test.md`). **Attachment and image results are on developer-written prompts only.** Blind sets
   written by people outside the development team (attachments 15 rows, image 10 rows) are **future work**
-  (`attachment_blind_test.md`, `image_blind_test.md`).
+  (`attachments/attachment_blind_test.md`, `image/image_blind_test.md`).
 * **Renderers**: the same content for all three targets (Claude XML tags, GPT `###` sections, Gemini plain labels
   with the instruction first); every rendering is parsed back in the tests to check no field is lost. Input tokens per
   target: GPT exact (tiktoken o200k_base), Claude/Gemini approximate (characters / 4, labelled).
@@ -224,7 +224,7 @@ Does the code the model writes actually work? Python test/benchmark coding items
 are Python; other languages not run). Cerebras gpt-oss-120b writes 3-6 assert tests per item, each kept only if it
 passes on the CodeAlpaca reference; references that fail are listed as suspects, not dropped. Code runs only in a
 bubblewrap sandbox (no network, read-only system, memory/CPU/process limits). Target: Cerebras gpt-oss-120b, the
-benchmark's settings. Details: `coding_tests.md`, `docs/CODING_TESTS.md`.
+benchmark's settings. Details: `coding/coding_tests.md`, `docs/CODING_TESTS.md`.
 
 | test split (29 tested items) | pass@1 strict | pass@1 lenient (naming-only failures counted as passes) |
 |---|---|---|
@@ -238,7 +238,7 @@ Python. Real failures (wrong results) are similar (13 vs 16). Scope: 4 reference
 
 ## 8. Image-generation mode (finish phase 5)
 
-A separate mode the user selects; Stage A/B/C are not involved. Details and images: `image_mode.md`. All prompts
+A separate mode the user selects; Stage A/B/C are not involved. Details and images: `image/image_mode.md`. All prompts
 (dev and held-out) were written by the developers; a blind set written by others is future work.
 
 * **v1** filled every missing attribute (style, lighting, palette, ...) with "neutral" defaults. On a dev set of 40
@@ -266,7 +266,7 @@ The app's Compare runs the original and the optimized prompt on the same model (
 side by side: answers, input/output/reasoning/total tokens, latency, sandbox tests for dataset coding items, and an
 optional blind judge. Available now: gpt-oss-120b on Groq and Cerebras; Gemini when `GEMINI_API_KEY` is set; GPT and
 Claude are listed as "add API key". Every result says which model answered: a Claude-rendered prompt run on gpt-oss is
-labelled as a stand-in. Live examples (`compare_examples.md`, Groq gpt-oss-120b; illustrations, not evidence):
+labelled as a stand-in. Live examples (`compare/compare_examples.md`, Groq gpt-oss-120b; illustrations, not evidence):
 
 | prompt | original total tokens | optimized total tokens | change | quality |
 |---|---|---|---|---|
@@ -278,7 +278,7 @@ The closed_qa answer was already one line, so the longer optimized prompt cannot
 ## 9a. Token evaluation on the full test split (after `final-for-test`)
 
 <!-- TOKEN:section:start -->
-**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** [`token_test.md`]: mean of the per-prompt changes in total tokens (input + output, output including hidden reasoning tokens), degraded prompt vs Stage A + B, on `cerebras/gpt-oss-120b`, temperature 0, the final benchmark's settings, frozen pipeline. Summed over all prompts: -55.4%; Wilcoxon signed-rank p < 0.001.
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** [`tokens/token_test.md`]: mean of the per-prompt changes in total tokens (input + output, output including hidden reasoning tokens), degraded prompt vs Stage A + B, on `cerebras/gpt-oss-120b`, temperature 0, the final benchmark's settings, frozen pipeline. Summed over all prompts: -55.4%; Wilcoxon signed-rank p < 0.001.
 
 **Input grows; the saving comes from output.** Input tokens 226 -> 241 per prompt (+11.1% per prompt); output tokens 682 -> 165 (-52.7% per prompt): a stated format and length stop long, unrequested answers.
 
@@ -293,7 +293,7 @@ The closed_qa answer was already one line, so the longer optimized prompt cannot
 
 **No category shows a net increase** in total tokens; the smallest saving is information_extraction (-24.2% per prompt). **Limitation:** input grows in every category, and **87 of 482 prompts (18.0%) individually cost more** in total, because their answer was already short: information_extraction 35/93, classification 23/98, closed_qa 11/99, summarization 10/94, coding 8/98. Future work: a **lean mode** that adds less (only the output-format line, or nothing) when the expected answer is short.
 
-Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: `token_test.md`.
+Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: `tokens/token_test.md`.
 <!-- TOKEN:section:end -->
 
 ## 10. Known limitations
@@ -309,28 +309,28 @@ Routed prompts (A+B vs A+B+C) and task success where checkable without a judge: 
   asked.
 * Real GPT/Gemini/Claude runs need API keys and are not done; the LLM numbers above use Cerebras/Groq stand-ins.
 * After Stage B, 27 test prompts that are not sent to Stage C still state no programming language according to the A03
-  detector (`stage_b_test_final.md`, "Missing constraints left after Stage B").
+  detector (`stage_b/stage_b_test_final.md`, "Missing constraints left after Stage B").
 * Coding tests: Python items only (29 tested on test); the test writer is the same model as the target (tests are
   validated on an independent reference, which limits but does not remove the bias).
 * Image mode: measured with SD 1.5 and CLIP only; DALL-E and Nano Banana prompts are untested without API keys.
 * Attachment and image results are on developer-written prompts only; blind sets written by others are future work.
 * Compare and all LLM numbers use gpt-oss-120b (Groq/Cerebras) as a stand-in for GPT, Gemini and Claude.
 <!-- TOKEN:limitation:start -->
-* **Token cost:** input tokens grow in every category; no category increases total tokens on average, but 87 of 482 test prompts (18.0%) individually cost more, most in information_extraction (35/93). Future work: lean mode (`token_test.md`).
+* **Token cost:** input tokens grow in every category; no category increases total tokens on average, but 87 of 482 test prompts (18.0%) individually cost more, most in information_extraction (35/93). Future work: lean mode (`tokens/token_test.md`).
 <!-- TOKEN:limitation:end -->
 
 ## 11. Reproduce (inside `backend/`)
 
 ```
 python -m app.freeze_check                                             # Stage A/B vs frozen-for-test
-python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a_test_final.md
-python -m app.stage_b.evaluate --split test --out ../evaluation/stage_b_test_final.md
-python -m app.stage_b.rule_accuracy --out ../evaluation/stage_b_rule_accuracy.md  # per-rule accuracy (4.1)
+python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a/stage_a_test_final.md
+python -m app.stage_b.evaluate --split test --out ../evaluation/stage_b/stage_b_test_final.md
+python -m app.stage_b.rule_accuracy --out ../evaluation/stage_b/stage_b_rule_accuracy.md  # per-rule accuracy (4.1)
 python -m app.stage_c.data --test                                      # data/stage_c/test.jsonl
 .venv-gpu/bin/python -m app.stage_c.evaluate --split test --adapter artifacts/stage_c_adapter \
-    --out ../evaluation/stage_c_test.md                                # and --split val for stage_c_eval.md
-python -m app.attachment_eval --out ../evaluation/attachment_test.md
-python -m app.coding.testgen && python -m app.coding.evaluate --out ../evaluation/coding_tests.md
-.venv-gpu/bin/python -m app.image.generate --set heldout && .venv-gpu/bin/python -m app.image.evaluate --out ../evaluation/image_mode.md
-.venv-gpu/bin/python -m app.evaluation.tokens --out ../evaluation/token_test.md
+    --out ../evaluation/stage_c/stage_c_test.md                                # and --split val for stage_c/stage_c_eval.md
+python -m app.attachment_eval --out ../evaluation/attachments/attachment_test.md
+python -m app.coding.testgen && python -m app.coding.evaluate --out ../evaluation/coding/coding_tests.md
+.venv-gpu/bin/python -m app.image.generate --set heldout && .venv-gpu/bin/python -m app.image.evaluate --out ../evaluation/image/image_mode.md
+.venv-gpu/bin/python -m app.evaluation.tokens --out ../evaluation/tokens/token_test.md
 ```

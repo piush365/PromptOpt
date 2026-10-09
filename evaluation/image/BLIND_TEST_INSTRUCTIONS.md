@@ -13,5 +13,5 @@ Fill in `blind_test.csv` (10 rows) **without looking at the PromptOpt code, the 
 | `expected_behaviour` | in your own words, written **before** running anything: what a good optimized prompt must keep and what it could add (e.g. "must keep 'Sunrise' as the bakery name; should not add a style I did not ask for") |
 | `author` | your initials |
 
-No personal data. Results are reported in `evaluation/image_blind_test.md`, separately from the 40 hand-written
+No personal data. Results are reported in `evaluation/image/image_blind_test.md`, separately from the 40 hand-written
 prompts (`python -m app.image.evaluate --blind ../evaluation/image/blind_test.csv`).

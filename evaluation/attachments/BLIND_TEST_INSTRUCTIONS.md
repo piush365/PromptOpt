@@ -18,4 +18,4 @@ For each row:
 | `author` | your initials |
 
 Do not include personal data (real names, emails, phone numbers). When done, send the file back; results are
-reported in `evaluation/attachment_blind_test.md`, separately from the 30 hand-made prompts.
+reported in `evaluation/attachments/attachment_blind_test.md`, separately from the 30 hand-made prompts.

@@ -4,7 +4,7 @@ Phase 2 added attachment types `spreadsheet` and `code` with rules B14/B15 (2026
 They may fire only when that attachment type is given. Checked two ways on the test split (482 prompts, no attachment),
 offline, with the same category index:
 
-1. **Report:** `python -m app.stage_b.evaluate --split test` regenerated `evaluation/stage_b_test.md`. The only
+1. **Report:** `python -m app.stage_b.evaluate --split test` regenerated `evaluation/stage_b/stage_b_test.md`. The only
    difference from the frozen report is two new rows in the rules table, each fired on 0 prompts:
    ```
    > | B14_ATTACHMENT_SPREADSHEET | 0 | 0.0% |

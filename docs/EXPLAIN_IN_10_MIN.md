@@ -58,7 +58,7 @@ You type: **`write code to get all permutations of a string`**
 ## 5. The main results (the facts to say)
 
 <!-- TOKEN:headline:start -->
-**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/token_test.md`): input grows, the saving comes from shorter answers.
+**Optimized prompts reduce total tokens by 39.2% (95% CI 35.9–42.5%, n = 482)** (`evaluation/tokens/token_test.md`): input grows, the saving comes from shorter answers.
 <!-- TOKEN:headline:end -->
 
 In simple words: on 482 test prompts, the fixed prompt used **39.2% fewer tokens** in total. The prompt itself

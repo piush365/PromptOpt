@@ -1,6 +1,6 @@
 """Pass rate of the target model's code for degraded vs Stage B prompts, on the tested Python coding items.
 
-    python -m app.coding.evaluate --out ../evaluation/coding_tests.md      # after python -m app.coding.testgen
+    python -m app.coding.evaluate --out ../evaluation/coding/coding_tests.md      # after python -m app.coding.testgen
 
 Target: cerebras/gpt-oss-120b, temperature 0, reasoning "low", max 2048 tokens, one user message: exactly the
 settings of the final benchmark run (app.evaluation.run). pass@1 = the one answer passes every validated test.

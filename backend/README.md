@@ -119,13 +119,13 @@ The k-NN index is built from the dataset (git-ignored), so build it once after d
 ```bash
 python -m app.stage_a.build_index        # -> artifacts/category_index.npz (~30 s on CPU)
 python -m app.stage_a.evaluate --split val                                   # while tuning
-python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a_test.md   # final numbers only
+python -m app.stage_a.evaluate --split test --out ../evaluation/stage_a/stage_a_test.md   # final numbers only
 ```
 
 The index file also holds the linear head (trained by `build_index`, needs scikit-learn; prediction is plain numpy).
 Without the index, Stage A falls back to the keyword classifier (57% accuracy on val instead of 77%).
 Rebuild the index whenever the dataset's train split changes.
-Hyper-parameters were tuned on val only; `../evaluation/stage_a_test.md` has the test-split results.
+Hyper-parameters were tuned on val only; `../evaluation/stage_a/stage_a_test.md` has the test-split results.
 
 ## Stage B: rule-based optimization (`app/stage_b/`)
 
@@ -164,7 +164,7 @@ Existing databases need `python -m app.init_db` once to seed the B08 rule.
 
 ```bash
 python -m app.stage_b.evaluate --split val                                    # while tuning
-python -m app.stage_b.evaluate --split test --out ../evaluation/stage_b_test.md   # final numbers only
+python -m app.stage_b.evaluate --split test --out ../evaluation/stage_b/stage_b_test.md   # final numbers only
 ```
 
 ## Dataset validation (`app/validation.py`)

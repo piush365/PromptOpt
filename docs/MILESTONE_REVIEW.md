@@ -6,15 +6,15 @@ Full write-up: `evaluation/REVIEW_SUMMARY.md`.
 
 | # | Area | Status | Key numbers | Proof |
 |---|---|---|---|---|
-| 1 | Dataset | Done | v1.2 final: **5,184** pairs, 1,000-1,089 per category; train 4,509 / val 149 / test 482 / benchmark 44; no instruction in two splits | `docs/DATASET_CARD.md`, `evaluation/final_dataset_merge_log.csv` |
-| 2 | Human validation | Done | 3 raters x 170 rows + faculty 20; **330 validated, 295 accepted, 35 rejected**; team per-question raw agreement 89-94%, Gwet's AC1 0.92-0.96, PABAK 0.85-0.93, Fleiss' kappa -0.04 to 0.07 | `evaluation/validation_report.md`, `docs/validation_guide.md` |
-| 3 | Faculty check | Done | faculty vs team majority: agreement 85-100% per question, AC1 0.83-1.00 | `evaluation/validation_report.md` |
+| 1 | Dataset | Done | v1.2 final: **5,184** pairs, 1,000-1,089 per category; train 4,509 / val 149 / test 482 / benchmark 44; no instruction in two splits | `docs/DATASET_CARD.md`, `evaluation/dataset/final_dataset_merge_log.csv` |
+| 2 | Human validation | Done | 3 raters x 170 rows + faculty 20; **330 validated, 295 accepted, 35 rejected**; team per-question raw agreement 89-94%, Gwet's AC1 0.92-0.96, PABAK 0.85-0.93, Fleiss' kappa -0.04 to 0.07 | `evaluation/dataset/validation_report.md`, `docs/validation_guide.md` |
+| 3 | Faculty check | Done | faculty vs team majority: agreement 85-100% per question, AC1 0.83-1.00 | `evaluation/dataset/validation_report.md` |
 | 4 | LLM-assisted filter (automatic, not human) | Done | LLM rater on the 90 overlap rows; **9 rows removed** (answer leaked, impossible constraint, added facts, changed task); never counted in agreement | `evaluation/llm_rater/`, `evaluation/REVIEW_SUMMARY.md` section 4 |
-| 5 | Stage A (feature detection) | Done, retrained on final train | test (482, run once): **accuracy 74.7%, macro-F1 0.746**; classification F1 0.945, coding 0.985, closed_qa 0.652, information_extraction 0.634, summarization 0.512; out-of-scope -> `other` 68.5% | `evaluation/stage_a_test.md` |
-| 6 | Stage B (rule-based optimizer, B01-B13) | Done | test: output format stated **3.1% -> 95.0%**; 11.2 -> 22.0 words; wrong-category additions 5.2%; **Stage C routing 6.4%** | `evaluation/stage_b_test.md`, `backend/tests/test_stage_b.py` |
+| 5 | Stage A (feature detection) | Done, retrained on final train | test (482, run once): **accuracy 74.7%, macro-F1 0.746**; classification F1 0.945, coding 0.985, closed_qa 0.652, information_extraction 0.634, summarization 0.512; out-of-scope -> `other` 68.5% | `evaluation/stage_a/stage_a_test.md` |
+| 6 | Stage B (rule-based optimizer, B01-B13) | Done | test: output format stated **3.1% -> 95.0%**; 11.2 -> 22.0 words; wrong-category additions 5.2%; **Stage C routing 6.4%** | `evaluation/stage_b/stage_b_test.md`, `backend/tests/test_stage_b.py` |
 | 7 | IR + renderers (GPT / Gemini / Claude) | Done | every rendering parsed back, no field lost | `backend/app/rendering.py`, `backend/tests/test_rendering.py` |
 | 8 | Evaluation: val (development) | Done | stage_b vs degraded: quality 9.6 vs 9.2, task success 96% vs 77%, total tokens -41% | `evaluation/REVIEW_SUMMARY.md` section 5 |
-| 9 | Evaluation: benchmark (final, LLM) | Done, 132 of 132 | Cerebras gpt-oss-120b target, Groq qwen judge; stage_b vs degraded: **quality 9.0 vs 8.2, task success 85% vs 67%, total tokens 386 vs 894 (-57%), latency -36%** | `evaluation/final_benchmark_summary.md` |
+| 9 | Evaluation: benchmark (final, LLM) | Done, 132 of 132 | Cerebras gpt-oss-120b target, Groq qwen judge; stage_b vs degraded: **quality 9.0 vs 8.2, task success 85% vs 67%, total tokens 386 vs 894 (-57%), latency -36%** | `evaluation/tokens/final_benchmark_summary.md` |
 | 10 | Ablation study | Not started | - | - |
 | 11 | Stage C (LoRA), FastAPI + React app | Not started (planned) | - | `CLAUDE.md` roadmap |
 | 12 | Tests | Passing | 416 tests (`python -m pytest -q`) | `backend/tests/` |

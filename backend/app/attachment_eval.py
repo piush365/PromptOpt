@@ -1,8 +1,8 @@
 """Attachment rules (B09-B15) on a hand-made test set: 30 prompts, 5 per attachment type.
 
-    python -m app.attachment_eval --out ../evaluation/attachment_test.md
+    python -m app.attachment_eval --out ../evaluation/attachments/attachment_test.md
     python -m app.attachment_eval --blind ../evaluation/attachments/blind_test.csv \
-        --out ../evaluation/attachment_blind_test.md       # the team's blind set, reported separately
+        --out ../evaluation/attachments/attachment_blind_test.md       # the team's blind set, reported separately
 
 The prompts (`evaluation/attachments/attachment_prompts.json`) were written by hand for this check and are not from
 the dataset. Each goes through the real Stage A and Stage B with its attachment type (and the category given in the
@@ -107,14 +107,14 @@ def load_blind(path: Path) -> list[dict]:
 
 def blind_report(items: list[dict], results: list[dict]) -> str:
     lines = ["# Blind attachment test (written by the team without seeing the rules)\n",
-             "Reported separately from the 30 hand-made prompts (`attachment_test.md`). `checks` = the same automated "
+             "Reported separately from the 30 hand-made prompts (`attachments/attachment_test.md`). `checks` = the same automated "
              "checks (own rule fired, only its rule, requirements and attachment note in all three renderings, "
              "ambiguous reference resolved). `meets expectation` is for the team to fill in by comparing the "
              "optimized prompt with their note.\n"]
     if not items:
         return "\n".join(lines + ["**Future work.** A blind set written by people outside the development team "
                                    "(`evaluation/attachments/blind_test.csv`, 15 rows) was planned but not collected. "
-                                   "Attachment results are on developer-written prompts only (`attachment_test.md`)."]) + "\n"
+                                   "Attachment results are on developer-written prompts only (`attachments/attachment_test.md`)."]) + "\n"
     lines += [f"**Automated checks: {sum(r['correct'] for r in results)}/{len(results)} pass.**\n",
               "| id | type | prompt | category (Stage A) | checks | Stage C | expected behaviour (team) | optimized prompt "
               "(plain) | meets expectation |", "|---|---|---|---|---|---|---|---|---|"]

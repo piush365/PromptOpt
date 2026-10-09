@@ -2,7 +2,7 @@
 
 Phase 4 of the finish plan. Measures whether the code a target LLM writes actually works, for degraded vs Stage B
 prompts. Stage A/B/C are frozen at `final-for-test`; this only adds evaluation and an app panel. Results:
-`evaluation/coding_tests.md`.
+`evaluation/coding/coding_tests.md`.
 
 ## Sandbox (`backend/app/coding/sandbox.py`)
 
@@ -19,7 +19,7 @@ All generated or reference code runs through `run_python`, and nothing else in t
 **Without bubblewrap**, the runner refuses to run code (`SANDBOX_REQUIRE_BWRAP=1`, the default). With
 `SANDBOX_REQUIRE_BWRAP=0` it runs with rlimits, timeout, temp dir and a cleared environment only: the code **can
 then reach the network and read the user's files**, and every result is labelled `rlimits-only`. All numbers in
-`evaluation/coding_tests.md` were produced with bwrap.
+`evaluation/coding/coding_tests.md` were produced with bwrap.
 
 Tested in `backend/tests/test_coding.py`: timeout (busy loop and sleep), memory limit, no network, host files
 invisible, output limit, fork limit, refusal without bwrap.
@@ -71,6 +71,6 @@ For a coding prompt the UI shows a "Tests for this coding prompt" panel:
 
 ```
 python -m app.coding.testgen                                    # items + validated tests -> data/coding/items.json
-python -m app.coding.evaluate --out ../evaluation/coding_tests.md
+python -m app.coding.evaluate --out ../evaluation/coding/coding_tests.md
 python -m pytest -q tests/test_coding.py
 ```

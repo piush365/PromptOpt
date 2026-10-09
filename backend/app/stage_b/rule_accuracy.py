@@ -1,6 +1,6 @@
 """Per-rule accuracy of Stage B (B01-B08) on a dataset split. Measurement only: no rule is changed.
 
-    python -m app.stage_b.rule_accuracy --out ../evaluation/stage_b_rule_accuracy.md     # test split
+    python -m app.stage_b.rule_accuracy --out ../evaluation/stage_b/stage_b_rule_accuracy.md     # test split
 
 For each rule, "expected" = the dataset's optimized prompt (the target) fixes the defect the rule is for, while the
 degraded prompt has it. Defects are found with the Stage A detectors, so expected and fired use the same yardstick:

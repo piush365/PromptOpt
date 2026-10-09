@@ -2,7 +2,7 @@
 
     python -m app.stage_a.evaluate                 # test split (final numbers)
     python -m app.stage_a.evaluate --split val     # use val while tuning; never tune on test
-    python -m app.stage_a.evaluate --out ../evaluation/stage_a_test.md
+    python -m app.stage_a.evaluate --out ../evaluation/stage_a/stage_a_test.md
 
 Inputs are the *degraded* prompts, because those are what real users type. The dataset's own labels are used as
 references: `category`, and `has_format_spec` / `optimized_has_format_spec` (computed by the dataset notebook's
