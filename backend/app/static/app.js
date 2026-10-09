@@ -340,4 +340,96 @@ $("copy").addEventListener("click", async () => {
   catch { $("status").textContent = "Copy failed; select the text instead."; }
 });
 
+// ---------------------------------------------------------------- Test suite (correctness suite)
+let SUITE = null;
+
+function verdict(span, ok) {
+  span.textContent = ok === null ? "" : (ok ? "✅ correct" : "❌ wrong");
+  span.className = "verdict " + (ok === null ? "" : ok ? "ok" : "bad");
+}
+
+function suiteHeadline() {
+  const m = SUITE.models.find((x) => x.id === $("suite_model").value);
+  const s = m && m.summary;
+  $("suite_headline").textContent = !s ? `No stored results for ${m ? m.label : "this model"}; use "Run live".` :
+    `${m.label}: vague prompt correct on ${s.vague}/${s.n}, optimized on ${s.optimized}/${s.n} ` +
+    `(fixed by optimizing: ${s.only_optimized}, broken: ${s.only_vague}; McNemar p = ${s.mcnemar_p.toFixed(3)}); ` +
+    `total tokens ${pct(s.mean_reduction === null ? null : -s.mean_reduction)} per case on average. ` +
+    "Full report: evaluation/correctness_suite/RESULTS.md";
+}
+
+function renderSuite(d) {
+  $("suite_scenario").textContent = `${LABELS[d.case.category] || d.case.category}: ${d.case.scenario}. ` +
+    `Difficulty: ${d.case.difficulty.join(", ")}.` + (d.notes ? ` Why: ${d.notes}` : "");
+  $("suite_material").textContent = d.case.material;
+  $("suite_vague_prompt").textContent = d.case.vague_prompt;
+  $("suite_opt_prompt").textContent = d.prompts.optimized;
+  const p = d.pipeline;
+  $("suite_opt_note").textContent = `(${d.prompts.rendered_for.toUpperCase()} rendering; Stage A: ` +
+    `${p.stage_a.category} ${p.stage_a.confidence.toFixed(2)}; rules ${p.rules.map((r) => r.split("_")[0]).join(", ")}` +
+    (p.routed ? "; Stage C" : "") + ")";
+  $("suite_gold").textContent = d.gold;
+  const r = d.result;
+  for (const [v, key] of [["vague", "vague"], ["opt", "optimized"]]) {
+    const x = r && r[key];
+    $(`suite_${v}_answer`).textContent = x ? x.answer : "(not run yet: press \"Run live\")";
+    verdict($(`suite_${v}_mark`), x ? x.correct : null);
+    $(`suite_${v}_meta`).textContent = x ? `tokens in ${x.input_tokens}, out ${x.output_tokens}, total ${x.total_tokens}; ` +
+      `${(x.latency_ms / 1000).toFixed(1)} s; scored by ${x.method}` + (x.why ? `. Why wrong: ${x.why}` : "") : "";
+  }
+  $("suite_tokens").textContent = r ? `Total tokens: ${r.vague.total_tokens} -> ${r.optimized.total_tokens} ` +
+    `(${pct(r.total_reduction_pct === null ? null : -r.total_reduction_pct)}) on ${d.model.label}` +
+    (d.live ? " (run live)" : " (stored result)") : "";
+}
+
+async function loadSuiteCase(live = false) {
+  const id = $("suite_case").value, model = $("suite_model").value;
+  $("suite_status").textContent = live ? "Running both prompts on the model ..." : "";
+  $("suite_live").disabled = true;
+  try {
+    const res = live ? await fetch(`/api/suite/${encodeURIComponent(id)}/run`, {method: "POST",
+        headers: {"Content-Type": "application/json"}, body: JSON.stringify({model})})
+      : await fetch(`/api/suite/${encodeURIComponent(id)}?model=${encodeURIComponent(model)}`);
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.detail || res.statusText);
+    renderSuite(d);
+    $("suite_status").textContent = "";
+  } catch (e) {
+    $("suite_status").textContent = "Error: " + e.message;
+  } finally {
+    const m = SUITE.models.find((x) => x.id === model);
+    $("suite_live").disabled = !(m && m.available);
+    $("suite_live").title = m && !m.available ? m.reason : "Run both prompts on this model now (cached answers are reused)";
+  }
+}
+
+async function initSuite() {
+  SUITE = await (await fetch("/api/suite")).json();
+  $("suite_case").replaceChildren(...SUITE.categories.map((cat) => {
+    const g = document.createElement("optgroup"); g.label = LABELS[cat] || cat;
+    g.replaceChildren(...SUITE.cases.filter((c) => c.category === cat).map((c) => {
+      const o = el("option", `${c.id}: ${c.scenario}`); o.value = c.id; return o;
+    }));
+    return g;
+  }));
+  $("suite_model").replaceChildren(...SUITE.models.map((m) => {
+    const o = el("option", m.label + (m.has_results ? "" : m.available ? " (no stored results)" : " (needs API key)"));
+    o.value = m.id; o.disabled = !m.has_results && !m.available; return o;
+  }));
+  suiteHeadline();
+  loadSuiteCase();
+}
+
+function stepCase(d) {
+  const s = $("suite_case"); s.selectedIndex = (s.selectedIndex + d + s.options.length) % s.options.length;
+  loadSuiteCase();
+}
+
+$("suite_box").addEventListener("toggle", () => { if ($("suite_box").open && !SUITE) initSuite(); });
+$("suite_case").addEventListener("change", () => loadSuiteCase());
+$("suite_model").addEventListener("change", () => { suiteHeadline(); loadSuiteCase(); });
+$("suite_live").addEventListener("click", () => loadSuiteCase(true));
+$("suite_prev").addEventListener("click", () => stepCase(-1));
+$("suite_next").addEventListener("click", () => stepCase(1));
+
 init();

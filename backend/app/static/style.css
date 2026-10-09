@@ -57,3 +57,15 @@ label.inline { display: inline; font-weight: normal; margin: 0 4px 0 8px; }
 #compare_result .grid { margin-top: 8px; }
 #compare_result pre { max-height: 420px; overflow-y: auto; }
 .suggest-row .label { color: var(--muted); margin-right: 6px; font-size: 13px; }
+#suite_box > summary { list-style-position: outside; margin-left: 16px; }
+.inline-h { display: inline; margin: 0; }
+#suite_box .grid { margin-top: 8px; }
+#suite_box pre { max-height: 380px; overflow-y: auto; }
+#suite_box pre.clip { max-height: 220px; }
+.actions.end { align-self: end; margin-top: 0; }
+#suite_model, #suite_case { min-width: 0; }
+.gold { background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; white-space: pre-wrap; }
+.verdict { font-weight: 600; }
+.verdict.ok { color: #1a7f37; }
+.verdict.bad { color: #c62828; }
+@media (prefers-color-scheme: dark) { .verdict.ok { color: #56d364; } .verdict.bad { color: #ff7b72; } }

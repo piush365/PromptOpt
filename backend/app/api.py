@@ -13,6 +13,9 @@ Endpoints
     GET  /api/compare/models    models Compare can run on, with availability ("add GEMINI_API_KEY", ...)
     POST /api/compare           original vs optimized prompt on one model: answers, tokens, latency, sandbox tests
                                 for dataset coding items, optional blind judge (app.compare)
+    GET  /api/suite             correctness suite: the 50 cases and each model's headline (app.correctness)
+    GET  /api/suite/{id}        one case: material, vague vs optimized prompt, both answers, gold, verdicts, tokens
+    POST /api/suite/{id}/run    the same, run live on a model now (cached)
 
 Everything runs offline. Stage C is used when its adapter is installed (config.STAGE_C_ADAPTER) and
 STAGE_C_ENABLED is not "0"; otherwise the UI says Stage C is unavailable and Stage B's result is shown.
@@ -263,3 +266,40 @@ def compare(req: CompareRequest, db: Session = Depends(get_db)):
                           result["optimized"]["output_tokens"])
     db.commit()
     return {"prompt_id": optimized["prompt_id"], "category": optimized["category"], **result}
+
+
+# ---------------------------------------------------------------- correctness suite (Test suite view)
+class SuiteRunRequest(BaseModel):
+    model: str = Field(description="a model id from /api/suite")
+
+
+@app.get("/api/suite")
+def suite():
+    from app.correctness import view
+    return view.overview()
+
+
+@app.get("/api/suite/{case_id}")
+def suite_case(case_id: str, model: str = "cerebras/gpt-oss-120b"):
+    from app.correctness import view
+    try:
+        return view.case_view(case_id, model)
+    except KeyError:
+        raise HTTPException(404, f"no case {case_id!r}")
+    except (ValueError, LookupError) as e:
+        raise HTTPException(422, str(e))
+
+
+@app.post("/api/suite/{case_id}/run")
+def suite_run(case_id: str, req: SuiteRunRequest):
+    from app.correctness import view
+    try:
+        return view.case_view(case_id, req.model, live=True)
+    except KeyError:
+        raise HTTPException(404, f"no case {case_id!r}")
+    except (ValueError, LookupError) as e:
+        raise HTTPException(422, str(e))
+    except DailyLimitReached as e:
+        raise HTTPException(429, str(e))
+    except ModelUnavailable as e:
+        raise HTTPException(503, str(e))

@@ -1,0 +1,1235 @@
+{
+ "stage_c_model": "Qwen/Qwen2.5-0.5B-Instruct + stage_c_adapter",
+ "targets": [
+  "claude",
+  "gpt",
+  "gemini"
+ ],
+ "cases": {
+  "cqa-01": {
+   "vague": "im in 2nd yr, already in boys hostel. if i pay on 18 july how much total??\n\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - HOSTEL OFFICE\nNotice No. HO/2026/41, dated 1 July 2026\n\nHostel fees for A.Y. 2026-27 (all years):\n- Room rent: Rs 38,000 per year\n- Mess charges: Rs 42,000 per year\n- Caution deposit: Rs 5,000 (refundable; collected only once, at first admission to the hostel)\n- Students in the girls' hostel annexe pay Rs 36,000 room rent instead of Rs 38,000.\n\nDue date: 15 July 2026. A late fee of Rs 100 is charged for every day after the due date.\nPay through the ERP portal only.",
+   "optimized": {
+    "claude": "<context>\n<document>\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - HOSTEL OFFICE\nNotice No. HO/2026/41, dated 1 July 2026\n\nHostel fees for A.Y. 2026-27 (all years):\n- Room rent: Rs 38,000 per year\n- Mess charges: Rs 42,000 per year\n- Caution deposit: Rs 5,000 (refundable; collected only once, at first admission to the hostel)\n- Students in the girls' hostel annexe pay Rs 36,000 room rent instead of Rs 38,000.\n\nDue date: 15 July 2026. A late fee of Rs 100 is charged for every day after the due date.\nPay through the ERP portal only.\n</document>\n</context>\n\n<task>\nIm in 2nd yr, already in boys hostel. if I pay on 18 july how much total??\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nIm in 2nd yr, already in boys hostel. if I pay on 18 july how much total??\n\n### Context\nDocument:\n```\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - HOSTEL OFFICE\nNotice No. HO/2026/41, dated 1 July 2026\n\nHostel fees for A.Y. 2026-27 (all years):\n- Room rent: Rs 38,000 per year\n- Mess charges: Rs 42,000 per year\n- Caution deposit: Rs 5,000 (refundable; collected only once, at first admission to the hostel)\n- Students in the girls' hostel annexe pay Rs 36,000 room rent instead of Rs 38,000.\n\nDue date: 15 July 2026. A late fee of Rs 100 is charged for every day after the due date.\nPay through the ERP portal only.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Im in 2nd yr, already in boys hostel. if I pay on 18 july how much total??\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - HOSTEL OFFICE\nNotice No. HO/2026/41, dated 1 July 2026\n\nHostel fees for A.Y. 2026-27 (all years):\n- Room rent: Rs 38,000 per year\n- Mess charges: Rs 42,000 per year\n- Caution deposit: Rs 5,000 (refundable; collected only once, at first admission to the hostel)\n- Students in the girls' hostel annexe pay Rs 36,000 room rent instead of Rs 38,000.\n\nDue date: 15 July 2026. A late fee of Rs 100 is charged for every day after the due date.\nPay through the ERP portal only.\n```"
+   },
+   "request": "Im in 2nd yr, already in boys hostel. if I pay on 18 july how much total??\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.463
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-02": {
+   "vague": "when is my CD paper\n\nEND SEMESTER EXAMINATION - NOVEMBER 2026\nT.Y. B.Tech (Computer Science and Engineering)    Time: 10:00 am to 1:00 pm\n\nDate        | Course\n4 Nov 2026  | Database Engineering\n6 Nov 2026  | Computer Networks\n10 Nov 2026 | Compiler Design\n12 Nov 2026 | Operating Systems\n14 Nov 2026 | Elective II: Machine Learning\n\nCorrigendum (issued 28 Oct 2026): because of the Diwali holiday, the examination scheduled on\n10 Nov 2026 is rescheduled to 17 Nov 2026. All other papers remain as scheduled.",
+   "optimized": {
+    "claude": "<context>\n<document>\nEND SEMESTER EXAMINATION - NOVEMBER 2026\nT.Y. B.Tech (Computer Science and Engineering)    Time: 10:00 am to 1:00 pm\n\nDate        | Course\n4 Nov 2026  | Database Engineering\n6 Nov 2026  | Computer Networks\n10 Nov 2026 | Compiler Design\n12 Nov 2026 | Operating Systems\n14 Nov 2026 | Elective II: Machine Learning\n\nCorrigendum (issued 28 Oct 2026): because of the Diwali holiday, the examination scheduled on\n10 Nov 2026 is rescheduled to 17 Nov 2026. All other papers remain as scheduled.\n</document>\n</context>\n\n<task>\nWhen is my CD paper?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWhen is my CD paper?\n\n### Context\nDocument:\n```\nEND SEMESTER EXAMINATION - NOVEMBER 2026\nT.Y. B.Tech (Computer Science and Engineering)    Time: 10:00 am to 1:00 pm\n\nDate        | Course\n4 Nov 2026  | Database Engineering\n6 Nov 2026  | Computer Networks\n10 Nov 2026 | Compiler Design\n12 Nov 2026 | Operating Systems\n14 Nov 2026 | Elective II: Machine Learning\n\nCorrigendum (issued 28 Oct 2026): because of the Diwali holiday, the examination scheduled on\n10 Nov 2026 is rescheduled to 17 Nov 2026. All other papers remain as scheduled.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: When is my CD paper?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nEND SEMESTER EXAMINATION - NOVEMBER 2026\nT.Y. B.Tech (Computer Science and Engineering)    Time: 10:00 am to 1:00 pm\n\nDate        | Course\n4 Nov 2026  | Database Engineering\n6 Nov 2026  | Computer Networks\n10 Nov 2026 | Compiler Design\n12 Nov 2026 | Operating Systems\n14 Nov 2026 | Elective II: Machine Learning\n\nCorrigendum (issued 28 Oct 2026): because of the Diwali holiday, the examination scheduled on\n10 Nov 2026 is rescheduled to 17 Nov 2026. All other papers remain as scheduled.\n```"
+   },
+   "request": "When is my CD paper?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.518
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-03": {
+   "vague": "wat was the target for mech?\n\nInter-department T20 - CSE vs Mechanical, 2 Feb 2026, Main Ground\nCSE innings (20 overs)\nAarav Kulkarni     c Patil b Shinde    34\nSneha Jadhav       b More              12\nRohit Pawar        lbw b Shinde         0\nIshaan Deshpande   c & b Gaikwad       45\nTanmay Joshi       run out              7\nKabir Shaikh       c Mane b More       22\nVaibhav Kale       b Gaikwad            3\nYash Chavan        not out             18\nOm Bhosale         not out              1\nExtras (wd 7, nb 2, lb 2)              11\nFall of wickets: 1-40, 2-41, 3-66, 4-79, 5-121, 6-130, 7-148\nMechanical innings: after lunch.",
+   "optimized": {
+    "claude": "<context>\n<document>\nInter-department T20 - CSE vs Mechanical, 2 Feb 2026, Main Ground\nCSE innings (20 overs)\nAarav Kulkarni     c Patil b Shinde    34\nSneha Jadhav       b More              12\nRohit Pawar        lbw b Shinde         0\nIshaan Deshpande   c & b Gaikwad       45\nTanmay Joshi       run out              7\nKabir Shaikh       c Mane b More       22\nVaibhav Kale       b Gaikwad            3\nYash Chavan        not out             18\nOm Bhosale         not out              1\nExtras (wd 7, nb 2, lb 2)              11\nFall of wickets: 1-40, 2-41, 3-66, 4-79, 5-121, 6-130, 7-148\nMechanical innings: after lunch.\n</document>\n</context>\n\n<task>\nWat was the target for mech?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWat was the target for mech?\n\n### Context\nDocument:\n```\nInter-department T20 - CSE vs Mechanical, 2 Feb 2026, Main Ground\nCSE innings (20 overs)\nAarav Kulkarni     c Patil b Shinde    34\nSneha Jadhav       b More              12\nRohit Pawar        lbw b Shinde         0\nIshaan Deshpande   c & b Gaikwad       45\nTanmay Joshi       run out              7\nKabir Shaikh       c Mane b More       22\nVaibhav Kale       b Gaikwad            3\nYash Chavan        not out             18\nOm Bhosale         not out              1\nExtras (wd 7, nb 2, lb 2)              11\nFall of wickets: 1-40, 2-41, 3-66, 4-79, 5-121, 6-130, 7-148\nMechanical innings: after lunch.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Wat was the target for mech?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nInter-department T20 - CSE vs Mechanical, 2 Feb 2026, Main Ground\nCSE innings (20 overs)\nAarav Kulkarni     c Patil b Shinde    34\nSneha Jadhav       b More              12\nRohit Pawar        lbw b Shinde         0\nIshaan Deshpande   c & b Gaikwad       45\nTanmay Joshi       run out              7\nKabir Shaikh       c Mane b More       22\nVaibhav Kale       b Gaikwad            3\nYash Chavan        not out             18\nOm Bhosale         not out              1\nExtras (wd 7, nb 2, lb 2)              11\nFall of wickets: 1-40, 2-41, 3-66, 4-79, 5-121, 6-130, 7-148\nMechanical innings: after lunch.\n```"
+   },
+   "request": "Wat was the target for mech?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.362
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-04": {
+   "vague": "making this for 10 ppl in hostel, how much poha\n\nKanda Poha (serves 4)\n- 2 cups thick poha\n- 1 large onion, chopped\n- 2 green chillies\n- 1/2 tsp turmeric\n- 1 tsp mustard seeds\n- 10-12 curry leaves\n- 1/4 cup peanuts\n- 1 tbsp oil; salt and sugar to taste; lemon to serve\nRinse the poha in a strainer; do not soak it.",
+   "optimized": {
+    "claude": "<context>\n<document>\nKanda Poha (serves 4)\n- 2 cups thick poha\n- 1 large onion, chopped\n- 2 green chillies\n- 1/2 tsp turmeric\n- 1 tsp mustard seeds\n- 10-12 curry leaves\n- 1/4 cup peanuts\n- 1 tbsp oil; salt and sugar to taste; lemon to serve\nRinse the poha in a strainer; do not soak it.\n</document>\n</context>\n\n<task>\nMaking this for 10 ppl in hostel, how much poha.\n</task>\n\n<output_format>\nOutput as JSON with field \"amount\".\n</output_format>",
+    "gpt": "### Task\nMaking this for 10 ppl in hostel, how much poha.\n\n### Context\nDocument:\n```\nKanda Poha (serves 4)\n- 2 cups thick poha\n- 1 large onion, chopped\n- 2 green chillies\n- 1/2 tsp turmeric\n- 1 tsp mustard seeds\n- 10-12 curry leaves\n- 1/4 cup peanuts\n- 1 tbsp oil; salt and sugar to taste; lemon to serve\nRinse the poha in a strainer; do not soak it.\n```\n\n### Output format\nOutput as JSON with field \"amount\".",
+    "gemini": "Task: Making this for 10 ppl in hostel, how much poha.\n\nOutput format: Output as JSON with field \"amount\".\n\nContext:\nDocument:\n```\nKanda Poha (serves 4)\n- 2 cups thick poha\n- 1 large onion, chopped\n- 2 green chillies\n- 1/2 tsp turmeric\n- 1 tsp mustard seeds\n- 10-12 curry leaves\n- 1/4 cup peanuts\n- 1 tbsp oil; salt and sugar to taste; lemon to serve\nRinse the poha in a strainer; do not soak it.\n```"
+   },
+   "request": "Making this for 10 ppl in hostel, how much poha.\n\nOutput as JSON with field \"amount\".",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.339
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "coding"
+   },
+   "leaks": []
+  },
+  "cqa-05": {
+   "vague": "infosys min cgpa for btech?\n\nTRAINING AND PLACEMENT CELL - Campus drives, week of 12 Oct 2026\n1) TCS Digital: B.Tech, all branches; minimum 6.0 CGPA; no active backlog. Date: 13 Oct.\n2) Infosys Specialist Programmer: B.Tech CSE / IT / E&TC; minimum 6.5 CGPA (or 60% aggregate)\n   throughout; M.Tech students need 7.0 CGPA. At most one dead backlog allowed. Date: 15 Oct.\n3) Barclays: B.Tech CSE / IT; minimum 7.5 CGPA; no backlog history. Date: 16 Oct.",
+   "optimized": {
+    "claude": "<context>\n<document>\nTRAINING AND PLACEMENT CELL - Campus drives, week of 12 Oct 2026\n1) TCS Digital: B.Tech, all branches; minimum 6.0 CGPA; no active backlog. Date: 13 Oct.\n2) Infosys Specialist Programmer: B.Tech CSE / IT / E&TC; minimum 6.5 CGPA (or 60% aggregate)\n   throughout; M.Tech students need 7.0 CGPA. At most one dead backlog allowed. Date: 15 Oct.\n3) Barclays: B.Tech CSE / IT; minimum 7.5 CGPA; no backlog history. Date: 16 Oct.\n</document>\n</context>\n\n<task>\nInfosys min cgpa for btech?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nInfosys min cgpa for btech?\n\n### Context\nDocument:\n```\nTRAINING AND PLACEMENT CELL - Campus drives, week of 12 Oct 2026\n1) TCS Digital: B.Tech, all branches; minimum 6.0 CGPA; no active backlog. Date: 13 Oct.\n2) Infosys Specialist Programmer: B.Tech CSE / IT / E&TC; minimum 6.5 CGPA (or 60% aggregate)\n   throughout; M.Tech students need 7.0 CGPA. At most one dead backlog allowed. Date: 15 Oct.\n3) Barclays: B.Tech CSE / IT; minimum 7.5 CGPA; no backlog history. Date: 16 Oct.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Infosys min cgpa for btech?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nTRAINING AND PLACEMENT CELL - Campus drives, week of 12 Oct 2026\n1) TCS Digital: B.Tech, all branches; minimum 6.0 CGPA; no active backlog. Date: 13 Oct.\n2) Infosys Specialist Programmer: B.Tech CSE / IT / E&TC; minimum 6.5 CGPA (or 60% aggregate)\n   throughout; M.Tech students need 7.0 CGPA. At most one dead backlog allowed. Date: 15 Oct.\n3) Barclays: B.Tech CSE / IT; minimum 7.5 CGPA; no backlog history. Date: 16 Oct.\n```"
+   },
+   "request": "Infosys min cgpa for btech?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.422
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-06": {
+   "vague": "need min 2gb per day, which plan is cheapest per day?\n\nPrepaid plans (all include unlimited calls and 100 SMS/day)\nP1  Rs 299   - 28 days  - 1.5 GB/day\nP2  Rs 349   - 28 days  - 2 GB/day\nP3  Rs 719   - 84 days  - 2 GB/day\nP4  Rs 859   - 84 days  - 2.5 GB/day\nP5  Rs 2,999 - 365 days - 2.5 GB/day\nP6  Rs 1,799 - 365 days - 24 GB in total for the whole year",
+   "optimized": {
+    "claude": "<context>\n<document>\nPrepaid plans (all include unlimited calls and 100 SMS/day)\nP1  Rs 299   - 28 days  - 1.5 GB/day\nP2  Rs 349   - 28 days  - 2 GB/day\nP3  Rs 719   - 84 days  - 2 GB/day\nP4  Rs 859   - 84 days  - 2.5 GB/day\nP5  Rs 2,999 - 365 days - 2.5 GB/day\nP6  Rs 1,799 - 365 days - 24 GB in total for the whole year\n</document>\n</context>\n\n<task>\nNeed min 2gb per day, which plan is cheapest per day?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nNeed min 2gb per day, which plan is cheapest per day?\n\n### Context\nDocument:\n```\nPrepaid plans (all include unlimited calls and 100 SMS/day)\nP1  Rs 299   - 28 days  - 1.5 GB/day\nP2  Rs 349   - 28 days  - 2 GB/day\nP3  Rs 719   - 84 days  - 2 GB/day\nP4  Rs 859   - 84 days  - 2.5 GB/day\nP5  Rs 2,999 - 365 days - 2.5 GB/day\nP6  Rs 1,799 - 365 days - 24 GB in total for the whole year\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Need min 2gb per day, which plan is cheapest per day?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nPrepaid plans (all include unlimited calls and 100 SMS/day)\nP1  Rs 299   - 28 days  - 1.5 GB/day\nP2  Rs 349   - 28 days  - 2 GB/day\nP3  Rs 719   - 84 days  - 2 GB/day\nP4  Rs 859   - 84 days  - 2.5 GB/day\nP5  Rs 2,999 - 365 days - 2.5 GB/day\nP6  Rs 1,799 - 365 days - 24 GB in total for the whole year\n```"
+   },
+   "request": "Need min 2gb per day, which plan is cheapest per day?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.53
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-07": {
+   "vague": "how much fine do i pay for the OS book\n\nCentral Library - overdue rules\nBooks are issued for 14 days. Fine for late return: Rs 2 per day for the first 7 days of delay, and\nRs 5 per day for every day after that. Fines for reference books are double. The library is closed on\nSundays, but Sundays are counted as days of delay.\n\nIssue record: 'Operating System Concepts' (Silberschatz), accession no. 40217\nIssued 19 Sep 2026, due 3 Oct 2026, returned 14 Oct 2026. Category: lending (not reference).",
+   "optimized": {
+    "claude": "<context>\n<document>\nCentral Library - overdue rules\nBooks are issued for 14 days. Fine for late return: Rs 2 per day for the first 7 days of delay, and\nRs 5 per day for every day after that. Fines for reference books are double. The library is closed on\nSundays, but Sundays are counted as days of delay.\n\nIssue record: 'Operating System Concepts' (Silberschatz), accession no. 40217\nIssued 19 Sep 2026, due 3 Oct 2026, returned 14 Oct 2026. Category: lending (not reference).\n</document>\n</context>\n\n<task>\nHow much fine do I pay for the OS book?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nHow much fine do I pay for the OS book?\n\n### Context\nDocument:\n```\nCentral Library - overdue rules\nBooks are issued for 14 days. Fine for late return: Rs 2 per day for the first 7 days of delay, and\nRs 5 per day for every day after that. Fines for reference books are double. The library is closed on\nSundays, but Sundays are counted as days of delay.\n\nIssue record: 'Operating System Concepts' (Silberschatz), accession no. 40217\nIssued 19 Sep 2026, due 3 Oct 2026, returned 14 Oct 2026. Category: lending (not reference).\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: How much fine do I pay for the OS book?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nCentral Library - overdue rules\nBooks are issued for 14 days. Fine for late return: Rs 2 per day for the first 7 days of delay, and\nRs 5 per day for every day after that. Fines for reference books are double. The library is closed on\nSundays, but Sundays are counted as days of delay.\n\nIssue record: 'Operating System Concepts' (Silberschatz), accession no. 40217\nIssued 19 Sep 2026, due 3 Oct 2026, returned 14 Oct 2026. Category: lending (not reference).\n```"
+   },
+   "request": "How much fine do I pay for the OS book?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.535
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-08": {
+   "vague": "its sunday, i reach the stand at 8.10, which bus gets me to kolhapur earliest?\n\nMSRTC Sangli bus stand - departures to Kolhapur\n07:45  Ordinary   - journey 1 h 50 min - daily\n08:00  Shivshahi  - journey 1 h 20 min - daily\n08:30  Ordinary   - journey 1 h 50 min - daily\n08:45  Shivshahi  - journey 1 h 20 min - not on Sundays\n09:00  Shivshahi  - journey 1 h 25 min - daily\n09:30  Ordinary   - journey 1 h 50 min - daily",
+   "optimized": {
+    "claude": "<context>\n<document>\nMSRTC Sangli bus stand - departures to Kolhapur\n07:45  Ordinary   - journey 1 h 50 min - daily\n08:00  Shivshahi  - journey 1 h 20 min - daily\n08:30  Ordinary   - journey 1 h 50 min - daily\n08:45  Shivshahi  - journey 1 h 20 min - not on Sundays\n09:00  Shivshahi  - journey 1 h 25 min - daily\n09:30  Ordinary   - journey 1 h 50 min - daily\n</document>\n</context>\n\n<task>\nIts sunday, i reach the stand at 8.10, which bus gets me to kolhapur earliest?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nIts sunday, i reach the stand at 8.10, which bus gets me to kolhapur earliest?\n\n### Context\nDocument:\n```\nMSRTC Sangli bus stand - departures to Kolhapur\n07:45  Ordinary   - journey 1 h 50 min - daily\n08:00  Shivshahi  - journey 1 h 20 min - daily\n08:30  Ordinary   - journey 1 h 50 min - daily\n08:45  Shivshahi  - journey 1 h 20 min - not on Sundays\n09:00  Shivshahi  - journey 1 h 25 min - daily\n09:30  Ordinary   - journey 1 h 50 min - daily\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Its sunday, i reach the stand at 8.10, which bus gets me to kolhapur earliest?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nMSRTC Sangli bus stand - departures to Kolhapur\n07:45  Ordinary   - journey 1 h 50 min - daily\n08:00  Shivshahi  - journey 1 h 20 min - daily\n08:30  Ordinary   - journey 1 h 50 min - daily\n08:45  Shivshahi  - journey 1 h 20 min - not on Sundays\n09:00  Shivshahi  - journey 1 h 25 min - daily\n09:30  Ordinary   - journey 1 h 50 min - daily\n```"
+   },
+   "request": "Its sunday, i reach the stand at 8.10, which bus gets me to kolhapur earliest?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.45
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-09": {
+   "vague": "final price if i use sbi card n coupon?\n\nSoundPods X1 TWS earbuds\nMRP: Rs 1,999    Deal price: Rs 1,299 (35% off)\nCoupon: Rs 50 off (applied on the deal price)\nBank offer: 10% instant discount on SBI credit cards, up to Rs 100, on the price after the coupon\nExchange offer: not available. Delivery: free.",
+   "optimized": {
+    "claude": "<context>\n<document>\nSoundPods X1 TWS earbuds\nMRP: Rs 1,999    Deal price: Rs 1,299 (35% off)\nCoupon: Rs 50 off (applied on the deal price)\nBank offer: 10% instant discount on SBI credit cards, up to Rs 100, on the price after the coupon\nExchange offer: not available. Delivery: free.\n</document>\n</context>\n\n<task>\nFinal price if I use sbi card n coupon?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nFinal price if I use sbi card n coupon?\n\n### Context\nDocument:\n```\nSoundPods X1 TWS earbuds\nMRP: Rs 1,999    Deal price: Rs 1,299 (35% off)\nCoupon: Rs 50 off (applied on the deal price)\nBank offer: 10% instant discount on SBI credit cards, up to Rs 100, on the price after the coupon\nExchange offer: not available. Delivery: free.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Final price if I use sbi card n coupon?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nSoundPods X1 TWS earbuds\nMRP: Rs 1,999    Deal price: Rs 1,299 (35% off)\nCoupon: Rs 50 off (applied on the deal price)\nBank offer: 10% instant discount on SBI credit cards, up to Rs 100, on the price after the coupon\nExchange offer: not available. Delivery: free.\n```"
+   },
+   "request": "Final price if I use sbi card n coupon?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.316
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cqa-10": {
+   "vague": "how many more dbms lectures can i bunk n still get 75\n\nAttendance report - T.Y. CSE, Div A - Roll 3121 - as on 30 Sep 2026\nCourse                | Conducted so far | Attended | Lectures planned this semester\nDatabase Engineering  | 48               | 38       | 60\nComputer Networks     | 46               | 40       | 56\nOperating Systems     | 44               | 30       | 58\nRule: at least 75% attendance in each course, calculated on the lectures planned for the whole\nsemester, is needed to take the end-semester exam.",
+   "optimized": {
+    "claude": "<context>\n<document>\nAttendance report - T.Y. CSE, Div A - Roll 3121 - as on 30 Sep 2026\nCourse                | Conducted so far | Attended | Lectures planned this semester\nDatabase Engineering  | 48               | 38       | 60\nComputer Networks     | 46               | 40       | 56\nOperating Systems     | 44               | 30       | 58\nRule: at least 75% attendance in each course, calculated on the lectures planned for the whole\nsemester, is needed to take the end-semester exam.\n</document>\n</context>\n\n<task>\nHow many more dbms lectures can I bunk n still get 75?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nHow many more dbms lectures can I bunk n still get 75?\n\n### Context\nDocument:\n```\nAttendance report - T.Y. CSE, Div A - Roll 3121 - as on 30 Sep 2026\nCourse                | Conducted so far | Attended | Lectures planned this semester\nDatabase Engineering  | 48               | 38       | 60\nComputer Networks     | 46               | 40       | 56\nOperating Systems     | 44               | 30       | 58\nRule: at least 75% attendance in each course, calculated on the lectures planned for the whole\nsemester, is needed to take the end-semester exam.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: How many more dbms lectures can I bunk n still get 75?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nAttendance report - T.Y. CSE, Div A - Roll 3121 - as on 30 Sep 2026\nCourse                | Conducted so far | Attended | Lectures planned this semester\nDatabase Engineering  | 48               | 38       | 60\nComputer Networks     | 46               | 40       | 56\nOperating Systems     | 44               | 30       | 58\nRule: at least 75% attendance in each course, calculated on the lectures planned for the whole\nsemester, is needed to take the end-semester exam.\n```"
+   },
+   "request": "How many more dbms lectures can I bunk n still get 75?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.434
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-01": {
+   "vague": "which branches can apply for persistent\n\nT&P Cell - Drive notice (2027 batch)\nPersistent Systems - Graduate Engineer Trainee\nEligible branches: CSE, IT and E&TC. Mechanical, Civil and Electrical students are not eligible for this role.\nCriteria: 6.0 CGPA, no active backlog. Online test: 20 Oct.\n\nKPIT Technologies - Embedded Software Trainee\nEligible branches: Electrical, E&TC and Mechanical (with the Mechatronics minor). Online test: 22 Oct.",
+   "optimized": {
+    "claude": "<context>\n<document>\nT&P Cell - Drive notice (2027 batch)\nPersistent Systems - Graduate Engineer Trainee\nEligible branches: CSE, IT and E&TC. Mechanical, Civil and Electrical students are not eligible for this role.\nCriteria: 6.0 CGPA, no active backlog. Online test: 20 Oct.\n\nKPIT Technologies - Embedded Software Trainee\nEligible branches: Electrical, E&TC and Mechanical (with the Mechatronics minor). Online test: 22 Oct.\n</document>\n</context>\n\n<task>\nWhich branches can apply for persistent?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWhich branches can apply for persistent?\n\n### Context\nDocument:\n```\nT&P Cell - Drive notice (2027 batch)\nPersistent Systems - Graduate Engineer Trainee\nEligible branches: CSE, IT and E&TC. Mechanical, Civil and Electrical students are not eligible for this role.\nCriteria: 6.0 CGPA, no active backlog. Online test: 20 Oct.\n\nKPIT Technologies - Embedded Software Trainee\nEligible branches: Electrical, E&TC and Mechanical (with the Mechatronics minor). Online test: 22 Oct.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Which branches can apply for persistent?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nT&P Cell - Drive notice (2027 batch)\nPersistent Systems - Graduate Engineer Trainee\nEligible branches: CSE, IT and E&TC. Mechanical, Civil and Electrical students are not eligible for this role.\nCriteria: 6.0 CGPA, no active backlog. Online test: 20 Oct.\n\nKPIT Technologies - Embedded Software Trainee\nEligible branches: Electrical, E&TC and Mechanical (with the Mechatronics minor). Online test: 22 Oct.\n```"
+   },
+   "request": "Which branches can apply for persistent?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.42
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-02": {
+   "vague": "list all deadlines frm this mail\n\nFrom: Project Coordinator, Dept. of CSE\nDate: 2 Oct 2026\nSubject: B.Tech final-year project schedule (revised)\n\nDear students,\nThe synopsis submission date announced earlier (7 Oct) has been extended. The revised schedule is:\n1. Synopsis submission: 14 Oct 2026, through the department portal.\n2. Mid-semester progress report upload: 21 Oct 2026.\n3. Final project report (hard-bound, 2 copies): 30 Nov 2026.\nThe department will be closed on 20 Oct for Dussehra.\nRegards,\nDr. S. Kale",
+   "optimized": {
+    "claude": "<context>\n<document>\nFrom: Project Coordinator, Dept. of CSE\nDate: 2 Oct 2026\nSubject: B.Tech final-year project schedule (revised)\n\nDear students,\nThe synopsis submission date announced earlier (7 Oct) has been extended. The revised schedule is:\n1. Synopsis submission: 14 Oct 2026, through the department portal.\n2. Mid-semester progress report upload: 21 Oct 2026.\n3. Final project report (hard-bound, 2 copies): 30 Nov 2026.\nThe department will be closed on 20 Oct for Dussehra.\nRegards,\nDr. S. Kale\n</document>\n</context>\n\n<task>\nList all deadlines frm this mail.\n</task>\n\n<output_format>\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".\n</output_format>",
+    "gpt": "### Task\nList all deadlines frm this mail.\n\n### Context\nDocument:\n```\nFrom: Project Coordinator, Dept. of CSE\nDate: 2 Oct 2026\nSubject: B.Tech final-year project schedule (revised)\n\nDear students,\nThe synopsis submission date announced earlier (7 Oct) has been extended. The revised schedule is:\n1. Synopsis submission: 14 Oct 2026, through the department portal.\n2. Mid-semester progress report upload: 21 Oct 2026.\n3. Final project report (hard-bound, 2 copies): 30 Nov 2026.\nThe department will be closed on 20 Oct for Dussehra.\nRegards,\nDr. S. Kale\n```\n\n### Output format\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".",
+    "gemini": "Task: List all deadlines frm this mail.\n\nOutput format: List each extracted item on its own line; if the text does not contain it, reply \"Not found\".\n\nContext:\nDocument:\n```\nFrom: Project Coordinator, Dept. of CSE\nDate: 2 Oct 2026\nSubject: B.Tech final-year project schedule (revised)\n\nDear students,\nThe synopsis submission date announced earlier (7 Oct) has been extended. The revised schedule is:\n1. Synopsis submission: 14 Oct 2026, through the department portal.\n2. Mid-semester progress report upload: 21 Oct 2026.\n3. Final project report (hard-bound, 2 copies): 30 Nov 2026.\nThe department will be closed on 20 Oct for Dussehra.\nRegards,\nDr. S. Kale\n```"
+   },
+   "request": "List all deadlines frm this mail.\n\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.695
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-03": {
+   "vague": "which os versions hv the crash\n\nIssue #212: App crashes when opening the timetable screen\nReported by Nikhil (Android 13, Redmi Note 12)\nComments:\n- Priya: Same crash on my Samsung, Android 12.\n- Faiz: Works fine for me on Android 14 (Pixel 7).\n- Ananya: iPhone 13 on iOS 17.2, crashes too.\n- Rahul: I updated to iOS 17.4 and it stopped crashing.\n- Maintainer: Confirmed. Crash reproduced on Android 12, Android 13 and iOS 17.2.\n  Not reproducible on Android 14 or iOS 17.4.",
+   "optimized": {
+    "claude": "<context>\n<document>\nIssue #212: App crashes when opening the timetable screen\nReported by Nikhil (Android 13, Redmi Note 12)\nComments:\n- Priya: Same crash on my Samsung, Android 12.\n- Faiz: Works fine for me on Android 14 (Pixel 7).\n- Ananya: iPhone 13 on iOS 17.2, crashes too.\n- Rahul: I updated to iOS 17.4 and it stopped crashing.\n- Maintainer: Confirmed. Crash reproduced on Android 12, Android 13 and iOS 17.2.\n  Not reproducible on Android 14 or iOS 17.4.\n</document>\n</context>\n\n<task>\nWhich os versions hv the crash?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWhich os versions hv the crash?\n\n### Context\nDocument:\n```\nIssue #212: App crashes when opening the timetable screen\nReported by Nikhil (Android 13, Redmi Note 12)\nComments:\n- Priya: Same crash on my Samsung, Android 12.\n- Faiz: Works fine for me on Android 14 (Pixel 7).\n- Ananya: iPhone 13 on iOS 17.2, crashes too.\n- Rahul: I updated to iOS 17.4 and it stopped crashing.\n- Maintainer: Confirmed. Crash reproduced on Android 12, Android 13 and iOS 17.2.\n  Not reproducible on Android 14 or iOS 17.4.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Which os versions hv the crash?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nIssue #212: App crashes when opening the timetable screen\nReported by Nikhil (Android 13, Redmi Note 12)\nComments:\n- Priya: Same crash on my Samsung, Android 12.\n- Faiz: Works fine for me on Android 14 (Pixel 7).\n- Ananya: iPhone 13 on iOS 17.2, crashes too.\n- Rahul: I updated to iOS 17.4 and it stopped crashing.\n- Maintainer: Confirmed. Crash reproduced on Android 12, Android 13 and iOS 17.2.\n  Not reproducible on Android 14 or iOS 17.4.\n```"
+   },
+   "request": "Which os versions hv the crash?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.501
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-04": {
+   "vague": "names of ppl with backlogs\n\nResult sheet - T.Y. CSE, Semester V (grades)\nRoll | Name            | DBMS | CN | OS | TOC\n101  | Aditi Kulkarni  | A    | B+ | A  | A\n102  | Rohan Patil     | B    | C  | F  | B\n103  | Sana Shaikh     | A+   | A  | A  | B+\n104  | Vedant Joshi    | C    | AB | B  | C\n105  | Priya Deshmukh  | B    | B  | B+ | A\n106  | Omkar Jadhav    | F    | D  | C  | F\n107  | Neha Pawar      | A    | A+ | A+ | A+\n108  | Kunal More      | D    | C  | D  | C\nGrades A+ to D are passes. F = fail. AB = absent, which counts as a fail.",
+   "optimized": {
+    "claude": "<context>\n<document>\nResult sheet - T.Y. CSE, Semester V (grades)\nRoll | Name            | DBMS | CN | OS | TOC\n101  | Aditi Kulkarni  | A    | B+ | A  | A\n102  | Rohan Patil     | B    | C  | F  | B\n103  | Sana Shaikh     | A+   | A  | A  | B+\n104  | Vedant Joshi    | C    | AB | B  | C\n105  | Priya Deshmukh  | B    | B  | B+ | A\n106  | Omkar Jadhav    | F    | D  | C  | F\n107  | Neha Pawar      | A    | A+ | A+ | A+\n108  | Kunal More      | D    | C  | D  | C\nGrades A+ to D are passes. F = fail. AB = absent, which counts as a fail.\n</document>\n</context>\n\n<task>\nNames of ppl with backlogs.\n</task>\n\n<output_format>\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".\n</output_format>",
+    "gpt": "### Task\nNames of ppl with backlogs.\n\n### Context\nDocument:\n```\nResult sheet - T.Y. CSE, Semester V (grades)\nRoll | Name            | DBMS | CN | OS | TOC\n101  | Aditi Kulkarni  | A    | B+ | A  | A\n102  | Rohan Patil     | B    | C  | F  | B\n103  | Sana Shaikh     | A+   | A  | A  | B+\n104  | Vedant Joshi    | C    | AB | B  | C\n105  | Priya Deshmukh  | B    | B  | B+ | A\n106  | Omkar Jadhav    | F    | D  | C  | F\n107  | Neha Pawar      | A    | A+ | A+ | A+\n108  | Kunal More      | D    | C  | D  | C\nGrades A+ to D are passes. F = fail. AB = absent, which counts as a fail.\n```\n\n### Output format\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".",
+    "gemini": "Task: Names of ppl with backlogs.\n\nOutput format: List each extracted item on its own line; if the text does not contain it, reply \"Not found\".\n\nContext:\nDocument:\n```\nResult sheet - T.Y. CSE, Semester V (grades)\nRoll | Name            | DBMS | CN | OS | TOC\n101  | Aditi Kulkarni  | A    | B+ | A  | A\n102  | Rohan Patil     | B    | C  | F  | B\n103  | Sana Shaikh     | A+   | A  | A  | B+\n104  | Vedant Joshi    | C    | AB | B  | C\n105  | Priya Deshmukh  | B    | B  | B+ | A\n106  | Omkar Jadhav    | F    | D  | C  | F\n107  | Neha Pawar      | A    | A+ | A+ | A+\n108  | Kunal More      | D    | C  | D  | C\nGrades A+ to D are passes. F = fail. AB = absent, which counts as a fail.\n```"
+   },
+   "request": "Names of ppl with backlogs.\n\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.81
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-05": {
+   "vague": "my frnd is lactose intolerant, which ingredients here have dairy\n\nPaneer Makhani (restaurant style), serves 4\nIngredients:\n250 g paneer, cubed\n2 tbsp butter\n1 tbsp oil\n2 onions, sliced\n3 tomatoes, chopped\n10 cashews, soaked and ground to a paste\n1 tsp ginger-garlic paste\n1/4 cup fresh cream\n2 tbsp curd, whisked\n1 tsp ghee, for the tadka\n1 tsp kasuri methi\nSalt, sugar and Kashmiri chilli powder to taste\nNote: the cashew paste gives the gravy its body; cashews are not a dairy product.",
+   "optimized": {
+    "claude": "<context>\n<document>\nPaneer Makhani (restaurant style), serves 4\nIngredients:\n250 g paneer, cubed\n2 tbsp butter\n1 tbsp oil\n2 onions, sliced\n3 tomatoes, chopped\n10 cashews, soaked and ground to a paste\n1 tsp ginger-garlic paste\n1/4 cup fresh cream\n2 tbsp curd, whisked\n1 tsp ghee, for the tadka\n1 tsp kasuri methi\nSalt, sugar and Kashmiri chilli powder to taste\nNote: the cashew paste gives the gravy its body; cashews are not a dairy product.\n</document>\n</context>\n\n<task>\nMy frnd is lactose intolerant, which ingredients here have dairy.\n</task>\n\n<output_format>\nOutput as a bullet list.\n</output_format>",
+    "gpt": "### Task\nMy frnd is lactose intolerant, which ingredients here have dairy.\n\n### Context\nDocument:\n```\nPaneer Makhani (restaurant style), serves 4\nIngredients:\n250 g paneer, cubed\n2 tbsp butter\n1 tbsp oil\n2 onions, sliced\n3 tomatoes, chopped\n10 cashews, soaked and ground to a paste\n1 tsp ginger-garlic paste\n1/4 cup fresh cream\n2 tbsp curd, whisked\n1 tsp ghee, for the tadka\n1 tsp kasuri methi\nSalt, sugar and Kashmiri chilli powder to taste\nNote: the cashew paste gives the gravy its body; cashews are not a dairy product.\n```\n\n### Output format\nOutput as a bullet list.",
+    "gemini": "Task: My frnd is lactose intolerant, which ingredients here have dairy.\n\nOutput format: Output as a bullet list.\n\nContext:\nDocument:\n```\nPaneer Makhani (restaurant style), serves 4\nIngredients:\n250 g paneer, cubed\n2 tbsp butter\n1 tbsp oil\n2 onions, sliced\n3 tomatoes, chopped\n10 cashews, soaked and ground to a paste\n1 tsp ginger-garlic paste\n1/4 cup fresh cream\n2 tbsp curd, whisked\n1 tsp ghee, for the tadka\n1 tsp kasuri methi\nSalt, sugar and Kashmiri chilli powder to taste\nNote: the cashew paste gives the gravy its body; cashews are not a dairy product.\n```"
+   },
+   "request": "My frnd is lactose intolerant, which ingredients here have dairy.\n\nOutput as a bullet list.",
+   "stage_a": {
+    "category": "classification",
+    "confidence": 0.269
+   },
+   "category_used": "classification",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "information_extraction"
+   },
+   "leaks": []
+  },
+  "ie-06": {
+   "vague": "who all got confirmed seats?\n\nPNR status - 11029 Koyna Express, Kolhapur to Mumbai CSMT, 18 Oct 2026, Class SL\nChart prepared.\nPassenger 1: Suresh Naik, 52, M - Booking status: CNF S4/33 - Current status: CNF S4/33\nPassenger 2: Lata Naik, 48, F   - Booking status: WL 12     - Current status: RAC 14\nPassenger 3: Arjun Naik, 21, M  - Booking status: WL 15     - Current status: CNF S6/18\nPassenger 4: Meera Naik, 17, F  - Booking status: WL 19     - Current status: WL 3",
+   "optimized": {
+    "claude": "<context>\n<document>\nPNR status - 11029 Koyna Express, Kolhapur to Mumbai CSMT, 18 Oct 2026, Class SL\nChart prepared.\nPassenger 1: Suresh Naik, 52, M - Booking status: CNF S4/33 - Current status: CNF S4/33\nPassenger 2: Lata Naik, 48, F   - Booking status: WL 12     - Current status: RAC 14\nPassenger 3: Arjun Naik, 21, M  - Booking status: WL 15     - Current status: CNF S6/18\nPassenger 4: Meera Naik, 17, F  - Booking status: WL 19     - Current status: WL 3\n</document>\n</context>\n\n<task>\nWho all got confirmed seats?\n</task>\n\n<constraints>\n- Answer in at most two sentences.\n</constraints>\n\n<output_format>\nStart with the direct answer.\n</output_format>",
+    "gpt": "### Task\nWho all got confirmed seats?\n\n### Context\nDocument:\n```\nPNR status - 11029 Koyna Express, Kolhapur to Mumbai CSMT, 18 Oct 2026, Class SL\nChart prepared.\nPassenger 1: Suresh Naik, 52, M - Booking status: CNF S4/33 - Current status: CNF S4/33\nPassenger 2: Lata Naik, 48, F   - Booking status: WL 12     - Current status: RAC 14\nPassenger 3: Arjun Naik, 21, M  - Booking status: WL 15     - Current status: CNF S6/18\nPassenger 4: Meera Naik, 17, F  - Booking status: WL 19     - Current status: WL 3\n```\n\n### Constraints\n- Answer in at most two sentences.\n\n### Output format\nStart with the direct answer.",
+    "gemini": "Task: Who all got confirmed seats?\n\nConstraints:\n- Answer in at most two sentences.\n\nOutput format: Start with the direct answer.\n\nContext:\nDocument:\n```\nPNR status - 11029 Koyna Express, Kolhapur to Mumbai CSMT, 18 Oct 2026, Class SL\nChart prepared.\nPassenger 1: Suresh Naik, 52, M - Booking status: CNF S4/33 - Current status: CNF S4/33\nPassenger 2: Lata Naik, 48, F   - Booking status: WL 12     - Current status: RAC 14\nPassenger 3: Arjun Naik, 21, M  - Booking status: WL 15     - Current status: CNF S6/18\nPassenger 4: Meera Naik, 17, F  - Booking status: WL 19     - Current status: WL 3\n```"
+   },
+   "request": "Who all got confirmed seats?\n\nAnswer in at most two sentences. Start with the direct answer.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.742
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B04_ADD_LENGTH",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-07": {
+   "vague": "which labs does T2 have this week\n\nT.Y. CSE Div B - practical batches T1, T2, T3 - weekly timetable (labs only)\nMon 10:00-12:00  T1: DBMS Lab (Lab 3)   | T2: CN Lab (Lab 5)    | T3: OS Lab (Lab 2)\nTue 14:00-16:00  T1: CN Lab (Lab 5)     | T2: OS Lab (Lab 2)    | T3: DBMS Lab (Lab 3)\nWed 10:00-12:00  T1 and T3: Python Programming Lab (Lab 1)      | T2: mini-project hours (no lab)\nThu 14:00-16:00  T2 and T3: Web Technology Lab (Lab 4)          | T1: library hour\nFri 10:00-12:00  T1: Web Technology Lab (Lab 4)                 | T2, T3: no practical",
+   "optimized": {
+    "claude": "<context>\n<document>\nT.Y. CSE Div B - practical batches T1, T2, T3 - weekly timetable (labs only)\nMon 10:00-12:00  T1: DBMS Lab (Lab 3)   | T2: CN Lab (Lab 5)    | T3: OS Lab (Lab 2)\nTue 14:00-16:00  T1: CN Lab (Lab 5)     | T2: OS Lab (Lab 2)    | T3: DBMS Lab (Lab 3)\nWed 10:00-12:00  T1 and T3: Python Programming Lab (Lab 1)      | T2: mini-project hours (no lab)\nThu 14:00-16:00  T2 and T3: Web Technology Lab (Lab 4)          | T1: library hour\nFri 10:00-12:00  T1: Web Technology Lab (Lab 4)                 | T2, T3: no practical\n</document>\n</context>\n\n<task>\nWhich labs does T2 have this week?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWhich labs does T2 have this week?\n\n### Context\nDocument:\n```\nT.Y. CSE Div B - practical batches T1, T2, T3 - weekly timetable (labs only)\nMon 10:00-12:00  T1: DBMS Lab (Lab 3)   | T2: CN Lab (Lab 5)    | T3: OS Lab (Lab 2)\nTue 14:00-16:00  T1: CN Lab (Lab 5)     | T2: OS Lab (Lab 2)    | T3: DBMS Lab (Lab 3)\nWed 10:00-12:00  T1 and T3: Python Programming Lab (Lab 1)      | T2: mini-project hours (no lab)\nThu 14:00-16:00  T2 and T3: Web Technology Lab (Lab 4)          | T1: library hour\nFri 10:00-12:00  T1: Web Technology Lab (Lab 4)                 | T2, T3: no practical\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Which labs does T2 have this week?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nT.Y. CSE Div B - practical batches T1, T2, T3 - weekly timetable (labs only)\nMon 10:00-12:00  T1: DBMS Lab (Lab 3)   | T2: CN Lab (Lab 5)    | T3: OS Lab (Lab 2)\nTue 14:00-16:00  T1: CN Lab (Lab 5)     | T2: OS Lab (Lab 2)    | T3: DBMS Lab (Lab 3)\nWed 10:00-12:00  T1 and T3: Python Programming Lab (Lab 1)      | T2: mini-project hours (no lab)\nThu 14:00-16:00  T2 and T3: Web Technology Lab (Lab 4)          | T1: library hour\nFri 10:00-12:00  T1: Web Technology Lab (Lab 4)                 | T2, T3: no practical\n```"
+   },
+   "request": "Which labs does T2 have this week?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.595
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-08": {
+   "vague": "list payments above 5000 i made this month\n\nAccount statement - savings a/c XXXX4417 - 1 Sep to 30 Sep 2026\nDate  | Description             | Amount (Rs) | Dr/Cr\n02-09 | UPI/Swiggy              |      432.00 | Dr\n03-09 | NEFT/WCE SANGLI FEES    |   45,500.00 | Dr\n05-09 | UPI/Reliance Digital    |    5,000.00 | Dr\n08-09 | NEFT/MahaDBT Scholarship|   12,000.00 | Cr\n10-09 | UPI/Decathlon Sports    |    6,299.00 | Dr\n15-09 | ATM WDL/Vishrambag      |    2,000.00 | Dr\n18-09 | UPI/MakeMyTrip          |    8,740.00 | Dr\n22-09 | Refund/MakeMyTrip       |    1,200.00 | Cr\nClosing balance: 18,327.40",
+   "optimized": {
+    "claude": "<context>\n<document>\nAccount statement - savings a/c XXXX4417 - 1 Sep to 30 Sep 2026\nDate  | Description             | Amount (Rs) | Dr/Cr\n02-09 | UPI/Swiggy              |      432.00 | Dr\n03-09 | NEFT/WCE SANGLI FEES    |   45,500.00 | Dr\n05-09 | UPI/Reliance Digital    |    5,000.00 | Dr\n08-09 | NEFT/MahaDBT Scholarship|   12,000.00 | Cr\n10-09 | UPI/Decathlon Sports    |    6,299.00 | Dr\n15-09 | ATM WDL/Vishrambag      |    2,000.00 | Dr\n18-09 | UPI/MakeMyTrip          |    8,740.00 | Dr\n22-09 | Refund/MakeMyTrip       |    1,200.00 | Cr\nClosing balance: 18,327.40\n</document>\n</context>\n\n<task>\nList payments above 5000 i made this month.\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nList payments above 5000 i made this month.\n\n### Context\nDocument:\n```\nAccount statement - savings a/c XXXX4417 - 1 Sep to 30 Sep 2026\nDate  | Description             | Amount (Rs) | Dr/Cr\n02-09 | UPI/Swiggy              |      432.00 | Dr\n03-09 | NEFT/WCE SANGLI FEES    |   45,500.00 | Dr\n05-09 | UPI/Reliance Digital    |    5,000.00 | Dr\n08-09 | NEFT/MahaDBT Scholarship|   12,000.00 | Cr\n10-09 | UPI/Decathlon Sports    |    6,299.00 | Dr\n15-09 | ATM WDL/Vishrambag      |    2,000.00 | Dr\n18-09 | UPI/MakeMyTrip          |    8,740.00 | Dr\n22-09 | Refund/MakeMyTrip       |    1,200.00 | Cr\nClosing balance: 18,327.40\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: List payments above 5000 i made this month.\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\nAccount statement - savings a/c XXXX4417 - 1 Sep to 30 Sep 2026\nDate  | Description             | Amount (Rs) | Dr/Cr\n02-09 | UPI/Swiggy              |      432.00 | Dr\n03-09 | NEFT/WCE SANGLI FEES    |   45,500.00 | Dr\n05-09 | UPI/Reliance Digital    |    5,000.00 | Dr\n08-09 | NEFT/MahaDBT Scholarship|   12,000.00 | Cr\n10-09 | UPI/Decathlon Sports    |    6,299.00 | Dr\n15-09 | ATM WDL/Vishrambag      |    2,000.00 | Dr\n18-09 | UPI/MakeMyTrip          |    8,740.00 | Dr\n22-09 | Refund/MakeMyTrip       |    1,200.00 | Cr\nClosing balance: 18,327.40\n```"
+   },
+   "request": "List payments above 5000 i made this month.\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.908
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "ie-09": {
+   "vague": "list the files in the failing tracebacks here\n\nBug #87 - 500 error when faculty upload marks (college ERP, Django)\nTraceback (most recent call last):\n  File \"erp/marks/views.py\", line 142, in upload_marks\n    row = parse_row(line)\n  File \"erp/marks/utils.py\", line 58, in parse_row\n    roll = data[\"roll_no\"]\nKeyError: 'roll_no'\n\nComment (Swati): the attendance upload fails the same way. Its traceback ends in\nerp/attendance/utils.py line 31, called from erp/attendance/views.py line 77.\nComment (Prof. Mane): I first suspected erp/core/middleware.py, but disabling it changed nothing,\nso it is not involved.\nComment (Swati): erp/timetable/views.py uses a function with the same name, and its upload works fine.",
+   "optimized": {
+    "claude": "<context>\n<document>\nBug #87 - 500 error when faculty upload marks (college ERP, Django)\nTraceback (most recent call last):\n  File \"erp/marks/views.py\", line 142, in upload_marks\n    row = parse_row(line)\n  File \"erp/marks/utils.py\", line 58, in parse_row\n    roll = data[\"roll_no\"]\nKeyError: 'roll_no'\n\nComment (Swati): the attendance upload fails the same way. Its traceback ends in\nerp/attendance/utils.py line 31, called from erp/attendance/views.py line 77.\nComment (Prof. Mane): I first suspected erp/core/middleware.py, but disabling it changed nothing,\nso it is not involved.\nComment (Swati): erp/timetable/views.py uses a function with the same name, and its upload works fine.\n</document>\n</context>\n\n<task>\nList the files in the failing tracebacks here.\n</task>\n\n<output_format>\nOutput as a bullet list.\n</output_format>",
+    "gpt": "### Task\nList the files in the failing tracebacks here.\n\n### Context\nDocument:\n```\nBug #87 - 500 error when faculty upload marks (college ERP, Django)\nTraceback (most recent call last):\n  File \"erp/marks/views.py\", line 142, in upload_marks\n    row = parse_row(line)\n  File \"erp/marks/utils.py\", line 58, in parse_row\n    roll = data[\"roll_no\"]\nKeyError: 'roll_no'\n\nComment (Swati): the attendance upload fails the same way. Its traceback ends in\nerp/attendance/utils.py line 31, called from erp/attendance/views.py line 77.\nComment (Prof. Mane): I first suspected erp/core/middleware.py, but disabling it changed nothing,\nso it is not involved.\nComment (Swati): erp/timetable/views.py uses a function with the same name, and its upload works fine.\n```\n\n### Output format\nOutput as a bullet list.",
+    "gemini": "Task: List the files in the failing tracebacks here.\n\nOutput format: Output as a bullet list.\n\nContext:\nDocument:\n```\nBug #87 - 500 error when faculty upload marks (college ERP, Django)\nTraceback (most recent call last):\n  File \"erp/marks/views.py\", line 142, in upload_marks\n    row = parse_row(line)\n  File \"erp/marks/utils.py\", line 58, in parse_row\n    roll = data[\"roll_no\"]\nKeyError: 'roll_no'\n\nComment (Swati): the attendance upload fails the same way. Its traceback ends in\nerp/attendance/utils.py line 31, called from erp/attendance/views.py line 77.\nComment (Prof. Mane): I first suspected erp/core/middleware.py, but disabling it changed nothing,\nso it is not involved.\nComment (Swati): erp/timetable/views.py uses a function with the same name, and its upload works fine.\n```"
+   },
+   "request": "List the files in the failing tracebacks here.\n\nOutput as a bullet list.",
+   "stage_a": {
+    "category": "other",
+    "confidence": 0.414
+   },
+   "category_used": "other",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "information_extraction"
+   },
+   "leaks": []
+  },
+  "ie-10": {
+   "vague": "what docs do i need for scholarship renewal, i got it last yr\n\nScholarship Section - Post-Matric Scholarship 2026-27 (MahaDBT)\nA) Fresh applicants must upload: income certificate (FY 2025-26), caste certificate, caste validity\n   certificate, domicile certificate, SSC marksheet, HSC/diploma marksheet, fee receipt for 2026-27,\n   and an Aadhaar-seeded bank passbook.\nB) Renewal applicants (students who received the scholarship in 2025-26) must upload only: income\n   certificate (FY 2025-26), previous year's marksheet, fee receipt for 2026-27, and an Aadhaar-seeded\n   bank passbook. Caste and domicile documents verified last year need not be uploaded again.\nLast date: 31 Oct 2026.",
+   "optimized": {
+    "claude": "<context>\n<document>\nScholarship Section - Post-Matric Scholarship 2026-27 (MahaDBT)\nA) Fresh applicants must upload: income certificate (FY 2025-26), caste certificate, caste validity\n   certificate, domicile certificate, SSC marksheet, HSC/diploma marksheet, fee receipt for 2026-27,\n   and an Aadhaar-seeded bank passbook.\nB) Renewal applicants (students who received the scholarship in 2025-26) must upload only: income\n   certificate (FY 2025-26), previous year's marksheet, fee receipt for 2026-27, and an Aadhaar-seeded\n   bank passbook. Caste and domicile documents verified last year need not be uploaded again.\nLast date: 31 Oct 2026.\n</document>\n</context>\n\n<task>\nWhat docs do I need for scholarship renewal, I got it last yr?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWhat docs do I need for scholarship renewal, I got it last yr?\n\n### Context\nDocument:\n```\nScholarship Section - Post-Matric Scholarship 2026-27 (MahaDBT)\nA) Fresh applicants must upload: income certificate (FY 2025-26), caste certificate, caste validity\n   certificate, domicile certificate, SSC marksheet, HSC/diploma marksheet, fee receipt for 2026-27,\n   and an Aadhaar-seeded bank passbook.\nB) Renewal applicants (students who received the scholarship in 2025-26) must upload only: income\n   certificate (FY 2025-26), previous year's marksheet, fee receipt for 2026-27, and an Aadhaar-seeded\n   bank passbook. Caste and domicile documents verified last year need not be uploaded again.\nLast date: 31 Oct 2026.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: What docs do I need for scholarship renewal, I got it last yr?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nScholarship Section - Post-Matric Scholarship 2026-27 (MahaDBT)\nA) Fresh applicants must upload: income certificate (FY 2025-26), caste certificate, caste validity\n   certificate, domicile certificate, SSC marksheet, HSC/diploma marksheet, fee receipt for 2026-27,\n   and an Aadhaar-seeded bank passbook.\nB) Renewal applicants (students who received the scholarship in 2025-26) must upload only: income\n   certificate (FY 2025-26), previous year's marksheet, fee receipt for 2026-27, and an Aadhaar-seeded\n   bank passbook. Caste and domicile documents verified last year need not be uploaded again.\nLast date: 31 Oct 2026.\n```"
+   },
+   "request": "What docs do I need for scholarship renewal, I got it last yr?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "closed_qa",
+    "confidence": 0.387
+   },
+   "category_used": "closed_qa",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cls-01": {
+   "vague": "classify these reviews pos neg or mixed\n\nReviews - 5-litre aluminium pressure cooker\nR1: Cooks dal in 3 whistles, saves so much gas. Very happy with it.\nR2: Great, the whistle flew off on day two. Just great.\nR3: Body is solid and cooks fast, but the handle became loose within a month.\nR4: Returned it. The lid never sealed properly and steam kept leaking.\nR5: Not bad at all, honestly better than my old cooker.\nR6: Delivery was a week late, but the cooker itself is perfect.\nR7: The gasket smells of rubber even after five washes. Cooking is fine.\nR8: Bought it for my hostel room. 5 stars, would buy again.",
+   "optimized": {
+    "claude": "<context>\n<document>\nReviews - 5-litre aluminium pressure cooker\nR1: Cooks dal in 3 whistles, saves so much gas. Very happy with it.\nR2: Great, the whistle flew off on day two. Just great.\nR3: Body is solid and cooks fast, but the handle became loose within a month.\nR4: Returned it. The lid never sealed properly and steam kept leaking.\nR5: Not bad at all, honestly better than my old cooker.\nR6: Delivery was a week late, but the cooker itself is perfect.\nR7: The gasket smells of rubber even after five washes. Cooking is fine.\nR8: Bought it for my hostel room. 5 stars, would buy again.\n</document>\n</context>\n\n<task>\nClassify these reviews pos neg or mixed.\n</task>\n\n<output_format>\nFor each item, output \"item: label\" on its own line.\n</output_format>",
+    "gpt": "### Task\nClassify these reviews pos neg or mixed.\n\n### Context\nDocument:\n```\nReviews - 5-litre aluminium pressure cooker\nR1: Cooks dal in 3 whistles, saves so much gas. Very happy with it.\nR2: Great, the whistle flew off on day two. Just great.\nR3: Body is solid and cooks fast, but the handle became loose within a month.\nR4: Returned it. The lid never sealed properly and steam kept leaking.\nR5: Not bad at all, honestly better than my old cooker.\nR6: Delivery was a week late, but the cooker itself is perfect.\nR7: The gasket smells of rubber even after five washes. Cooking is fine.\nR8: Bought it for my hostel room. 5 stars, would buy again.\n```\n\n### Output format\nFor each item, output \"item: label\" on its own line.",
+    "gemini": "Task: Classify these reviews pos neg or mixed.\n\nOutput format: For each item, output \"item: label\" on its own line.\n\nContext:\nDocument:\n```\nReviews - 5-litre aluminium pressure cooker\nR1: Cooks dal in 3 whistles, saves so much gas. Very happy with it.\nR2: Great, the whistle flew off on day two. Just great.\nR3: Body is solid and cooks fast, but the handle became loose within a month.\nR4: Returned it. The lid never sealed properly and steam kept leaking.\nR5: Not bad at all, honestly better than my old cooker.\nR6: Delivery was a week late, but the cooker itself is perfect.\nR7: The gasket smells of rubber even after five washes. Cooking is fine.\nR8: Bought it for my hostel room. 5 stars, would buy again.\n```"
+   },
+   "request": "Classify these reviews pos neg or mixed.\n\nFor each item, output \"item: label\" on its own line.",
+   "stage_a": {
+    "category": "classification",
+    "confidence": 0.921
+   },
+   "category_used": "classification",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cls-02": {
+   "vague": "put these expenses in food travel education entertainment\n\nMy expenses, September\nE1  Zomato - biryani order during exam week   Rs 289\nE2  Ola auto to college                         Rs 74\nE3  Udemy - Python for Data Science course      Rs 449\nE4  BookMyShow - movie tickets                  Rs 520\nE5  IRCTC - Sangli to Pune ticket, home visit   Rs 335\nE6  Canteen thali                               Rs 70\nE7  Xerox shop - assignment printouts           Rs 60\nE8  Spotify Premium, monthly                    Rs 119\nE9  Rapido bike to the movie theatre            Rs 45",
+   "optimized": {
+    "claude": "<context>\n<document>\nMy expenses, September\nE1  Zomato - biryani order during exam week   Rs 289\nE2  Ola auto to college                         Rs 74\nE3  Udemy - Python for Data Science course      Rs 449\nE4  BookMyShow - movie tickets                  Rs 520\nE5  IRCTC - Sangli to Pune ticket, home visit   Rs 335\nE6  Canteen thali                               Rs 70\nE7  Xerox shop - assignment printouts           Rs 60\nE8  Spotify Premium, monthly                    Rs 119\nE9  Rapido bike to the movie theatre            Rs 45\n</document>\n</context>\n\n<task>\nPut these expenses in food travel education entertainment.\n</task>\n\n<output_format>\nOutput as a bulleted list.\n</output_format>",
+    "gpt": "### Task\nPut these expenses in food travel education entertainment.\n\n### Context\nDocument:\n```\nMy expenses, September\nE1  Zomato - biryani order during exam week   Rs 289\nE2  Ola auto to college                         Rs 74\nE3  Udemy - Python for Data Science course      Rs 449\nE4  BookMyShow - movie tickets                  Rs 520\nE5  IRCTC - Sangli to Pune ticket, home visit   Rs 335\nE6  Canteen thali                               Rs 70\nE7  Xerox shop - assignment printouts           Rs 60\nE8  Spotify Premium, monthly                    Rs 119\nE9  Rapido bike to the movie theatre            Rs 45\n```\n\n### Output format\nOutput as a bulleted list.",
+    "gemini": "Task: Put these expenses in food travel education entertainment.\n\nOutput format: Output as a bulleted list.\n\nContext:\nDocument:\n```\nMy expenses, September\nE1  Zomato - biryani order during exam week   Rs 289\nE2  Ola auto to college                         Rs 74\nE3  Udemy - Python for Data Science course      Rs 449\nE4  BookMyShow - movie tickets                  Rs 520\nE5  IRCTC - Sangli to Pune ticket, home visit   Rs 335\nE6  Canteen thali                               Rs 70\nE7  Xerox shop - assignment printouts           Rs 60\nE8  Spotify Premium, monthly                    Rs 119\nE9  Rapido bike to the movie theatre            Rs 45\n```"
+   },
+   "request": "Put these expenses in food travel education entertainment.\n\nOutput as a bulleted list.",
+   "stage_a": {
+    "category": "other",
+    "confidence": 0.541
+   },
+   "category_used": "other",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "information_extraction"
+   },
+   "leaks": []
+  },
+  "cls-03": {
+   "vague": "label these issues bug feature or question\n\nLabel guide used by our team:\nbug = existing behaviour is broken or wrong; feature = a request for something the app does not do yet;\nquestion = the user asks how to do something the app already supports.\nI1: Attendance % shows 112% for some students.\nI2: Can you add a dark mode?\nI3: How do I download my hall ticket from the app?\nI4: Notifications stopped coming after the last update.\nI5: It would be great if we could export the timetable to Google Calendar.\nI6: How do I change my registered mobile number in the profile?\nI7: The 'Forgot password' link opens a blank page.\nI8: Please support Marathi in the app.",
+   "optimized": {
+    "claude": "<context>\n<document>\nLabel guide used by our team:\nbug = existing behaviour is broken or wrong; feature = a request for something the app does not do yet;\nquestion = the user asks how to do something the app already supports.\nI1: Attendance % shows 112% for some students.\nI2: Can you add a dark mode?\nI3: How do I download my hall ticket from the app?\nI4: Notifications stopped coming after the last update.\nI5: It would be great if we could export the timetable to Google Calendar.\nI6: How do I change my registered mobile number in the profile?\nI7: The 'Forgot password' link opens a blank page.\nI8: Please support Marathi in the app.\n</document>\n</context>\n\n<task>\nLabel these issues bug feature or question.\n</task>\n\n<output_format>\nFor each item, output \"item: label\" on its own line.\n</output_format>",
+    "gpt": "### Task\nLabel these issues bug feature or question.\n\n### Context\nDocument:\n```\nLabel guide used by our team:\nbug = existing behaviour is broken or wrong; feature = a request for something the app does not do yet;\nquestion = the user asks how to do something the app already supports.\nI1: Attendance % shows 112% for some students.\nI2: Can you add a dark mode?\nI3: How do I download my hall ticket from the app?\nI4: Notifications stopped coming after the last update.\nI5: It would be great if we could export the timetable to Google Calendar.\nI6: How do I change my registered mobile number in the profile?\nI7: The 'Forgot password' link opens a blank page.\nI8: Please support Marathi in the app.\n```\n\n### Output format\nFor each item, output \"item: label\" on its own line.",
+    "gemini": "Task: Label these issues bug feature or question.\n\nOutput format: For each item, output \"item: label\" on its own line.\n\nContext:\nDocument:\n```\nLabel guide used by our team:\nbug = existing behaviour is broken or wrong; feature = a request for something the app does not do yet;\nquestion = the user asks how to do something the app already supports.\nI1: Attendance % shows 112% for some students.\nI2: Can you add a dark mode?\nI3: How do I download my hall ticket from the app?\nI4: Notifications stopped coming after the last update.\nI5: It would be great if we could export the timetable to Google Calendar.\nI6: How do I change my registered mobile number in the profile?\nI7: The 'Forgot password' link opens a blank page.\nI8: Please support Marathi in the app.\n```"
+   },
+   "request": "Label these issues bug feature or question.\n\nFor each item, output \"item: label\" on its own line.",
+   "stage_a": {
+    "category": "classification",
+    "confidence": 0.66
+   },
+   "category_used": "classification",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cls-04": {
+   "vague": "mark each dish veg or nonveg\n\nHostel mess menu, week 41. Mess committee rule: egg dishes count as non-veg.\nD1 Paneer tikka\nD2 Egg bhurji\nD3 Chicken biryani\nD4 Dal tadka\nD5 Fish fry\nD6 Veg Manchurian\nD7 Omelette sandwich\nD8 Mushroom masala\nD9 Eggless chocolate cake",
+   "optimized": {
+    "claude": "<context>\n<document>\nHostel mess menu, week 41. Mess committee rule: egg dishes count as non-veg.\nD1 Paneer tikka\nD2 Egg bhurji\nD3 Chicken biryani\nD4 Dal tadka\nD5 Fish fry\nD6 Veg Manchurian\nD7 Omelette sandwich\nD8 Mushroom masala\nD9 Eggless chocolate cake\n</document>\n</context>\n\n<task>\nMark each dish veg or nonveg.\n</task>\n\n<output_format>\nOutput a JSON array where each element contains the dish name followed by its label.\n</output_format>",
+    "gpt": "### Task\nMark each dish veg or nonveg.\n\n### Context\nDocument:\n```\nHostel mess menu, week 41. Mess committee rule: egg dishes count as non-veg.\nD1 Paneer tikka\nD2 Egg bhurji\nD3 Chicken biryani\nD4 Dal tadka\nD5 Fish fry\nD6 Veg Manchurian\nD7 Omelette sandwich\nD8 Mushroom masala\nD9 Eggless chocolate cake\n```\n\n### Output format\nOutput a JSON array where each element contains the dish name followed by its label.",
+    "gemini": "Task: Mark each dish veg or nonveg.\n\nOutput format: Output a JSON array where each element contains the dish name followed by its label.\n\nContext:\nDocument:\n```\nHostel mess menu, week 41. Mess committee rule: egg dishes count as non-veg.\nD1 Paneer tikka\nD2 Egg bhurji\nD3 Chicken biryani\nD4 Dal tadka\nD5 Fish fry\nD6 Veg Manchurian\nD7 Omelette sandwich\nD8 Mushroom masala\nD9 Eggless chocolate cake\n```"
+   },
+   "request": "Mark each dish veg or nonveg.\n\nOutput a JSON array where each element contains the dish name followed by its label.",
+   "stage_a": {
+    "category": "classification",
+    "confidence": 0.424
+   },
+   "category_used": "classification",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "classification"
+   },
+   "leaks": []
+  },
+  "cls-05": {
+   "vague": "categorise these offers normal dream super dream as per policy\n\nPlacement policy 2026-27: offers are categorised by annual CTC.\nNormal: below Rs 6 LPA. Dream: Rs 6 LPA to Rs 10 LPA (both inclusive). Super Dream: above Rs 10 LPA.\nJoining bonuses and other one-time payments are NOT part of CTC for this purpose.\nOffers so far:\nO1 Infosys - Rs 3.6 LPA\nO2 Persistent Systems - Rs 6 LPA\nO3 Barclays - Rs 12 LPA\nO4 Finlytics (startup) - Rs 50,000 per month fixed, no variable pay\nO5 Deloitte - Rs 7.6 LPA (Rs 6.6 LPA CTC + Rs 1 lakh joining bonus)\nO6 Amazon - Rs 10 LPA\nO7 Zeus Learning - Rs 10.5 LPA\nO8 Mphasis - Rs 4.2 lakh per annum\nO9 Cognizant - Rs 6.3 LPA including a Rs 0.5 lakh one-time relocation bonus",
+   "optimized": {
+    "claude": "<context>\n<document>\nPlacement policy 2026-27: offers are categorised by annual CTC.\nNormal: below Rs 6 LPA. Dream: Rs 6 LPA to Rs 10 LPA (both inclusive). Super Dream: above Rs 10 LPA.\nJoining bonuses and other one-time payments are NOT part of CTC for this purpose.\nOffers so far:\nO1 Infosys - Rs 3.6 LPA\nO2 Persistent Systems - Rs 6 LPA\nO3 Barclays - Rs 12 LPA\nO4 Finlytics (startup) - Rs 50,000 per month fixed, no variable pay\nO5 Deloitte - Rs 7.6 LPA (Rs 6.6 LPA CTC + Rs 1 lakh joining bonus)\nO6 Amazon - Rs 10 LPA\nO7 Zeus Learning - Rs 10.5 LPA\nO8 Mphasis - Rs 4.2 lakh per annum\nO9 Cognizant - Rs 6.3 LPA including a Rs 0.5 lakh one-time relocation bonus\n</document>\n</context>\n\n<task>\nCategorise these offers normal dream super dream as per policy.\n</task>\n\n<output_format>\nFor each item, output \"item: label\" on its own line.\n</output_format>",
+    "gpt": "### Task\nCategorise these offers normal dream super dream as per policy.\n\n### Context\nDocument:\n```\nPlacement policy 2026-27: offers are categorised by annual CTC.\nNormal: below Rs 6 LPA. Dream: Rs 6 LPA to Rs 10 LPA (both inclusive). Super Dream: above Rs 10 LPA.\nJoining bonuses and other one-time payments are NOT part of CTC for this purpose.\nOffers so far:\nO1 Infosys - Rs 3.6 LPA\nO2 Persistent Systems - Rs 6 LPA\nO3 Barclays - Rs 12 LPA\nO4 Finlytics (startup) - Rs 50,000 per month fixed, no variable pay\nO5 Deloitte - Rs 7.6 LPA (Rs 6.6 LPA CTC + Rs 1 lakh joining bonus)\nO6 Amazon - Rs 10 LPA\nO7 Zeus Learning - Rs 10.5 LPA\nO8 Mphasis - Rs 4.2 lakh per annum\nO9 Cognizant - Rs 6.3 LPA including a Rs 0.5 lakh one-time relocation bonus\n```\n\n### Output format\nFor each item, output \"item: label\" on its own line.",
+    "gemini": "Task: Categorise these offers normal dream super dream as per policy.\n\nOutput format: For each item, output \"item: label\" on its own line.\n\nContext:\nDocument:\n```\nPlacement policy 2026-27: offers are categorised by annual CTC.\nNormal: below Rs 6 LPA. Dream: Rs 6 LPA to Rs 10 LPA (both inclusive). Super Dream: above Rs 10 LPA.\nJoining bonuses and other one-time payments are NOT part of CTC for this purpose.\nOffers so far:\nO1 Infosys - Rs 3.6 LPA\nO2 Persistent Systems - Rs 6 LPA\nO3 Barclays - Rs 12 LPA\nO4 Finlytics (startup) - Rs 50,000 per month fixed, no variable pay\nO5 Deloitte - Rs 7.6 LPA (Rs 6.6 LPA CTC + Rs 1 lakh joining bonus)\nO6 Amazon - Rs 10 LPA\nO7 Zeus Learning - Rs 10.5 LPA\nO8 Mphasis - Rs 4.2 lakh per annum\nO9 Cognizant - Rs 6.3 LPA including a Rs 0.5 lakh one-time relocation bonus\n```"
+   },
+   "request": "Categorise these offers normal dream super dream as per policy.\n\nFor each item, output \"item: label\" on its own line.",
+   "stage_a": {
+    "category": "classification",
+    "confidence": 0.903
+   },
+   "category_used": "classification",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cls-06": {
+   "vague": "which of these sms r legit, promo or scam\n\nM1: Your OTP for logging in to the college ERP is 482193. It is valid for 10 minutes. Do not share it with anyone.\nM2: Congratulations! Your number has won Rs 25,00,000 in the KBC lucky draw. Pay Rs 4,999 processing fee to claim.\nM3: Electricity board: your bill of Rs 1,240 for consumer no. 27901 is due on 12 Oct 2026. Pay via the official app.\nM4: Instant loan of Rs 5 lakh approved in 5 minutes, no documents needed! Click bit.ly/xx-loan\nM5: Dear customer, your bank account will be blocked today. Update your KYC at sbi-kyc-update.xyz\nM6: Swiggy: your order is out for delivery and will arrive in 20 minutes.\nM7: FLAT 70% OFF on all kurtas this weekend only! Shop now on our app. T&C apply.\nM8: Recharge with Rs 299 today and get 2 GB extra data free. Offer valid till Sunday.\nM9: Your parcel is held at customs. Pay Rs 199 at parcel-release.in to release it.",
+   "optimized": {
+    "claude": "<context>\n<document>\nM1: Your OTP for logging in to the college ERP is 482193. It is valid for 10 minutes. Do not share it with anyone.\nM2: Congratulations! Your number has won Rs 25,00,000 in the KBC lucky draw. Pay Rs 4,999 processing fee to claim.\nM3: Electricity board: your bill of Rs 1,240 for consumer no. 27901 is due on 12 Oct 2026. Pay via the official app.\nM4: Instant loan of Rs 5 lakh approved in 5 minutes, no documents needed! Click bit.ly/xx-loan\nM5: Dear customer, your bank account will be blocked today. Update your KYC at sbi-kyc-update.xyz\nM6: Swiggy: your order is out for delivery and will arrive in 20 minutes.\nM7: FLAT 70% OFF on all kurtas this weekend only! Shop now on our app. T&C apply.\nM8: Recharge with Rs 299 today and get 2 GB extra data free. Offer valid till Sunday.\nM9: Your parcel is held at customs. Pay Rs 199 at parcel-release.in to release it.\n</document>\n</context>\n\n<task>\nWhich of these sms r legit, promo or scam?\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWhich of these sms r legit, promo or scam?\n\n### Context\nDocument:\n```\nM1: Your OTP for logging in to the college ERP is 482193. It is valid for 10 minutes. Do not share it with anyone.\nM2: Congratulations! Your number has won Rs 25,00,000 in the KBC lucky draw. Pay Rs 4,999 processing fee to claim.\nM3: Electricity board: your bill of Rs 1,240 for consumer no. 27901 is due on 12 Oct 2026. Pay via the official app.\nM4: Instant loan of Rs 5 lakh approved in 5 minutes, no documents needed! Click bit.ly/xx-loan\nM5: Dear customer, your bank account will be blocked today. Update your KYC at sbi-kyc-update.xyz\nM6: Swiggy: your order is out for delivery and will arrive in 20 minutes.\nM7: FLAT 70% OFF on all kurtas this weekend only! Shop now on our app. T&C apply.\nM8: Recharge with Rs 299 today and get 2 GB extra data free. Offer valid till Sunday.\nM9: Your parcel is held at customs. Pay Rs 199 at parcel-release.in to release it.\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Which of these sms r legit, promo or scam?\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nM1: Your OTP for logging in to the college ERP is 482193. It is valid for 10 minutes. Do not share it with anyone.\nM2: Congratulations! Your number has won Rs 25,00,000 in the KBC lucky draw. Pay Rs 4,999 processing fee to claim.\nM3: Electricity board: your bill of Rs 1,240 for consumer no. 27901 is due on 12 Oct 2026. Pay via the official app.\nM4: Instant loan of Rs 5 lakh approved in 5 minutes, no documents needed! Click bit.ly/xx-loan\nM5: Dear customer, your bank account will be blocked today. Update your KYC at sbi-kyc-update.xyz\nM6: Swiggy: your order is out for delivery and will arrive in 20 minutes.\nM7: FLAT 70% OFF on all kurtas this weekend only! Shop now on our app. T&C apply.\nM8: Recharge with Rs 299 today and get 2 GB extra data free. Offer valid till Sunday.\nM9: Your parcel is held at customs. Pay Rs 199 at parcel-release.in to release it.\n```"
+   },
+   "request": "Which of these sms r legit, promo or scam?\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.483
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cls-07": {
+   "vague": "which office shud each query go to\n\nOffices: Exam cell, Accounts, Library, Hostel office.\nNote: all refunds, including the hostel caution deposit, are processed by the Accounts section.\nQ1: My hall ticket for the end-sem exam has not been generated.\nQ2: I paid the tuition fee online but the receipt is not showing on ERP.\nQ3: I lost my library card and need a duplicate.\nQ4: The fan in room B-214 has not been working for a week.\nQ5: I need the revaluation form for the Compiler Design paper.\nQ6: When will my hostel caution deposit be refunded? I left the hostel in May.\nQ7: I paid my overdue fine but the system still shows it as pending.\nQ8: Complaint about the quality of mess food on weekends.",
+   "optimized": {
+    "claude": "<context>\n<document>\nOffices: Exam cell, Accounts, Library, Hostel office.\nNote: all refunds, including the hostel caution deposit, are processed by the Accounts section.\nQ1: My hall ticket for the end-sem exam has not been generated.\nQ2: I paid the tuition fee online but the receipt is not showing on ERP.\nQ3: I lost my library card and need a duplicate.\nQ4: The fan in room B-214 has not been working for a week.\nQ5: I need the revaluation form for the Compiler Design paper.\nQ6: When will my hostel caution deposit be refunded? I left the hostel in May.\nQ7: I paid my overdue fine but the system still shows it as pending.\nQ8: Complaint about the quality of mess food on weekends.\n</document>\n</context>\n\n<task>\nWhich office shud each query go to?\n</task>\n\n<output_format>\nOutput as a JSON array under the key \"queries\".\n</output_format>",
+    "gpt": "### Task\nWhich office shud each query go to?\n\n### Context\nDocument:\n```\nOffices: Exam cell, Accounts, Library, Hostel office.\nNote: all refunds, including the hostel caution deposit, are processed by the Accounts section.\nQ1: My hall ticket for the end-sem exam has not been generated.\nQ2: I paid the tuition fee online but the receipt is not showing on ERP.\nQ3: I lost my library card and need a duplicate.\nQ4: The fan in room B-214 has not been working for a week.\nQ5: I need the revaluation form for the Compiler Design paper.\nQ6: When will my hostel caution deposit be refunded? I left the hostel in May.\nQ7: I paid my overdue fine but the system still shows it as pending.\nQ8: Complaint about the quality of mess food on weekends.\n```\n\n### Output format\nOutput as a JSON array under the key \"queries\".",
+    "gemini": "Task: Which office shud each query go to?\n\nOutput format: Output as a JSON array under the key \"queries\".\n\nContext:\nDocument:\n```\nOffices: Exam cell, Accounts, Library, Hostel office.\nNote: all refunds, including the hostel caution deposit, are processed by the Accounts section.\nQ1: My hall ticket for the end-sem exam has not been generated.\nQ2: I paid the tuition fee online but the receipt is not showing on ERP.\nQ3: I lost my library card and need a duplicate.\nQ4: The fan in room B-214 has not been working for a week.\nQ5: I need the revaluation form for the Compiler Design paper.\nQ6: When will my hostel caution deposit be refunded? I left the hostel in May.\nQ7: I paid my overdue fine but the system still shows it as pending.\nQ8: Complaint about the quality of mess food on weekends.\n```"
+   },
+   "request": "Which office shud each query go to?\n\nOutput as a JSON array under the key \"queries\".",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.357
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "information_extraction"
+   },
+   "leaks": []
+  },
+  "cls-08": {
+   "vague": "time complexity of each? o(1) o(logn) o(n) o(nlogn) or o(n2)\n\nAssume average-case for dict/set operations; n = len(arr) or the argument n.\nS1:\ndef f(arr):\n    return arr[len(arr) // 2]\nS2:\ndef f(n):\n    i = n\n    while i > 1:\n        i //= 2\nS3:\ndef f(arr):\n    total = 0\n    for x in arr:\n        for k in range(10):\n            total += x * k\n    return total\nS4:\ndef f(arr):\n    return sorted(arr)[0]\nS5:\ndef f(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if arr[i] == arr[j]:\n                return True\n    return False\nS6:\ndef f(n):\n    count = 0\n    for i in range(n):\n        j = 1\n        while j < n:\n            j *= 2\n            count += 1\n    return count\nS7:\ndef f(d, key):\n    return key in d    # d is a dict\nS8:\ndef f(arr):\n    seen = set()\n    for x in arr:\n        if x in seen:\n            return True\n        seen.add(x)\n    return False",
+   "optimized": {
+    "claude": "<context>\n<document>\nAssume average-case for dict/set operations; n = len(arr) or the argument n.\nS1:\ndef f(arr):\n    return arr[len(arr) // 2]\nS2:\ndef f(n):\n    i = n\n    while i > 1:\n        i //= 2\nS3:\ndef f(arr):\n    total = 0\n    for x in arr:\n        for k in range(10):\n            total += x * k\n    return total\nS4:\ndef f(arr):\n    return sorted(arr)[0]\nS5:\ndef f(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if arr[i] == arr[j]:\n                return True\n    return False\nS6:\ndef f(n):\n    count = 0\n    for i in range(n):\n        j = 1\n        while j < n:\n            j *= 2\n            count += 1\n    return count\nS7:\ndef f(d, key):\n    return key in d    # d is a dict\nS8:\ndef f(arr):\n    seen = set()\n    for x in arr:\n        if x in seen:\n            return True\n        seen.add(x)\n    return False\n</document>\n</context>\n\n<task>\nTime complexity of each? o(1) o(logn) o(n) o(nlogn) or o(n2).\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nTime complexity of each? o(1) o(logn) o(n) o(nlogn) or o(n2).\n\n### Context\nDocument:\n```\nAssume average-case for dict/set operations; n = len(arr) or the argument n.\nS1:\ndef f(arr):\n    return arr[len(arr) // 2]\nS2:\ndef f(n):\n    i = n\n    while i > 1:\n        i //= 2\nS3:\ndef f(arr):\n    total = 0\n    for x in arr:\n        for k in range(10):\n            total += x * k\n    return total\nS4:\ndef f(arr):\n    return sorted(arr)[0]\nS5:\ndef f(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if arr[i] == arr[j]:\n                return True\n    return False\nS6:\ndef f(n):\n    count = 0\n    for i in range(n):\n        j = 1\n        while j < n:\n            j *= 2\n            count += 1\n    return count\nS7:\ndef f(d, key):\n    return key in d    # d is a dict\nS8:\ndef f(arr):\n    seen = set()\n    for x in arr:\n        if x in seen:\n            return True\n        seen.add(x)\n    return False\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Time complexity of each? o(1) o(logn) o(n) o(nlogn) or o(n2).\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\nAssume average-case for dict/set operations; n = len(arr) or the argument n.\nS1:\ndef f(arr):\n    return arr[len(arr) // 2]\nS2:\ndef f(n):\n    i = n\n    while i > 1:\n        i //= 2\nS3:\ndef f(arr):\n    total = 0\n    for x in arr:\n        for k in range(10):\n            total += x * k\n    return total\nS4:\ndef f(arr):\n    return sorted(arr)[0]\nS5:\ndef f(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if arr[i] == arr[j]:\n                return True\n    return False\nS6:\ndef f(n):\n    count = 0\n    for i in range(n):\n        j = 1\n        while j < n:\n            j *= 2\n            count += 1\n    return count\nS7:\ndef f(d, key):\n    return key in d    # d is a dict\nS8:\ndef f(arr):\n    seen = set()\n    for x in arr:\n        if x in seen:\n            return True\n        seen.add(x)\n    return False\n```"
+   },
+   "request": "Time complexity of each? o(1) o(logn) o(n) o(nlogn) or o(n2).\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.733
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cls-09": {
+   "vague": "mark each student safe warning or detained\n\nAttendance rule: below 65% -> Detained; 65% up to (not including) 75% -> Warning; 75% or more -> Safe.\nRoll | Name    | Attended | Conducted\n1    | Aarav   | 30       | 40\n2    | Bhakti  | 29       | 40\n3    | Chinmay | 25       | 40\n4    | Diya    | 39       | 52\n5    | Eshan   | 33       | 52\n6    | Farhan  | 34       | 52\n7    | Gauri   | 52       | 52\n8    | Harsh   | 26       | 40",
+   "optimized": {
+    "claude": "<context>\n<document>\nAttendance rule: below 65% -> Detained; 65% up to (not including) 75% -> Warning; 75% or more -> Safe.\nRoll | Name    | Attended | Conducted\n1    | Aarav   | 30       | 40\n2    | Bhakti  | 29       | 40\n3    | Chinmay | 25       | 40\n4    | Diya    | 39       | 52\n5    | Eshan   | 33       | 52\n6    | Farhan  | 34       | 52\n7    | Gauri   | 52       | 52\n8    | Harsh   | 26       | 40\n</document>\n</context>\n\n<task>\nMark each student safe warning or detained.\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nMark each student safe warning or detained.\n\n### Context\nDocument:\n```\nAttendance rule: below 65% -> Detained; 65% up to (not including) 75% -> Warning; 75% or more -> Safe.\nRoll | Name    | Attended | Conducted\n1    | Aarav   | 30       | 40\n2    | Bhakti  | 29       | 40\n3    | Chinmay | 25       | 40\n4    | Diya    | 39       | 52\n5    | Eshan   | 33       | 52\n6    | Farhan  | 34       | 52\n7    | Gauri   | 52       | 52\n8    | Harsh   | 26       | 40\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Mark each student safe warning or detained.\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\nAttendance rule: below 65% -> Detained; 65% up to (not including) 75% -> Warning; 75% or more -> Safe.\nRoll | Name    | Attended | Conducted\n1    | Aarav   | 30       | 40\n2    | Bhakti  | 29       | 40\n3    | Chinmay | 25       | 40\n4    | Diya    | 39       | 52\n5    | Eshan   | 33       | 52\n6    | Farhan  | 34       | 52\n7    | Gauri   | 52       | 52\n8    | Harsh   | 26       | 40\n```"
+   },
+   "request": "Mark each student safe warning or detained.\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.844
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cls-10": {
+   "vague": "which language is each line - marathi hindi english or mixed\n\nL1: उद्या कॉलेजला सुट्टी आहे का?\nL2: कल कॉलेज बंद रहेगा।\nL3: Tomorrow's lab is cancelled, inform everyone.\nL4: मला परीक्षेची खूप भीती वाटते.\nL5: मुझे परीक्षा से बहुत डर लगता है।\nL6: Bhai kal ka lecture cancel hai kya?\nL7: आम्ही उद्या पुण्याला जाणार आहोत.\nL8: Submit kar de yaar assignment, deadline aaj hai.\nL9: आज मेस में पनीर बना है।",
+   "optimized": {
+    "claude": "<context>\n<document>\nL1: उद्या कॉलेजला सुट्टी आहे का?\nL2: कल कॉलेज बंद रहेगा।\nL3: Tomorrow's lab is cancelled, inform everyone.\nL4: मला परीक्षेची खूप भीती वाटते.\nL5: मुझे परीक्षा से बहुत डर लगता है।\nL6: Bhai kal ka lecture cancel hai kya?\nL7: आम्ही उद्या पुण्याला जाणार आहोत.\nL8: Submit kar de yaar assignment, deadline aaj hai.\nL9: आज मेस में पनीर बना है।\n</document>\n</context>\n\n<task>\nWhich language is each line - marathi hindi english or mixed?\n</task>\n\n<output_format>\nOutput each item on its own line.\n</output_format>",
+    "gpt": "### Task\nWhich language is each line - marathi hindi english or mixed?\n\n### Context\nDocument:\n```\nL1: उद्या कॉलेजला सुट्टी आहे का?\nL2: कल कॉलेज बंद रहेगा।\nL3: Tomorrow's lab is cancelled, inform everyone.\nL4: मला परीक्षेची खूप भीती वाटते.\nL5: मुझे परीक्षा से बहुत डर लगता है।\nL6: Bhai kal ka lecture cancel hai kya?\nL7: आम्ही उद्या पुण्याला जाणार आहोत.\nL8: Submit kar de yaar assignment, deadline aaj hai.\nL9: आज मेस में पनीर बना है।\n```\n\n### Output format\nOutput each item on its own line.",
+    "gemini": "Task: Which language is each line - marathi hindi english or mixed?\n\nOutput format: Output each item on its own line.\n\nContext:\nDocument:\n```\nL1: उद्या कॉलेजला सुट्टी आहे का?\nL2: कल कॉलेज बंद रहेगा।\nL3: Tomorrow's lab is cancelled, inform everyone.\nL4: मला परीक्षेची खूप भीती वाटते.\nL5: मुझे परीक्षा से बहुत डर लगता है।\nL6: Bhai kal ka lecture cancel hai kya?\nL7: आम्ही उद्या पुण्याला जाणार आहोत.\nL8: Submit kar de yaar assignment, deadline aaj hai.\nL9: आज मेस में पनीर बना है।\n```"
+   },
+   "request": "Which language is each line - marathi hindi english or mixed?\n\nOutput each item on its own line.",
+   "stage_a": {
+    "category": "classification",
+    "confidence": 0.465
+   },
+   "category_used": "classification",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "information_extraction"
+   },
+   "leaks": []
+  },
+  "sum-01": {
+   "vague": "summarise this fee circular in like 3-4 points for class grp\n\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - ACCOUNTS SECTION\nCircular No. ACC/2026/112, dated 5 Oct 2026\nSubject: Payment of the second instalment of tuition fees, A.Y. 2026-27\n1. The last date for the second instalment, announced earlier as 20 October 2026, is extended to 25 October 2026.\n2. Fees must be paid online through the ERP portal. Cash and demand drafts will not be accepted at the counter.\n3. A late fee of Rs 500 will be charged for payment after the last date.\n4. Students receiving a government scholarship (EBC/OBC/SC/ST) need to pay only the amount not covered by\n   the scholarship, as shown on their ERP fee page.\n5. Students who have not paid by 5 November 2026 will not be allowed to fill the end-semester examination form.\nAccounts Officer",
+   "optimized": {
+    "claude": "<context>\n<document>\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - ACCOUNTS SECTION\nCircular No. ACC/2026/112, dated 5 Oct 2026\nSubject: Payment of the second instalment of tuition fees, A.Y. 2026-27\n1. The last date for the second instalment, announced earlier as 20 October 2026, is extended to 25 October 2026.\n2. Fees must be paid online through the ERP portal. Cash and demand drafts will not be accepted at the counter.\n3. A late fee of Rs 500 will be charged for payment after the last date.\n4. Students receiving a government scholarship (EBC/OBC/SC/ST) need to pay only the amount not covered by\n   the scholarship, as shown on their ERP fee page.\n5. Students who have not paid by 5 November 2026 will not be allowed to fill the end-semester examination form.\nAccounts Officer\n</document>\n</context>\n\n<task>\nSummarise this fee circular in like 3-4 points for class grp.\n</task>\n\n<output_format>\nUse bullet points.\n</output_format>",
+    "gpt": "### Task\nSummarise this fee circular in like 3-4 points for class grp.\n\n### Context\nDocument:\n```\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - ACCOUNTS SECTION\nCircular No. ACC/2026/112, dated 5 Oct 2026\nSubject: Payment of the second instalment of tuition fees, A.Y. 2026-27\n1. The last date for the second instalment, announced earlier as 20 October 2026, is extended to 25 October 2026.\n2. Fees must be paid online through the ERP portal. Cash and demand drafts will not be accepted at the counter.\n3. A late fee of Rs 500 will be charged for payment after the last date.\n4. Students receiving a government scholarship (EBC/OBC/SC/ST) need to pay only the amount not covered by\n   the scholarship, as shown on their ERP fee page.\n5. Students who have not paid by 5 November 2026 will not be allowed to fill the end-semester examination form.\nAccounts Officer\n```\n\n### Output format\nUse bullet points.",
+    "gemini": "Task: Summarise this fee circular in like 3-4 points for class grp.\n\nOutput format: Use bullet points.\n\nContext:\nDocument:\n```\nWALCHAND COLLEGE OF ENGINEERING, SANGLI - ACCOUNTS SECTION\nCircular No. ACC/2026/112, dated 5 Oct 2026\nSubject: Payment of the second instalment of tuition fees, A.Y. 2026-27\n1. The last date for the second instalment, announced earlier as 20 October 2026, is extended to 25 October 2026.\n2. Fees must be paid online through the ERP portal. Cash and demand drafts will not be accepted at the counter.\n3. A late fee of Rs 500 will be charged for payment after the last date.\n4. Students receiving a government scholarship (EBC/OBC/SC/ST) need to pay only the amount not covered by\n   the scholarship, as shown on their ERP fee page.\n5. Students who have not paid by 5 November 2026 will not be allowed to fill the end-semester examination form.\nAccounts Officer\n```"
+   },
+   "request": "Summarise this fee circular in like 3-4 points for class grp.\n\nUse bullet points.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.718
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-02": {
+   "vague": "tldr of this bug for my team lead, short, under 60 words\n\nBug report - ERP v2.3.1 - reported 6 Oct 2026 by Prof. R. Mane (CSE)\nSummary: uploading the attendance sheet fails with 'Request Entity Too Large'.\nDetails: since the v2.3 release on 1 Oct, attendance CSV files larger than 5 MB fail to upload. Files under\n5 MB upload normally. Only faculty accounts are affected, since students cannot upload attendance. I checked:\nno data was lost, and earlier uploads are intact.\nWorkaround: split the CSV into two files of under 5 MB each.\nSuspected cause: the new Nginx config in v2.3 sets client_max_body_size to 5M (it was 20M before).\nPriority requested: high, because the monthly attendance report is due on 10 Oct.\nSteps: log in as faculty -> Attendance -> Upload -> choose a 7 MB CSV -> Submit -> error 413.",
+   "optimized": {
+    "claude": "<context>\n<document>\nBug report - ERP v2.3.1 - reported 6 Oct 2026 by Prof. R. Mane (CSE)\nSummary: uploading the attendance sheet fails with 'Request Entity Too Large'.\nDetails: since the v2.3 release on 1 Oct, attendance CSV files larger than 5 MB fail to upload. Files under\n5 MB upload normally. Only faculty accounts are affected, since students cannot upload attendance. I checked:\nno data was lost, and earlier uploads are intact.\nWorkaround: split the CSV into two files of under 5 MB each.\nSuspected cause: the new Nginx config in v2.3 sets client_max_body_size to 5M (it was 20M before).\nPriority requested: high, because the monthly attendance report is due on 10 Oct.\nSteps: log in as faculty -> Attendance -> Upload -> choose a 7 MB CSV -> Submit -> error 413.\n</document>\n</context>\n\n<task>\nTldr of this bug for my team lead, short, under 60 words.\n</task>\n\n<constraints>\n- Answer from the provided text.\n</constraints>",
+    "gpt": "### Task\nTldr of this bug for my team lead, short, under 60 words.\n\n### Context\nDocument:\n```\nBug report - ERP v2.3.1 - reported 6 Oct 2026 by Prof. R. Mane (CSE)\nSummary: uploading the attendance sheet fails with 'Request Entity Too Large'.\nDetails: since the v2.3 release on 1 Oct, attendance CSV files larger than 5 MB fail to upload. Files under\n5 MB upload normally. Only faculty accounts are affected, since students cannot upload attendance. I checked:\nno data was lost, and earlier uploads are intact.\nWorkaround: split the CSV into two files of under 5 MB each.\nSuspected cause: the new Nginx config in v2.3 sets client_max_body_size to 5M (it was 20M before).\nPriority requested: high, because the monthly attendance report is due on 10 Oct.\nSteps: log in as faculty -> Attendance -> Upload -> choose a 7 MB CSV -> Submit -> error 413.\n```\n\n### Constraints\n- Answer from the provided text.",
+    "gemini": "Task: Tldr of this bug for my team lead, short, under 60 words.\n\nConstraints:\n- Answer from the provided text.\n\nContext:\nDocument:\n```\nBug report - ERP v2.3.1 - reported 6 Oct 2026 by Prof. R. Mane (CSE)\nSummary: uploading the attendance sheet fails with 'Request Entity Too Large'.\nDetails: since the v2.3 release on 1 Oct, attendance CSV files larger than 5 MB fail to upload. Files under\n5 MB upload normally. Only faculty accounts are affected, since students cannot upload attendance. I checked:\nno data was lost, and earlier uploads are intact.\nWorkaround: split the CSV into two files of under 5 MB each.\nSuspected cause: the new Nginx config in v2.3 sets client_max_body_size to 5M (it was 20M before).\nPriority requested: high, because the monthly attendance report is due on 10 Oct.\nSteps: log in as faculty -> Attendance -> Upload -> choose a 7 MB CSV -> Submit -> error 413.\n```"
+   },
+   "request": "Tldr of this bug for my team lead, short, under 60 words.\n\nAnswer from the provided text.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.339
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-03": {
+   "vague": "sum up what ppl say abt this laptop, pros n cons, max 80 words\n\nCustomer reviews - 'Vortex 14' laptop (i5, 16 GB RAM, 512 GB SSD)\n5/5 'Battery easily lasts 8 hours of college work. The keyboard is a joy to type on.' - Rutuja\n3/5 'Good for coding, but it heats up a lot when I play games, and the fan gets loud.' - Sameer\n2/5 'Screen is too dim to use outdoors. Speakers are weak and tinny.' - Aditya\n4/5 'Battery around 7-8 hours, light enough to carry daily. Display is dim in sunlight though.' - Pooja\n4/5 'Fast boot, great keyboard. Gets hot during long gaming sessions.' - Kiran\n1/5 'Seller sent the wrong colour. The laptop itself is fine.' - Nishant",
+   "optimized": {
+    "claude": "<context>\n<document>\nCustomer reviews - 'Vortex 14' laptop (i5, 16 GB RAM, 512 GB SSD)\n5/5 'Battery easily lasts 8 hours of college work. The keyboard is a joy to type on.' - Rutuja\n3/5 'Good for coding, but it heats up a lot when I play games, and the fan gets loud.' - Sameer\n2/5 'Screen is too dim to use outdoors. Speakers are weak and tinny.' - Aditya\n4/5 'Battery around 7-8 hours, light enough to carry daily. Display is dim in sunlight though.' - Pooja\n4/5 'Fast boot, great keyboard. Gets hot during long gaming sessions.' - Kiran\n1/5 'Seller sent the wrong colour. The laptop itself is fine.' - Nishant\n</document>\n</context>\n\n<task>\nSum up what ppl say abt this laptop, pros n cons, max 80 words.\n</task>",
+    "gpt": "### Task\nSum up what ppl say abt this laptop, pros n cons, max 80 words.\n\n### Context\nDocument:\n```\nCustomer reviews - 'Vortex 14' laptop (i5, 16 GB RAM, 512 GB SSD)\n5/5 'Battery easily lasts 8 hours of college work. The keyboard is a joy to type on.' - Rutuja\n3/5 'Good for coding, but it heats up a lot when I play games, and the fan gets loud.' - Sameer\n2/5 'Screen is too dim to use outdoors. Speakers are weak and tinny.' - Aditya\n4/5 'Battery around 7-8 hours, light enough to carry daily. Display is dim in sunlight though.' - Pooja\n4/5 'Fast boot, great keyboard. Gets hot during long gaming sessions.' - Kiran\n1/5 'Seller sent the wrong colour. The laptop itself is fine.' - Nishant\n```",
+    "gemini": "Task: Sum up what ppl say abt this laptop, pros n cons, max 80 words.\n\nContext:\nDocument:\n```\nCustomer reviews - 'Vortex 14' laptop (i5, 16 GB RAM, 512 GB SSD)\n5/5 'Battery easily lasts 8 hours of college work. The keyboard is a joy to type on.' - Rutuja\n3/5 'Good for coding, but it heats up a lot when I play games, and the fan gets loud.' - Sameer\n2/5 'Screen is too dim to use outdoors. Speakers are weak and tinny.' - Aditya\n4/5 'Battery around 7-8 hours, light enough to carry daily. Display is dim in sunlight though.' - Pooja\n4/5 'Fast boot, great keyboard. Gets hot during long gaming sessions.' - Kiran\n1/5 'Seller sent the wrong colour. The laptop itself is fine.' - Nishant\n```"
+   },
+   "request": "Sum up what ppl say abt this laptop, pros n cons, max 80 words.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.664
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-04": {
+   "vague": "short summary of this drive for whatsapp, 50 words max\n\nTRAINING AND PLACEMENT CELL - NOTICE (8 Oct 2026)\nCompany: Sahyadri Data Systems, Pune\nRole: Graduate Engineer Trainee (Software)\nEligible: B.Tech CSE and IT, 2027 batch only; minimum 6.5 CGPA; no active backlogs.\nSelection: online aptitude and coding test on 22 Oct 2026 (on campus, Lab Complex), then technical and HR\ninterviews on 23 Oct.\nPackage: will be announced at the pre-placement talk. (Last year the company offered Rs 4.5 LPA.)\nRegistration: fill in the form on the T&P portal by 15 Oct 2026, 5 pm. Late registrations will not be accepted.\nCarry: college ID card and two copies of your resume; a laptop is not required.",
+   "optimized": {
+    "claude": "<context>\n<document>\nTRAINING AND PLACEMENT CELL - NOTICE (8 Oct 2026)\nCompany: Sahyadri Data Systems, Pune\nRole: Graduate Engineer Trainee (Software)\nEligible: B.Tech CSE and IT, 2027 batch only; minimum 6.5 CGPA; no active backlogs.\nSelection: online aptitude and coding test on 22 Oct 2026 (on campus, Lab Complex), then technical and HR\ninterviews on 23 Oct.\nPackage: will be announced at the pre-placement talk. (Last year the company offered Rs 4.5 LPA.)\nRegistration: fill in the form on the T&P portal by 15 Oct 2026, 5 pm. Late registrations will not be accepted.\nCarry: college ID card and two copies of your resume; a laptop is not required.\n</document>\n</context>\n\n<task>\nShort summary of this drive for whatsapp, 50 words max.\n</task>\n\n<output_format>\nUse bullet points.\n</output_format>",
+    "gpt": "### Task\nShort summary of this drive for whatsapp, 50 words max.\n\n### Context\nDocument:\n```\nTRAINING AND PLACEMENT CELL - NOTICE (8 Oct 2026)\nCompany: Sahyadri Data Systems, Pune\nRole: Graduate Engineer Trainee (Software)\nEligible: B.Tech CSE and IT, 2027 batch only; minimum 6.5 CGPA; no active backlogs.\nSelection: online aptitude and coding test on 22 Oct 2026 (on campus, Lab Complex), then technical and HR\ninterviews on 23 Oct.\nPackage: will be announced at the pre-placement talk. (Last year the company offered Rs 4.5 LPA.)\nRegistration: fill in the form on the T&P portal by 15 Oct 2026, 5 pm. Late registrations will not be accepted.\nCarry: college ID card and two copies of your resume; a laptop is not required.\n```\n\n### Output format\nUse bullet points.",
+    "gemini": "Task: Short summary of this drive for whatsapp, 50 words max.\n\nOutput format: Use bullet points.\n\nContext:\nDocument:\n```\nTRAINING AND PLACEMENT CELL - NOTICE (8 Oct 2026)\nCompany: Sahyadri Data Systems, Pune\nRole: Graduate Engineer Trainee (Software)\nEligible: B.Tech CSE and IT, 2027 batch only; minimum 6.5 CGPA; no active backlogs.\nSelection: online aptitude and coding test on 22 Oct 2026 (on campus, Lab Complex), then technical and HR\ninterviews on 23 Oct.\nPackage: will be announced at the pre-placement talk. (Last year the company offered Rs 4.5 LPA.)\nRegistration: fill in the form on the T&P portal by 15 Oct 2026, 5 pm. Late registrations will not be accepted.\nCarry: college ID card and two copies of your resume; a laptop is not required.\n```"
+   },
+   "request": "Short summary of this drive for whatsapp, 50 words max.\n\nUse bullet points.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.789
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-05": {
+   "vague": "give me short steps for this, im a hostel noob, under 70 words\n\nKanda Poha - method (serves 4)\n1. Put 2 cups thick poha in a strainer and rinse under running water for 30 seconds. Do not soak it, or it\n   turns mushy. Leave it to drain for 5 minutes.\n2. Heat 1 tbsp oil. Add 1 tsp mustard seeds; when they splutter, add curry leaves, 2 green chillies and\n   1/4 cup peanuts, and fry until the peanuts are crisp.\n3. Add 1 chopped onion and cook until soft. Then add 1/2 tsp turmeric (adding it before the onion burns it).\n4. Add the poha, salt and 1 tsp sugar; mix gently and cover for 2 minutes on low heat.\n5. Turn off the heat, squeeze lemon juice over it and garnish with coriander.",
+   "optimized": {
+    "claude": "<context>\n<document>\nKanda Poha - method (serves 4)\n1. Put 2 cups thick poha in a strainer and rinse under running water for 30 seconds. Do not soak it, or it\n   turns mushy. Leave it to drain for 5 minutes.\n2. Heat 1 tbsp oil. Add 1 tsp mustard seeds; when they splutter, add curry leaves, 2 green chillies and\n   1/4 cup peanuts, and fry until the peanuts are crisp.\n3. Add 1 chopped onion and cook until soft. Then add 1/2 tsp turmeric (adding it before the onion burns it).\n4. Add the poha, salt and 1 tsp sugar; mix gently and cover for 2 minutes on low heat.\n5. Turn off the heat, squeeze lemon juice over it and garnish with coriander.\n</document>\n</context>\n\n<task>\nGive me short steps for this, im a hostel noob, under 70 words.\n</task>\n\n<constraints>\n- Answer using only the provided text.\n</constraints>",
+    "gpt": "### Task\nGive me short steps for this, im a hostel noob, under 70 words.\n\n### Context\nDocument:\n```\nKanda Poha - method (serves 4)\n1. Put 2 cups thick poha in a strainer and rinse under running water for 30 seconds. Do not soak it, or it\n   turns mushy. Leave it to drain for 5 minutes.\n2. Heat 1 tbsp oil. Add 1 tsp mustard seeds; when they splutter, add curry leaves, 2 green chillies and\n   1/4 cup peanuts, and fry until the peanuts are crisp.\n3. Add 1 chopped onion and cook until soft. Then add 1/2 tsp turmeric (adding it before the onion burns it).\n4. Add the poha, salt and 1 tsp sugar; mix gently and cover for 2 minutes on low heat.\n5. Turn off the heat, squeeze lemon juice over it and garnish with coriander.\n```\n\n### Constraints\n- Answer using only the provided text.",
+    "gemini": "Task: Give me short steps for this, im a hostel noob, under 70 words.\n\nConstraints:\n- Answer using only the provided text.\n\nContext:\nDocument:\n```\nKanda Poha - method (serves 4)\n1. Put 2 cups thick poha in a strainer and rinse under running water for 30 seconds. Do not soak it, or it\n   turns mushy. Leave it to drain for 5 minutes.\n2. Heat 1 tbsp oil. Add 1 tsp mustard seeds; when they splutter, add curry leaves, 2 green chillies and\n   1/4 cup peanuts, and fry until the peanuts are crisp.\n3. Add 1 chopped onion and cook until soft. Then add 1/2 tsp turmeric (adding it before the onion burns it).\n4. Add the poha, salt and 1 tsp sugar; mix gently and cover for 2 minutes on low heat.\n5. Turn off the heat, squeeze lemon juice over it and garnish with coriander.\n```"
+   },
+   "request": "Give me short steps for this, im a hostel noob, under 70 words.\n\nAnswer using only the provided text.",
+   "stage_a": {
+    "category": "other",
+    "confidence": 0.379
+   },
+   "category_used": "other",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "closed_qa"
+   },
+   "leaks": []
+  },
+  "sum-06": {
+   "vague": "summarize this IV msg in 4-5 lines\n\nMessage from the CR (T.Y. Mech) - industrial visit update\nHi all, the IV to Shree Engine Works, Kagal is now on Friday 16 Oct (earlier it was 9 Oct; postponed because\nthe plant has an audit). The bus leaves from the main gate at 6:30 am sharp, so be there by 6:15. We'll be back\naround 7 pm.\nContribution: Rs 750 per head, pay me by Monday 12 Oct (UPI is fine).\nWear formals and safety shoes (no sandals allowed in the plant) and carry your college ID.\nLunch is NOT provided by the company, so carry your own lunch or money for the canteen near the plant.\nProf. Patil and Prof. Desai will come with us.",
+   "optimized": {
+    "claude": "<context>\n<document>\nMessage from the CR (T.Y. Mech) - industrial visit update\nHi all, the IV to Shree Engine Works, Kagal is now on Friday 16 Oct (earlier it was 9 Oct; postponed because\nthe plant has an audit). The bus leaves from the main gate at 6:30 am sharp, so be there by 6:15. We'll be back\naround 7 pm.\nContribution: Rs 750 per head, pay me by Monday 12 Oct (UPI is fine).\nWear formals and safety shoes (no sandals allowed in the plant) and carry your college ID.\nLunch is NOT provided by the company, so carry your own lunch or money for the canteen near the plant.\nProf. Patil and Prof. Desai will come with us.\n</document>\n</context>\n\n<task>\nSummarize this IV msg in 4-5 lines.\n</task>\n\n<output_format>\nUse bullet points.\n</output_format>",
+    "gpt": "### Task\nSummarize this IV msg in 4-5 lines.\n\n### Context\nDocument:\n```\nMessage from the CR (T.Y. Mech) - industrial visit update\nHi all, the IV to Shree Engine Works, Kagal is now on Friday 16 Oct (earlier it was 9 Oct; postponed because\nthe plant has an audit). The bus leaves from the main gate at 6:30 am sharp, so be there by 6:15. We'll be back\naround 7 pm.\nContribution: Rs 750 per head, pay me by Monday 12 Oct (UPI is fine).\nWear formals and safety shoes (no sandals allowed in the plant) and carry your college ID.\nLunch is NOT provided by the company, so carry your own lunch or money for the canteen near the plant.\nProf. Patil and Prof. Desai will come with us.\n```\n\n### Output format\nUse bullet points.",
+    "gemini": "Task: Summarize this IV msg in 4-5 lines.\n\nOutput format: Use bullet points.\n\nContext:\nDocument:\n```\nMessage from the CR (T.Y. Mech) - industrial visit update\nHi all, the IV to Shree Engine Works, Kagal is now on Friday 16 Oct (earlier it was 9 Oct; postponed because\nthe plant has an audit). The bus leaves from the main gate at 6:30 am sharp, so be there by 6:15. We'll be back\naround 7 pm.\nContribution: Rs 750 per head, pay me by Monday 12 Oct (UPI is fine).\nWear formals and safety shoes (no sandals allowed in the plant) and carry your college ID.\nLunch is NOT provided by the company, so carry your own lunch or money for the canteen near the plant.\nProf. Patil and Prof. Desai will come with us.\n```"
+   },
+   "request": "Summarize this IV msg in 4-5 lines.\n\nUse bullet points.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.832
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-07": {
+   "vague": "summarize minutes for ppl who missed the meeting, 60 words\n\nMinutes - cultural fest 'Rangtarang 2027' core committee, 3 Oct 2026\nPresent: 14 members and the faculty advisor, Dr. Kulkarni.\n1. Dates: the fest will run 14-16 Feb 2027 (the 21-23 Feb option was rejected because of mid-sem exams).\n2. Budget: the student council proposed Rs 3 lakh; the principal approved Rs 2.4 lakh. Sponsorship target:\n   Rs 1 lakh on top of that.\n3. DJ night: cancelled this year after last year's police-permission issue. A live band night replaces it.\n4. The sponsorship team will be led by Tanvi Shinde (T.Y. E&TC).\n5. Next meeting: 17 Oct 2026, 5 pm, seminar hall.",
+   "optimized": {
+    "claude": "<context>\n<document>\nMinutes - cultural fest 'Rangtarang 2027' core committee, 3 Oct 2026\nPresent: 14 members and the faculty advisor, Dr. Kulkarni.\n1. Dates: the fest will run 14-16 Feb 2027 (the 21-23 Feb option was rejected because of mid-sem exams).\n2. Budget: the student council proposed Rs 3 lakh; the principal approved Rs 2.4 lakh. Sponsorship target:\n   Rs 1 lakh on top of that.\n3. DJ night: cancelled this year after last year's police-permission issue. A live band night replaces it.\n4. The sponsorship team will be led by Tanvi Shinde (T.Y. E&TC).\n5. Next meeting: 17 Oct 2026, 5 pm, seminar hall.\n</document>\n</context>\n\n<task>\nSummarize minutes for ppl who missed the meeting, 60 words.\n</task>\n\n<output_format>\nUse bullet points.\n</output_format>",
+    "gpt": "### Task\nSummarize minutes for ppl who missed the meeting, 60 words.\n\n### Context\nDocument:\n```\nMinutes - cultural fest 'Rangtarang 2027' core committee, 3 Oct 2026\nPresent: 14 members and the faculty advisor, Dr. Kulkarni.\n1. Dates: the fest will run 14-16 Feb 2027 (the 21-23 Feb option was rejected because of mid-sem exams).\n2. Budget: the student council proposed Rs 3 lakh; the principal approved Rs 2.4 lakh. Sponsorship target:\n   Rs 1 lakh on top of that.\n3. DJ night: cancelled this year after last year's police-permission issue. A live band night replaces it.\n4. The sponsorship team will be led by Tanvi Shinde (T.Y. E&TC).\n5. Next meeting: 17 Oct 2026, 5 pm, seminar hall.\n```\n\n### Output format\nUse bullet points.",
+    "gemini": "Task: Summarize minutes for ppl who missed the meeting, 60 words.\n\nOutput format: Use bullet points.\n\nContext:\nDocument:\n```\nMinutes - cultural fest 'Rangtarang 2027' core committee, 3 Oct 2026\nPresent: 14 members and the faculty advisor, Dr. Kulkarni.\n1. Dates: the fest will run 14-16 Feb 2027 (the 21-23 Feb option was rejected because of mid-sem exams).\n2. Budget: the student council proposed Rs 3 lakh; the principal approved Rs 2.4 lakh. Sponsorship target:\n   Rs 1 lakh on top of that.\n3. DJ night: cancelled this year after last year's police-permission issue. A live band night replaces it.\n4. The sponsorship team will be led by Tanvi Shinde (T.Y. E&TC).\n5. Next meeting: 17 Oct 2026, 5 pm, seminar hall.\n```"
+   },
+   "request": "Summarize minutes for ppl who missed the meeting, 60 words.\n\nUse bullet points.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.864
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-08": {
+   "vague": "quick summary of water cut notice for hostel grp under 50 words\n\nCity Municipal Corporation, Sangli - water supply notice\nBecause of urgent repairs to the main pipeline near Vishrambag, water supply will be stopped in Vishrambag,\nVijaynagar and the college campus area on Tuesday 13 Oct 2026 from 6 am to 6 pm.\nSupply will resume on the morning of Wednesday 14 Oct at low pressure; normal pressure is expected from\nThursday 15 Oct.\nThe Miraj and Kupwad wards are not affected.\nResidents are requested to store enough water. Tankers are available on request at the ward office.",
+   "optimized": {
+    "claude": "<context>\n<document>\nCity Municipal Corporation, Sangli - water supply notice\nBecause of urgent repairs to the main pipeline near Vishrambag, water supply will be stopped in Vishrambag,\nVijaynagar and the college campus area on Tuesday 13 Oct 2026 from 6 am to 6 pm.\nSupply will resume on the morning of Wednesday 14 Oct at low pressure; normal pressure is expected from\nThursday 15 Oct.\nThe Miraj and Kupwad wards are not affected.\nResidents are requested to store enough water. Tankers are available on request at the ward office.\n</document>\n</context>\n\n<task>\nQuick summary of water cut notice for hostel grp under 50 words.\n</task>",
+    "gpt": "### Task\nQuick summary of water cut notice for hostel grp under 50 words.\n\n### Context\nDocument:\n```\nCity Municipal Corporation, Sangli - water supply notice\nBecause of urgent repairs to the main pipeline near Vishrambag, water supply will be stopped in Vishrambag,\nVijaynagar and the college campus area on Tuesday 13 Oct 2026 from 6 am to 6 pm.\nSupply will resume on the morning of Wednesday 14 Oct at low pressure; normal pressure is expected from\nThursday 15 Oct.\nThe Miraj and Kupwad wards are not affected.\nResidents are requested to store enough water. Tankers are available on request at the ward office.\n```",
+    "gemini": "Task: Quick summary of water cut notice for hostel grp under 50 words.\n\nContext:\nDocument:\n```\nCity Municipal Corporation, Sangli - water supply notice\nBecause of urgent repairs to the main pipeline near Vishrambag, water supply will be stopped in Vishrambag,\nVijaynagar and the college campus area on Tuesday 13 Oct 2026 from 6 am to 6 pm.\nSupply will resume on the morning of Wednesday 14 Oct at low pressure; normal pressure is expected from\nThursday 15 Oct.\nThe Miraj and Kupwad wards are not affected.\nResidents are requested to store enough water. Tankers are available on request at the ward office.\n```"
+   },
+   "request": "Quick summary of water cut notice for hostel grp under 50 words.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.889
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-09": {
+   "vague": "summarize this abstract in 3 lines for my ppt\n\nMini-project report (abstract): Detecting fake product reviews in Marathi and Hindi\nFake reviews mislead buyers on Indian shopping sites, and most detection tools work only for English. We\ncollected 12,400 product reviews in Marathi and Hindi from three public datasets and labelled 2,100 more by hand.\nWe fine-tuned a multilingual BERT model (MuRIL) to classify reviews as genuine or fake. On a held-out test set of\n1,860 reviews it reached 91.2% accuracy and 0.89 F1, compared with 84.0% for a logistic-regression baseline on\nTF-IDF features. The main limitation is code-mixed (Hinglish) reviews, where accuracy drops to 78%. The model has\nnot been deployed yet; a browser extension is future work.",
+   "optimized": {
+    "claude": "<context>\n<document>\nMini-project report (abstract): Detecting fake product reviews in Marathi and Hindi\nFake reviews mislead buyers on Indian shopping sites, and most detection tools work only for English. We\ncollected 12,400 product reviews in Marathi and Hindi from three public datasets and labelled 2,100 more by hand.\nWe fine-tuned a multilingual BERT model (MuRIL) to classify reviews as genuine or fake. On a held-out test set of\n1,860 reviews it reached 91.2% accuracy and 0.89 F1, compared with 84.0% for a logistic-regression baseline on\nTF-IDF features. The main limitation is code-mixed (Hinglish) reviews, where accuracy drops to 78%. The model has\nnot been deployed yet; a browser extension is future work.\n</document>\n</context>\n\n<task>\nSummarize this abstract in 3 lines for my ppt.\n</task>",
+    "gpt": "### Task\nSummarize this abstract in 3 lines for my ppt.\n\n### Context\nDocument:\n```\nMini-project report (abstract): Detecting fake product reviews in Marathi and Hindi\nFake reviews mislead buyers on Indian shopping sites, and most detection tools work only for English. We\ncollected 12,400 product reviews in Marathi and Hindi from three public datasets and labelled 2,100 more by hand.\nWe fine-tuned a multilingual BERT model (MuRIL) to classify reviews as genuine or fake. On a held-out test set of\n1,860 reviews it reached 91.2% accuracy and 0.89 F1, compared with 84.0% for a logistic-regression baseline on\nTF-IDF features. The main limitation is code-mixed (Hinglish) reviews, where accuracy drops to 78%. The model has\nnot been deployed yet; a browser extension is future work.\n```",
+    "gemini": "Task: Summarize this abstract in 3 lines for my ppt.\n\nContext:\nDocument:\n```\nMini-project report (abstract): Detecting fake product reviews in Marathi and Hindi\nFake reviews mislead buyers on Indian shopping sites, and most detection tools work only for English. We\ncollected 12,400 product reviews in Marathi and Hindi from three public datasets and labelled 2,100 more by hand.\nWe fine-tuned a multilingual BERT model (MuRIL) to classify reviews as genuine or fake. On a held-out test set of\n1,860 reviews it reached 91.2% accuracy and 0.89 F1, compared with 84.0% for a logistic-regression baseline on\nTF-IDF features. The main limitation is code-mixed (Hinglish) reviews, where accuracy drops to 78%. The model has\nnot been deployed yet; a browser extension is future work.\n```"
+   },
+   "request": "Summarize this abstract in 3 lines for my ppt.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.988
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "sum-10": {
+   "vague": "summarize pg rules main points under 80 words, need to tell my parents\n\nPaying-guest agreement - 'Sai Krupa PG', Vishrambag, Sangli (students)\nRent: Rs 7,500 per month per bed (twin sharing), payable by the 5th of each month. Late payment: Rs 50 per day.\nSecurity deposit: two months' rent (Rs 15,000), refundable when you leave, minus the cost of any damage.\nNotice period: one month's written notice before vacating; otherwise one month's rent is deducted from the deposit.\nElectricity: extra, by the sub-meter reading of your room, split between the two occupants.\nFood: not included. A tiffin service is available separately for Rs 3,000 per month.\nRules: no overnight guests; the gate closes at 10:30 pm; no cooking in rooms.",
+   "optimized": {
+    "claude": "<context>\n<document>\nPaying-guest agreement - 'Sai Krupa PG', Vishrambag, Sangli (students)\nRent: Rs 7,500 per month per bed (twin sharing), payable by the 5th of each month. Late payment: Rs 50 per day.\nSecurity deposit: two months' rent (Rs 15,000), refundable when you leave, minus the cost of any damage.\nNotice period: one month's written notice before vacating; otherwise one month's rent is deducted from the deposit.\nElectricity: extra, by the sub-meter reading of your room, split between the two occupants.\nFood: not included. A tiffin service is available separately for Rs 3,000 per month.\nRules: no overnight guests; the gate closes at 10:30 pm; no cooking in rooms.\n</document>\n</context>\n\n<task>\nSummarize pg rules main points under 80 words, need to tell my parents.\n</task>",
+    "gpt": "### Task\nSummarize pg rules main points under 80 words, need to tell my parents.\n\n### Context\nDocument:\n```\nPaying-guest agreement - 'Sai Krupa PG', Vishrambag, Sangli (students)\nRent: Rs 7,500 per month per bed (twin sharing), payable by the 5th of each month. Late payment: Rs 50 per day.\nSecurity deposit: two months' rent (Rs 15,000), refundable when you leave, minus the cost of any damage.\nNotice period: one month's written notice before vacating; otherwise one month's rent is deducted from the deposit.\nElectricity: extra, by the sub-meter reading of your room, split between the two occupants.\nFood: not included. A tiffin service is available separately for Rs 3,000 per month.\nRules: no overnight guests; the gate closes at 10:30 pm; no cooking in rooms.\n```",
+    "gemini": "Task: Summarize pg rules main points under 80 words, need to tell my parents.\n\nContext:\nDocument:\n```\nPaying-guest agreement - 'Sai Krupa PG', Vishrambag, Sangli (students)\nRent: Rs 7,500 per month per bed (twin sharing), payable by the 5th of each month. Late payment: Rs 50 per day.\nSecurity deposit: two months' rent (Rs 15,000), refundable when you leave, minus the cost of any damage.\nNotice period: one month's written notice before vacating; otherwise one month's rent is deducted from the deposit.\nElectricity: extra, by the sub-meter reading of your room, split between the two occupants.\nFood: not included. A tiffin service is available separately for Rs 3,000 per month.\nRules: no overnight guests; the gate closes at 10:30 pm; no cooking in rooms.\n```"
+   },
+   "request": "Summarize pg rules main points under 80 words, need to tell my parents.",
+   "stage_a": {
+    "category": "summarization",
+    "confidence": 0.947
+   },
+   "category_used": "summarization",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-01": {
+   "vague": "write this sgpa fn pls\n\nCollege grading (autonomous): grade points AA=10, AB=9, BB=8, BC=7, CC=6, CD=5, DD=4, FF=0.\nSGPA = sum(credits x grade points) / sum(credits) over all registered courses, failed (FF) ones included.\nRound to 2 decimal places. With no courses, the SGPA is 0.0. Grades may come in lower case.\n\ndef sgpa(courses):\n    \"\"\"courses: list of (grade, credits) tuples, e.g. [(\"AA\", 4), (\"BC\", 3)]\"\"\"",
+   "optimized": {
+    "claude": "<context>\n<document>\nCollege grading (autonomous): grade points AA=10, AB=9, BB=8, BC=7, CC=6, CD=5, DD=4, FF=0.\nSGPA = sum(credits x grade points) / sum(credits) over all registered courses, failed (FF) ones included.\nRound to 2 decimal places. With no courses, the SGPA is 0.0. Grades may come in lower case.\n\ndef sgpa(courses):\n    \"\"\"courses: list of (grade, credits) tuples, e.g. [(\"AA\", 4), (\"BC\", 3)]\"\"\"\n</document>\n</context>\n\n<task>\nWrite this sgpa fn pls.\n</task>\n\n<constraints>\n- Answer from the provided text in at most three sentences.\n</constraints>",
+    "gpt": "### Task\nWrite this sgpa fn pls.\n\n### Context\nDocument:\n```\nCollege grading (autonomous): grade points AA=10, AB=9, BB=8, BC=7, CC=6, CD=5, DD=4, FF=0.\nSGPA = sum(credits x grade points) / sum(credits) over all registered courses, failed (FF) ones included.\nRound to 2 decimal places. With no courses, the SGPA is 0.0. Grades may come in lower case.\n\ndef sgpa(courses):\n    \"\"\"courses: list of (grade, credits) tuples, e.g. [(\"AA\", 4), (\"BC\", 3)]\"\"\"\n```\n\n### Constraints\n- Answer from the provided text in at most three sentences.",
+    "gemini": "Task: Write this sgpa fn pls.\n\nConstraints:\n- Answer from the provided text in at most three sentences.\n\nContext:\nDocument:\n```\nCollege grading (autonomous): grade points AA=10, AB=9, BB=8, BC=7, CC=6, CD=5, DD=4, FF=0.\nSGPA = sum(credits x grade points) / sum(credits) over all registered courses, failed (FF) ones included.\nRound to 2 decimal places. With no courses, the SGPA is 0.0. Grades may come in lower case.\n\ndef sgpa(courses):\n    \"\"\"courses: list of (grade, credits) tuples, e.g. [(\"AA\", 4), (\"BC\", 3)]\"\"\"\n```"
+   },
+   "request": "Write this sgpa fn pls.\n\nAnswer from the provided text in at most three sentences.",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.438
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B08_GROUP_FALLBACK"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-02": {
+   "vague": "fix this its giving 0 always\n\ndef attendance_pct(attended, total):\n    return attended // total * 100\n\nIt should return the attendance percentage rounded to 1 decimal place, and 0.0 when no lectures have been\nconducted yet. Right now it returns 0 for everyone except full attendance, and crashes at the start of the\nsemester.",
+   "optimized": {
+    "claude": "<context>\n<document>\ndef attendance_pct(attended, total):\n    return attended // total * 100\n\nIt should return the attendance percentage rounded to 1 decimal place, and 0.0 when no lectures have been\nconducted yet. Right now it returns 0 for everyone except full attendance, and crashes at the start of the\nsemester.\n</document>\n</context>\n\n<task>\nFix this its giving 0 always.\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nFix this its giving 0 always.\n\n### Context\nDocument:\n```\ndef attendance_pct(attended, total):\n    return attended // total * 100\n\nIt should return the attendance percentage rounded to 1 decimal place, and 0.0 when no lectures have been\nconducted yet. Right now it returns 0 for everyone except full attendance, and crashes at the start of the\nsemester.\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Fix this its giving 0 always.\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\ndef attendance_pct(attended, total):\n    return attended // total * 100\n\nIt should return the attendance percentage rounded to 1 decimal place, and 0.0 when no lectures have been\nconducted yet. Right now it returns 0 for everyone except full attendance, and crashes at the start of the\nsemester.\n```"
+   },
+   "request": "Fix this its giving 0 always.\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.869
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-03": {
+   "vague": "need python fn for library fine as per these rules\n\nLibrary fine rules: Rs 2 per day for the first 7 days of delay, Rs 5 per day after that, at most Rs 100 in\ntotal. Reference books: the fine is doubled, and the Rs 100 cap applies after doubling. A book returned on or\nbefore the due date has no fine.\n\nfrom datetime import date\n\ndef library_fine(due, returned, reference=False):\n    \"\"\"due, returned: datetime.date. Returns the fine in rupees (int).\"\"\"",
+   "optimized": {
+    "claude": "<context>\n<document>\nLibrary fine rules: Rs 2 per day for the first 7 days of delay, Rs 5 per day after that, at most Rs 100 in\ntotal. Reference books: the fine is doubled, and the Rs 100 cap applies after doubling. A book returned on or\nbefore the due date has no fine.\n\nfrom datetime import date\n\ndef library_fine(due, returned, reference=False):\n    \"\"\"due, returned: datetime.date. Returns the fine in rupees (int).\"\"\"\n</document>\n</context>\n\n<task>\nNeed python fn for library fine as per these rules.\n</task>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nNeed python fn for library fine as per these rules.\n\n### Context\nDocument:\n```\nLibrary fine rules: Rs 2 per day for the first 7 days of delay, Rs 5 per day after that, at most Rs 100 in\ntotal. Reference books: the fine is doubled, and the Rs 100 cap applies after doubling. A book returned on or\nbefore the due date has no fine.\n\nfrom datetime import date\n\ndef library_fine(due, returned, reference=False):\n    \"\"\"due, returned: datetime.date. Returns the fine in rupees (int).\"\"\"\n```\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Need python fn for library fine as per these rules.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\nLibrary fine rules: Rs 2 per day for the first 7 days of delay, Rs 5 per day after that, at most Rs 100 in\ntotal. Reference books: the fine is doubled, and the Rs 100 cap applies after doubling. A book returned on or\nbefore the due date has no fine.\n\nfrom datetime import date\n\ndef library_fine(due, returned, reference=False):\n    \"\"\"due, returned: datetime.date. Returns the fine in rupees (int).\"\"\"\n```"
+   },
+   "request": "Need python fn for library fine as per these rules.\n\nReturn only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.91
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-04": {
+   "vague": "write code to find clashes in timetable slots\n\nEach slot is (day, start, end) with times as \"HH:MM\" (24-hour, zero-padded), e.g. (\"Mon\", \"10:00\", \"11:00\").\nTwo slots clash when they are on the same day and overlap in time; a slot that ends exactly when another starts\ndoes NOT clash with it.\n\ndef find_clashes(slots):\n    \"\"\"Return a sorted list of (i, j) index pairs, i < j, of slots that clash.\"\"\"",
+   "optimized": {
+    "claude": "<context>\n<document>\nEach slot is (day, start, end) with times as \"HH:MM\" (24-hour, zero-padded), e.g. (\"Mon\", \"10:00\", \"11:00\").\nTwo slots clash when they are on the same day and overlap in time; a slot that ends exactly when another starts\ndoes NOT clash with it.\n\ndef find_clashes(slots):\n    \"\"\"Return a sorted list of (i, j) index pairs, i < j, of slots that clash.\"\"\"\n</document>\n</context>\n\n<task>\nWrite code to find clashes in timetable slots.\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nWrite code to find clashes in timetable slots.\n\n### Context\nDocument:\n```\nEach slot is (day, start, end) with times as \"HH:MM\" (24-hour, zero-padded), e.g. (\"Mon\", \"10:00\", \"11:00\").\nTwo slots clash when they are on the same day and overlap in time; a slot that ends exactly when another starts\ndoes NOT clash with it.\n\ndef find_clashes(slots):\n    \"\"\"Return a sorted list of (i, j) index pairs, i < j, of slots that clash.\"\"\"\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Write code to find clashes in timetable slots.\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\nEach slot is (day, start, end) with times as \"HH:MM\" (24-hour, zero-padded), e.g. (\"Mon\", \"10:00\", \"11:00\").\nTwo slots clash when they are on the same day and overlap in time; a slot that ends exactly when another starts\ndoes NOT clash with it.\n\ndef find_clashes(slots):\n    \"\"\"Return a sorted list of (i, j) index pairs, i < j, of slots that clash.\"\"\"\n```"
+   },
+   "request": "Write code to find clashes in timetable slots.\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.855
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-05": {
+   "vague": "fn to print amt in indian format with commas\n\nOur fee receipt generator prints 4550000 instead of 45,50,000.\nNeeded: format_inr(amount: int) -> str, which formats a whole number of rupees with Indian digit grouping\n(the last three digits, then groups of two). Negative amounts (refunds) keep the minus sign.",
+   "optimized": {
+    "claude": "<context>\n<document>\nOur fee receipt generator prints 4550000 instead of 45,50,000.\nNeeded: format_inr(amount: int) -> str, which formats a whole number of rupees with Indian digit grouping\n(the last three digits, then groups of two). Negative amounts (refunds) keep the minus sign.\n</document>\n</context>\n\n<task>\nFn to print amt in indian format with commas.\n</task>\n\n<output_format>\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".\n</output_format>",
+    "gpt": "### Task\nFn to print amt in indian format with commas.\n\n### Context\nDocument:\n```\nOur fee receipt generator prints 4550000 instead of 45,50,000.\nNeeded: format_inr(amount: int) -> str, which formats a whole number of rupees with Indian digit grouping\n(the last three digits, then groups of two). Negative amounts (refunds) keep the minus sign.\n```\n\n### Output format\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".",
+    "gemini": "Task: Fn to print amt in indian format with commas.\n\nOutput format: List each extracted item on its own line; if the text does not contain it, reply \"Not found\".\n\nContext:\nDocument:\n```\nOur fee receipt generator prints 4550000 instead of 45,50,000.\nNeeded: format_inr(amount: int) -> str, which formats a whole number of rupees with Indian digit grouping\n(the last three digits, then groups of two). Negative amounts (refunds) keep the minus sign.\n```"
+   },
+   "request": "Fn to print amt in indian format with commas.\n\nList each extracted item on its own line; if the text does not contain it, reply \"Not found\".",
+   "stage_a": {
+    "category": "information_extraction",
+    "confidence": 0.901
+   },
+   "category_used": "information_extraction",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-06": {
+   "vague": "make validation fn for prn as per format below\n\nPRN format: 4-digit admission year (2018 to 2026) + programme \"BT\" or \"MT\" + branch code (CS, IT, EN, ME, CV or\nEL) + a 5-digit serial that is not 00000. Letters are upper case. Example: 2022BTCS00041.\nLeading or trailing spaces should be ignored.\n\ndef is_valid_prn(prn: str) -> bool:",
+   "optimized": {
+    "claude": "<context>\n<document>\nPRN format: 4-digit admission year (2018 to 2026) + programme \"BT\" or \"MT\" + branch code (CS, IT, EN, ME, CV or\nEL) + a 5-digit serial that is not 00000. Letters are upper case. Example: 2022BTCS00041.\nLeading or trailing spaces should be ignored.\n\ndef is_valid_prn(prn: str) -> bool:\n</document>\n</context>\n\n<task>\nMake validation fn for prn as per format below.\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nMake validation fn for prn as per format below.\n\n### Context\nDocument:\n```\nPRN format: 4-digit admission year (2018 to 2026) + programme \"BT\" or \"MT\" + branch code (CS, IT, EN, ME, CV or\nEL) + a 5-digit serial that is not 00000. Letters are upper case. Example: 2022BTCS00041.\nLeading or trailing spaces should be ignored.\n\ndef is_valid_prn(prn: str) -> bool:\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Make validation fn for prn as per format below.\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\nPRN format: 4-digit admission year (2018 to 2026) + programme \"BT\" or \"MT\" + branch code (CS, IT, EN, ME, CV or\nEL) + a 5-digit serial that is not 00000. Letters are upper case. Example: 2022BTCS00041.\nLeading or trailing spaces should be ignored.\n\ndef is_valid_prn(prn: str) -> bool:\n```"
+   },
+   "request": "Make validation fn for prn as per format below.\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.834
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-07": {
+   "vague": "this crashes when someone is absnt, fix\n\ndef class_average(marks):\n    return sum(marks) / len(marks)\n\nmarks is a list of ints (0-100), or the string \"AB\" for an absent student. Absent students must be ignored\n(not counted as 0). Return the average rounded to 2 decimals, or None if everyone was absent or the list is\nempty.",
+   "optimized": {
+    "claude": "<context>\n<document>\ndef class_average(marks):\n    return sum(marks) / len(marks)\n\nmarks is a list of ints (0-100), or the string \"AB\" for an absent student. Absent students must be ignored\n(not counted as 0). Return the average rounded to 2 decimals, or None if everyone was absent or the list is\nempty.\n</document>\n</context>\n\n<task>\nThis crashes when someone is absnt, fix.\n</task>\n\n<output_format>\nProvide the corrected code in a single code block.\n</output_format>",
+    "gpt": "### Task\nThis crashes when someone is absnt, fix.\n\n### Context\nDocument:\n```\ndef class_average(marks):\n    return sum(marks) / len(marks)\n\nmarks is a list of ints (0-100), or the string \"AB\" for an absent student. Absent students must be ignored\n(not counted as 0). Return the average rounded to 2 decimals, or None if everyone was absent or the list is\nempty.\n```\n\n### Output format\nProvide the corrected code in a single code block.",
+    "gemini": "Task: This crashes when someone is absnt, fix.\n\nOutput format: Provide the corrected code in a single code block.\n\nContext:\nDocument:\n```\ndef class_average(marks):\n    return sum(marks) / len(marks)\n\nmarks is a list of ints (0-100), or the string \"AB\" for an absent student. Absent students must be ignored\n(not counted as 0). Return the average rounded to 2 decimals, or None if everyone was absent or the list is\nempty.\n```"
+   },
+   "request": "This crashes when someone is absnt, fix.\n\nProvide the corrected code in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.456
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "coding"
+   },
+   "leaks": []
+  },
+  "cod-08": {
+   "vague": "code for splitting trip expenses\n\nGoa trip expense splitter.\nexpenses is a list of (payer, amount) tuples; members is everyone on the trip. Every expense is split equally\namong ALL members. Return {member: balance}, where balance = amount paid - fair share, rounded to 2 decimals\n(positive = should get money back). Members who paid nothing still appear. If a payer is not in members, raise\nValueError.\n\ndef balances(expenses, members):",
+   "optimized": {
+    "claude": "<context>\n<document>\nGoa trip expense splitter.\nexpenses is a list of (payer, amount) tuples; members is everyone on the trip. Every expense is split equally\namong ALL members. Return {member: balance}, where balance = amount paid - fair share, rounded to 2 decimals\n(positive = should get money back). Members who paid nothing still appear. If a payer is not in members, raise\nValueError.\n\ndef balances(expenses, members):\n</document>\n</context>\n\n<task>\nCode for splitting trip expenses.\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nCode for splitting trip expenses.\n\n### Context\nDocument:\n```\nGoa trip expense splitter.\nexpenses is a list of (payer, amount) tuples; members is everyone on the trip. Every expense is split equally\namong ALL members. Return {member: balance}, where balance = amount paid - fair share, rounded to 2 decimals\n(positive = should get money back). Members who paid nothing still appear. If a payer is not in members, raise\nValueError.\n\ndef balances(expenses, members):\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Code for splitting trip expenses.\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\nGoa trip expense splitter.\nexpenses is a list of (payer, amount) tuples; members is everyone on the trip. Every expense is split equally\namong ALL members. Return {member: balance}, where balance = amount paid - fair share, rounded to 2 decimals\n(positive = should get money back). Members who paid nothing still appear. If a payer is not in members, raise\nValueError.\n\ndef balances(expenses, members):\n```"
+   },
+   "request": "Code for splitting trip expenses.\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.723
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-09": {
+   "vague": "second highest marks code is wrong sometimes fix it\n\ndef second_highest(marks):\n    marks.sort()\n    return marks[-2]\n\nIt should return the second highest DISTINCT mark (for the second-rank prize). If there is no second distinct\nmark (empty list, one student, or everyone has the same marks), return None. It must not modify the caller's list.\nRight now it returns the topper's mark again when two students tie for first, and it crashes for a class of one.",
+   "optimized": {
+    "claude": "<context>\n<document>\ndef second_highest(marks):\n    marks.sort()\n    return marks[-2]\n\nIt should return the second highest DISTINCT mark (for the second-rank prize). If there is no second distinct\nmark (empty list, one student, or everyone has the same marks), return None. It must not modify the caller's list.\nRight now it returns the topper's mark again when two students tie for first, and it crashes for a class of one.\n</document>\n</context>\n\n<task>\nSecond highest marks code is wrong sometimes fix it.\n</task>\n\n<constraints>\n- Keep the language of the given code.\n</constraints>\n\n<output_format>\nReturn only the code, in a single code block.\n</output_format>",
+    "gpt": "### Task\nSecond highest marks code is wrong sometimes fix it.\n\n### Context\nDocument:\n```\ndef second_highest(marks):\n    marks.sort()\n    return marks[-2]\n\nIt should return the second highest DISTINCT mark (for the second-rank prize). If there is no second distinct\nmark (empty list, one student, or everyone has the same marks), return None. It must not modify the caller's list.\nRight now it returns the topper's mark again when two students tie for first, and it crashes for a class of one.\n```\n\n### Constraints\n- Keep the language of the given code.\n\n### Output format\nReturn only the code, in a single code block.",
+    "gemini": "Task: Second highest marks code is wrong sometimes fix it.\n\nConstraints:\n- Keep the language of the given code.\n\nOutput format: Return only the code, in a single code block.\n\nContext:\nDocument:\n```\ndef second_highest(marks):\n    marks.sort()\n    return marks[-2]\n\nIt should return the second highest DISTINCT mark (for the second-rank prize). If there is no second distinct\nmark (empty list, one student, or everyone has the same marks), return None. It must not modify the caller's list.\nRight now it returns the topper's mark again when two students tie for first, and it crashes for a class of one.\n```"
+   },
+   "request": "Second highest marks code is wrong sometimes fix it.\n\nKeep the language of the given code. Return only the code, in a single code block.",
+   "stage_a": {
+    "category": "coding",
+    "confidence": 0.977
+   },
+   "category_used": "coding",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE",
+    "B05_ADD_LANGUAGE",
+    "B03_ADD_OUTPUT_FORMAT"
+   ],
+   "routed": false,
+   "stage_c_reasons": [],
+   "stage_c": null,
+   "leaks": []
+  },
+  "cod-10": {
+   "vague": "write the scale fn for recipe app\n\nHostel recipe app: scale_quantity(qty, from_servings, to_servings) -> str\nqty is \"<amount> <unit>\", where the amount is an integer (\"2\"), a decimal (\"0.5\"), a fraction (\"1/2\") or a mixed\nnumber (\"1 1/2\"); the unit is everything after the amount and may be several words (\"cups thick poha\").\nScale the amount by to_servings / from_servings, round it to the nearest 1/8, and return it as a whole number,\na proper fraction or a mixed number in lowest terms, then a space and the unit, e.g. \"1 1/4 tsp\".",
+   "optimized": {
+    "claude": "<context>\n<document>\nHostel recipe app: scale_quantity(qty, from_servings, to_servings) -> str\nqty is \"<amount> <unit>\", where the amount is an integer (\"2\"), a decimal (\"0.5\"), a fraction (\"1/2\") or a mixed\nnumber (\"1 1/2\"); the unit is everything after the amount and may be several words (\"cups thick poha\").\nScale the amount by to_servings / from_servings, round it to the nearest 1/8, and return it as a whole number,\na proper fraction or a mixed number in lowest terms, then a space and the unit, e.g. \"1 1/4 tsp\".\n</document>\n</context>\n\n<task>\nWrite the scale fn for recipe app.\n</task>\n\n<output_format>\nOutput the code in a single code block.\n</output_format>",
+    "gpt": "### Task\nWrite the scale fn for recipe app.\n\n### Context\nDocument:\n```\nHostel recipe app: scale_quantity(qty, from_servings, to_servings) -> str\nqty is \"<amount> <unit>\", where the amount is an integer (\"2\"), a decimal (\"0.5\"), a fraction (\"1/2\") or a mixed\nnumber (\"1 1/2\"); the unit is everything after the amount and may be several words (\"cups thick poha\").\nScale the amount by to_servings / from_servings, round it to the nearest 1/8, and return it as a whole number,\na proper fraction or a mixed number in lowest terms, then a space and the unit, e.g. \"1 1/4 tsp\".\n```\n\n### Output format\nOutput the code in a single code block.",
+    "gemini": "Task: Write the scale fn for recipe app.\n\nOutput format: Output the code in a single code block.\n\nContext:\nDocument:\n```\nHostel recipe app: scale_quantity(qty, from_servings, to_servings) -> str\nqty is \"<amount> <unit>\", where the amount is an integer (\"2\"), a decimal (\"0.5\"), a fraction (\"1/2\") or a mixed\nnumber (\"1 1/2\"); the unit is everything after the amount and may be several words (\"cups thick poha\").\nScale the amount by to_servings / from_servings, round it to the nearest 1/8, and return it as a whole number,\na proper fraction or a mixed number in lowest terms, then a space and the unit, e.g. \"1 1/4 tsp\".\n```"
+   },
+   "request": "Write the scale fn for recipe app.\n\nOutput the code in a single code block.",
+   "stage_a": {
+    "category": "other",
+    "confidence": 0.237
+   },
+   "category_used": "other",
+   "rules": [
+    "B07_STANDARDIZE_STRUCTURE"
+   ],
+   "routed": true,
+   "stage_c_reasons": [
+    "task category"
+   ],
+   "stage_c": {
+    "used": true,
+    "accepted": true,
+    "fields": [
+     "output_format",
+     "constraints",
+     "category"
+    ],
+    "errors": [],
+    "category_status": "uncertain",
+    "category_guess": "coding"
+   },
+   "leaks": []
+  }
+ }
+}

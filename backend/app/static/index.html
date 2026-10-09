@@ -146,6 +146,44 @@
     <p id="compare_judge_line"></p>
   </section>
 
+  <section class="panel" id="suite_panel">
+    <details id="suite_box">
+      <summary><h2 class="inline-h">Test suite <span class="muted">50 hand-written cases with one correct answer each: is the optimized prompt also right?</span></h2></summary>
+      <p id="suite_headline" class="muted"></p>
+      <div class="row">
+        <div>
+          <label for="suite_case">Case</label>
+          <select id="suite_case"></select>
+        </div>
+        <div>
+          <label for="suite_model">Model</label>
+          <select id="suite_model"></select>
+        </div>
+        <div class="actions end">
+          <button type="button" id="suite_prev" aria-label="Previous case">&larr;</button>
+          <button type="button" id="suite_next" aria-label="Next case">&rarr;</button>
+          <button type="button" id="suite_live">Run live</button>
+          <span id="suite_status" role="status" class="muted"></span>
+        </div>
+      </div>
+      <p id="suite_scenario"></p>
+      <details>
+        <summary>Material (pasted with both prompts)</summary>
+        <pre id="suite_material" tabindex="0"></pre>
+      </details>
+      <div class="grid">
+        <div><h3>Vague prompt <span class="muted">(as the user typed it)</span></h3><pre id="suite_vague_prompt" tabindex="0"></pre></div>
+        <div><h3>Optimized prompt <span class="muted" id="suite_opt_note"></span></h3><pre id="suite_opt_prompt" class="clip" tabindex="0"></pre></div>
+      </div>
+      <p class="gold"><strong>Gold answer:</strong> <span id="suite_gold"></span></p>
+      <div class="grid">
+        <div><h3>Answer to the vague prompt <span id="suite_vague_mark"></span></h3><pre id="suite_vague_answer" tabindex="0"></pre><p class="muted" id="suite_vague_meta"></p></div>
+        <div><h3>Answer to the optimized prompt <span id="suite_opt_mark"></span></h3><pre id="suite_opt_answer" tabindex="0"></pre><p class="muted" id="suite_opt_meta"></p></div>
+      </div>
+      <p id="suite_tokens"></p>
+    </details>
+  </section>
+
   <section class="panel" id="history_panel">
     <h2>History <span class="muted" id="retention"></span></h2>
     <ul id="history"></ul>
