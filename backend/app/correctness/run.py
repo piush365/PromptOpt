@@ -383,8 +383,9 @@ def main() -> None:
     if not args.report_only or args.models != DEFAULT_MODELS:
         # a partial run never overwrites the full report: rescore everything from the cache
         results = collect(DEFAULT_MODELS, cases, prompts["cases"], calls=False)
+    text = report(results, cases, prompts)      # before writing: the report records `git describe`
     RESULTS.write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8")
-    REPORT.write_text(report(results, cases, prompts), encoding="utf-8")
+    REPORT.write_text(text, encoding="utf-8")
     for mid, res in results["models"].items():
         s = summarize([(None, r) for r in res["cases"].values()])
         print(f"{mid}: vague {s['vague']}/{s['n']}, optimized {s['optimized']}/{s['n']}, only-opt {s['only_optimized']}, "
