@@ -27,7 +27,7 @@ Stage A (blue) detects what is missing, Stage B (green) fixes it with rules, Sta
 ```mermaid
 %%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
 flowchart LR
-  UI["Web UI (HTML/JS)<br/>prompt · category · attachment · target LLM"]
+  UI["Web UI (React)<br/>prompt · category · attachment · target LLM"]
   subgraph API["FastAPI backend"]
     direction LR
     A["Stage A<br/>feature detection"]
@@ -405,6 +405,11 @@ python -m app.stage_a.build_index
 uvicorn app.api:app                    # open http://127.0.0.1:8000  (FastAPI docs: /docs)
 ```
 
+The web UI (React, built into `backend/app/static/ui`, committed) needs no Node to run; the first UI stays at
+`/classic`. To change the UI: `cd frontend && npm ci && npm run build` (dev server: `npm run dev`, proxies `/api` to
+port 8765); checks: `npm run e2e` (Playwright, system Chrome), `node scripts/screenshots.mjs <dir>`,
+`./scripts/lighthouse.sh`, `node scripts/api-parity.mjs` (demo prompts through the UI vs a reference server).
+
 This runs **without Stage C**: Stage A + B + rendering, fully offline. When a prompt needs Stage C (try
 "hey can you just summarize this article for me"), the page says Stage C is not installed and shows Stage B's result.
 
@@ -488,7 +493,8 @@ Every evaluation command is listed in FINAL_RESULTS section "Reproduce" and in e
 ## Repo layout
 
 ```
-backend/app/         Stage A/B/C, IR + rendering, pipeline, API + web UI (static/), DB layer,
+frontend/            web UI source (React + TypeScript + Vite + Tailwind); builds into backend/app/static/ui
+backend/app/         Stage A/B/C, IR + rendering, pipeline, API + web UI (static/ui; classic UI static/index.html), DB layer,
                      coding/ (sandbox, tests), image/ (image mode), compare/ (providers), evaluation/
 backend/tests/       offline test suite
 docs/                dataset card, Stage C plan, coding tests, category templates, milestone review

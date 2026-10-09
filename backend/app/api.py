@@ -1,9 +1,14 @@
-"""FastAPI app: the optimizer behind a small web UI (plain HTML/JS in app/static, no build step).
+"""FastAPI app: the optimizer behind the web UI.
 
     uvicorn app.api:app --reload            # inside backend/, then open http://127.0.0.1:8000
 
+The UI (v2) is a React app built from frontend/ into app/static/ui (committed, so Node is only needed to rebuild).
+The first UI (plain HTML/JS, app/static/index.html) stays at /classic.
+
 Endpoints
-    GET  /                      the UI
+    GET  /                      the UI (also /compare, /suite, /results, /how, /history, /image, /status)
+    GET  /classic               the first UI
+    /api/ui/...                 read-only data for the v2 UI (app.ui_api)
     GET  /api/options           targets, categories, attachment types, whether Stage C is loaded
     POST /api/optimize          prompt -> Stage A result, issues, rules fired, Stage C, renderings + input tokens;
                                 category "image_generation" -> the separate image mode (app.image), image targets
@@ -26,6 +31,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -47,8 +53,11 @@ from app.pipeline import process_prompt
 from app.rendering import TARGETS
 from app.stage_b.ir import Attachment
 from app.stage_b.rules import RULES
+from app.ui_api import router as ui_router
 
 STATIC = Path(__file__).parent / "static"
+UI_INDEX = STATIC / "ui" / "index.html"
+UI_PAGES = ("compare", "suite", "results", "how", "history", "image", "status")
 CATEGORIES = ("auto", "closed_qa", "information_extraction", "classification", "summarization", "coding",
               "image_generation")
 TEXT_TARGETS = ("gpt", "gemini", "claude")
@@ -57,7 +66,9 @@ RULE_DOCS = {code: (fn.__doc__ or "").strip().split("\n")[0] for code, fn in [*R
 RULE_DOCS.update({code: doc.strip().split("\n")[0] for code, doc in RULE_DOCS_V2.items()})
 
 app = FastAPI(title="PromptOpt", version="0.2.0")
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
+app.include_router(ui_router)
 
 
 @lru_cache(maxsize=1)
@@ -91,7 +102,27 @@ class OptimizeRequest(BaseModel):
 
 @app.get("/", include_in_schema=False)
 def index():
+    return FileResponse(UI_INDEX if UI_INDEX.exists() else STATIC / "index.html")
+
+
+@app.get("/classic", include_in_schema=False)
+def classic():
     return FileResponse(STATIC / "index.html")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    icon = STATIC / "ui" / "favicon.svg"
+    if not icon.exists():
+        raise HTTPException(404, "not found")
+    return FileResponse(icon, media_type="image/svg+xml")
+
+
+@app.get("/{page}", include_in_schema=False)
+def ui_page(page: str):
+    if page not in UI_PAGES or not UI_INDEX.exists():
+        raise HTTPException(404, "not found")
+    return FileResponse(UI_INDEX)
 
 
 @app.get("/api/options")

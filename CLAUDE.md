@@ -115,7 +115,7 @@ the target LLMs; real GPT/Gemini/Claude runs need API keys and come later.
 | 5 | Evaluation on val with Groq stand-in models | Done: `dev-val-n10` (Stage B tuned on val; `evaluation/REVIEW_SUMMARY.md` section 5) and the Stage C val evaluation (`evaluation/stage_c/stage_c_eval.md`) |
 | 6 | Validation results -> retrain classifier -> train Stage C LoRA | Done (finish phases 1 and 3): LoRA trained locally, best val loss 0.7047 at step 550 (early stop at 700); `evaluation/stage_c/stage_c_eval.md` |
 | 7 | Ablation, then final test/benchmark evaluation (once, on Groq stand-ins) | Done: final test run once on 2026-10-02, tag `final-for-test`; `evaluation/FINAL_RESULTS.md` (Stage A 74.7%; Stage B format 3.1% -> 95.0%, 6.4% routed; Stage C ablation: helps on routed prompts only; benchmark: quality 8.2 -> 9.0, task success 67% -> 85%, tokens -57%) |
-| 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`, plain HTML/JS in `app/static/`; Compare: finish phase 6 |
+| 8 | FastAPI + web app with history | Done (finish phase 3): `uvicorn app.api:app` in `backend/`; Compare: finish phase 6. UI v2 (branch `ui-v2`, tag `pre-ui-v2` before it): React app in `frontend/` built into `app/static/ui` (committed), read-only endpoints in `app/ui_api.py` (plus History delete); first UI at `/classic` |
 | 9 | Phase 2: image generation | Done as finish phase 5: separate, explicitly selected image mode (`app/image/`); `evaluation/image/image_mode.md` |
 
 ### Finish phase (started 2026-10-02; due Sunday 2026-10-04, buffer to Thursday 2026-10-08)

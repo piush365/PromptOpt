@@ -5,3 +5,10 @@ __pycache__/
 .ipynb_checkpoints/
 # Dataset lives on Google Drive; never commit it
 data/
+
+# frontend (v2 UI): build output is committed in backend/app/static/ui
+frontend/node_modules/
+frontend/test-results/
+frontend/playwright-report/
+frontend/.lighthouse/
+frontend/.e2e/

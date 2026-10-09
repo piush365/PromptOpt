@@ -1,0 +1,165 @@
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque/wght.css";
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* PromptOpt v2 — "proofing desk".
+   The chrome is graphite on cool paper; colour is reserved for meaning: a stage (A blue, B green, C amber,
+   Render ink) or a change (added green, removed red). */
+:root {
+  --paper: #f6f7f9;
+  --surface: #ffffff;
+  --sunken: #eef1f5;
+  --ink: #141a26;
+  --ink-2: #3a4456;
+  --muted: #5a6475;
+  --rule: #dde2ea;
+  --rule-strong: #c4ccd8;
+
+  --a: #2459c4;        /* Stage A: detect */
+  --a-soft: #e8effc;
+  --b: #0c7350;        /* Stage B: rules */
+  --b-soft: #e3f3ec;
+  --c: #925400;        /* Stage C: small model */
+  --c-soft: #fcefd9;
+  --r: #141a26;        /* Render */
+  --r-soft: #e9ecf1;
+
+  --add: #0c7350;
+  --add-bg: #d9f2e6;
+  --del: #b42318;
+  --del-bg: #fde3e0;
+  --focus: #2459c4;
+  /* chart series (validated with the dataviz palette checker, light surface) */
+  --viz-vague: #eb6834;
+  --viz-opt: #2a78d6;
+  --viz-in: #2a78d6;
+  --viz-out: #1baf7a;
+  --viz-reason: #4a3aa7;
+  --shadow: 0 1px 2px rgb(20 26 38 / 0.06), 0 4px 16px -6px rgb(20 26 38 / 0.10);
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #0d1219;
+  --surface: #141b25;
+  --sunken: #0a0f15;
+  --ink: #e7ebf1;
+  --ink-2: #c3cad6;
+  --muted: #9aa5b6;
+  --rule: #253041;
+  --rule-strong: #34425a;
+
+  --a: #7ea8f7;
+  --a-soft: #172440;
+  --b: #4fcb9c;
+  --b-soft: #10291f;
+  --c: #f1b65c;
+  --c-soft: #2c2010;
+  --r: #e7ebf1;
+  --r-soft: #1f2836;
+
+  --add: #63d6a8;
+  --add-bg: #123326;
+  --del: #ff9a8f;
+  --del-bg: #3a1714;
+  --focus: #7ea8f7;
+  --viz-vague: #d95926;
+  --viz-opt: #3987e5;
+  --viz-in: #3987e5;
+  --viz-out: #199e70;
+  --viz-reason: #9085e9;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 20px -8px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-a: var(--a);
+  --color-a-soft: var(--a-soft);
+  --color-b: var(--b);
+  --color-b-soft: var(--b-soft);
+  --color-c: var(--c);
+  --color-c-soft: var(--c-soft);
+  --color-r: var(--r);
+  --color-r-soft: var(--r-soft);
+  --color-add: var(--add);
+  --color-add-bg: var(--add-bg);
+  --color-del: var(--del);
+  --color-del-bg: var(--del-bg);
+  --color-focus: var(--focus);
+  --color-viz-vague: var(--viz-vague);
+  --color-viz-opt: var(--viz-opt);
+  --color-viz-in: var(--viz-in);
+  --color-viz-out: var(--viz-out);
+  --color-viz-reason: var(--viz-reason);
+
+  --font-display: "Bricolage Grotesque Variable", "IBM Plex Sans", system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --shadow-card: var(--shadow);
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--a-soft); color: var(--ink); }
+  :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+  button, [role="button"] { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 1.15; }
+}
+
+@utility tabular { font-variant-numeric: tabular-nums; }
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@utility proof {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Pipeline rail: cards rise in one after another, the line fills downwards, bars grow from the left. */
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.rise { animation: rise 280ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.grow-y { transform-origin: top; animation: grow-y 350ms ease-out both; }
+.grow-x { transform-origin: left; animation: grow-x 500ms ease-out both; }
+
+/* The highlighter behind the prompt textarea: same metrics as the textarea, transparent text. */
+.mirror { color: transparent; }
+.mirror mark { color: transparent; background: var(--a-soft); box-shadow: 0 0 0 2px var(--a); border-radius: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
