@@ -35,7 +35,9 @@ RESULTS = SUITE_DIR / "results.json"
 REPORT = SUITE_DIR / "RESULTS.md"
 ANALYSIS = SUITE_DIR / "analysis.json"          # hand-written notes on cases where optimization hurt (optional)
 HUMAN = SUITE_DIR / "human_review.json"         # written by app.correctness.review --import
-DEFAULT_MODELS = ["cerebras/gpt-oss-120b", "groq/openai/gpt-oss-120b", f"gemini/{providers.GEMINI_MODEL}"]
+# the first model is the primary one; a later model is reported as a replication once all its cases are answered
+DEFAULT_MODELS = ["groq/openai/gpt-oss-120b", "cerebras/gpt-oss-120b", f"gemini/{providers.GEMINI_MODEL}"]
+FUTURE_WORK = "future work: no API key, same as GPT and Claude"
 VARIANTS = ("vague", "optimized")
 JUDGE_DAILY_TOKENS = 200_000
 
@@ -189,7 +191,7 @@ def _p(p: float) -> str:
 
 def human_status(cases: list[dict]) -> list[str]:
     if not HUMAN.exists():
-        return ["Human review: **pending**. `cases_review.xlsx` (3 sheets, one per team member) asks each reviewer "
+        return ["Gold answers: **auto-validated; human review pending**.", "Human review: **pending**. `cases_review.xlsx` (3 sheets, one per team member) asks each reviewer "
                 "to tick \"gold correct Y/N\"; import it with `python -m app.correctness.review --import <file>`. "
                 "Until then the gold answers are checked automatically only (`validation.md`)."]
     h = json.loads(HUMAN.read_text())
@@ -236,11 +238,19 @@ def report(results: dict, cases: list[dict], prompts: dict) -> str:
         return "\n".join(L + ["No results yet."]) + "\n"
     missing = [m for m in DEFAULT_MODELS if m not in results["models"]]
     if missing:
-        L.append("Not run: " + "; ".join(f"`{m}` ({(providers.BY_ID[m].reason or 'incomplete') if m in providers.BY_ID else 'unknown'})"
-                                         for m in missing) + "\n")
-    for mid, res in results["models"].items():
+        L.append("Not run: " + "; ".join(
+            f"`{m}` ({FUTURE_WORK if m.startswith('gemini/') else providers.BY_ID[m].reason or 'incomplete'})"
+            for m in missing) + ".\n")
+    partial = {m: len(r["cases"]) for m, r in results["models"].items() if len(r["cases"]) < len(cases)}
+    if partial:
+        L.append("In progress (reported once every case is answered): " + "; ".join(
+            f"`{m}` {k}/{len(cases)}" for m, k in partial.items()) + ".\n")
+    complete = [m for m in results["models"] if m not in partial]
+    for i, mid in enumerate(complete):
+        res = results["models"][mid]
         rows = [(byid[k], r) for k, r in res["cases"].items()]
-        L += [f"## {res['label']}\n",
+        role = "Primary model" if i == 0 else "Second-model replication"
+        L += [f"## {role}: {res['label']}\n",
               f"{len(rows)} of {len(cases)} cases answered with both prompts.\n",
               "| category | n | vague correct | optimized correct | both | only optimized | only vague | both wrong "
               "| McNemar p | total tokens: mean reduction per case | aggregate |",
