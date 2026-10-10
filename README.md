@@ -490,6 +490,10 @@ no instruction shared across splits; human-validated sample and LLM-assisted fil
 and a 10-minute cheat sheet [`docs/EXPLAIN_IN_10_MIN.md`](docs/EXPLAIN_IN_10_MIN.md).
 Every evaluation command is listed in FINAL_RESULTS section "Reproduce" and in each report's header.
 
+**Complete technical documentation:** [`docs/documentation/`](docs/documentation/README.md) — every step and sub-step,
+every setting with how it was chosen, every estimate with its basis, every formula with its derivation (17 chapters and
+three appendices: constants, formulas, glossary).
+
 ## Repo layout
 
 ```
@@ -497,7 +501,7 @@ frontend/            web UI source (React + TypeScript + Vite + Tailwind); build
 backend/app/         Stage A/B/C, IR + rendering, pipeline, API + web UI (static/ui; classic UI static/index.html), DB layer,
                      coding/ (sandbox, tests), image/ (image mode), compare/ (providers), evaluation/
 backend/tests/       offline test suite
-docs/                dataset card, Stage C plan, coding tests, category templates, milestone review
+docs/                complete documentation (documentation/), dataset card, Stage C plan, coding tests, category templates
 evaluation/          all reports, grouped by topic; FINAL_RESULTS.md is the summary
 notebooks/           Stage C training notebook (Colab); dataset_prep/: dataset EDA and annotation sheets
 team_input/          everything that needs a person: correctness gold-answer review, blind sets, rater guide (README.md)
