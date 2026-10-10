@@ -13,7 +13,7 @@ The same code runs on both; only `DATABASE_URL` changes.
 pip install -r requirements-lock.txt   # exact versions (CPU torch, en_core_web_sm); full guide: ../README.md "How to run"
 cp .env.example .env        # optional: DATABASE_URL, API keys; .env is git-ignored
 
-python -m app.init_db       # uses DATABASE_URL from .env, or SQLite ./promptopt.db if it is not set
+python -m app.init_db       # uses DATABASE_URL from .env, or SQLite backend/promptopt.db if it is not set
 ```
 
 Settings come from `.env` (loaded by `app/config.py`); variables already set in the shell win.
@@ -74,7 +74,7 @@ In FastAPI use the `get_db` dependency from `app/db/base.py`.
 
 * `create_prompt` strips emails and phone numbers **before** the prompt is stored, so raw PII never reaches the database.
 * Every prompt gets `expires_at = created_at + RETENTION_DAYS` (default 30, set with the `RETENTION_DAYS` env variable).
-* `python -m app.init_db --purge` deletes expired prompts; features, results, transformations, renderings and token usage are removed with them by `ON DELETE CASCADE`. Run it daily (cron job, or a FastAPI startup/background task).
+* Expired prompts are deleted with everything derived from them (features, results, transformations, renderings, token usage: `ON DELETE CASCADE`). The web app does this itself before every request that stores, reads or lists prompts (`app/retention.py`), so the UI never shows a prompt past its expiry date; `python -m app.init_db --purge` does the same from the command line (e.g. a daily cron job when the app is not running).
 
 ## Integrity rules enforced by the database itself
 

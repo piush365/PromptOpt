@@ -6,6 +6,7 @@
     GET    /api/ui/results           evaluation/FINAL_RESULTS.md parsed into sections and tables, plus the token headline
     GET    /api/ui/suite-grid        correctness suite: every case's verdicts and tokens per model (results.json)
     GET    /api/ui/history           past prompts with search and paging, with category/target/compare runs
+                                     (expired prompts are deleted first: app.retention)
     DELETE /api/ui/history/{id}      delete one prompt (cascade, like the retention purge)
     GET    /api/ui/compare-history   past Compare runs (token usage rows written by POST /api/compare)
 
@@ -24,6 +25,7 @@ from app.config import BACKEND_DIR, RETENTION_DAYS
 from app.db.base import get_db
 from app.db.models import OptimizationResult, Prompt, TokenUsage
 from app.rendering import TARGETS, count_tokens
+from app.retention import enforce_retention
 
 ROOT = BACKEND_DIR.parent
 EVAL = ROOT / "evaluation"
@@ -248,7 +250,7 @@ def _summary(p: Prompt) -> dict:
             "optimized": r.optimized_text if r else None, "compares": compares}
 
 
-@router.get("/history")
+@router.get("/history", dependencies=[Depends(enforce_retention)])
 def history(q: str = "", limit: int = 50, offset: int = 0, db: Session = Depends(get_db)):
     stmt = select(Prompt)
     if q.strip():
@@ -271,7 +273,7 @@ def delete_history(prompt_id: int, db: Session = Depends(get_db)):
     return {"deleted": prompt_id}
 
 
-@router.get("/compare-history")
+@router.get("/compare-history", dependencies=[Depends(enforce_retention)])
 def compare_history(limit: int = 30, db: Session = Depends(get_db)):
     rows = db.execute(select(TokenUsage, OptimizationResult.prompt_id, Prompt.original_text)
                       .join(OptimizationResult, TokenUsage.result_id == OptimizationResult.id)

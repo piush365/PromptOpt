@@ -1,7 +1,7 @@
 """Settings, read from environment variables so nothing is hard-coded.
 
 DATABASE_URL examples
-    SQLite (default, development):  sqlite:///./promptopt.db
+    SQLite (default, development):  backend/promptopt.db, wherever the command is started from
     PostgreSQL (deployment):        postgresql+psycopg://promptopt:password@localhost:5432/promptopt
 
 Values are read from backend/.env if it exists (see .env.example). Variables already set in the
@@ -12,10 +12,14 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# backend/.env, located relative to this file so it works from any working directory.
-load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=False)
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./promptopt.db")
+# backend/.env, located relative to this file so it works from any working directory.
+load_dotenv(BACKEND_DIR / ".env", override=False)
+
+# Default: SQLite at backend/promptopt.db (an absolute path, so a command run from another directory does not create a
+# second, empty database next to it).
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{BACKEND_DIR / 'promptopt.db'}")
 
 # Retention policy: stored prompts (and everything derived from them) are deleted after this many days.
 RETENTION_DAYS = int(os.getenv("RETENTION_DAYS", "30"))
@@ -34,7 +38,6 @@ TASK_CATEGORIES = (
 )
 
 # ---- Stage A
-BACKEND_DIR = Path(__file__).resolve().parent.parent
 # Sentence-Transformers model for task-category detection (same model the dataset quality checks used)
 SENTENCE_MODEL = os.getenv("SENTENCE_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 # k-NN index built from the dataset's train split by `python -m app.stage_a.build_index` (git-ignored)

@@ -75,8 +75,8 @@ def judge(original_request: str, answer: str, cache: Cache) -> dict | None:
         info = providers.BY_ID["groq/openai/gpt-oss-120b"]
         if not info.available:
             return None
-        from app.groq_budget import UsageLedger
-        if UsageLedger().used(JUDGE_MODEL)["tokens"] > providers.BUDGET_FRACTION * 200_000:
+        from app.groq_budget import DAILY_LIMITS, UsageLedger
+        if UsageLedger().used(JUDGE_MODEL)["tokens"] > providers.BUDGET_FRACTION * DAILY_LIMITS[JUDGE_MODEL]["tokens"]:
             return {"score": None, "reason": "judge skipped: Groq daily budget for the judge model reached"}
         msgs = [{"role": "system", "content": JUDGE_SYSTEM},
                 {"role": "user", "content": f"USER'S REQUEST:\n{original_request.strip()}\n\nRESPONSE:\n"
@@ -93,13 +93,13 @@ def judge(original_request: str, answer: str, cache: Cache) -> dict | None:
 
 
 def compare(original_prompt: str, optimized_prompt: str, model_id: str, target: str, context: str | None = None,
-            category: str | None = None, judge_answers: bool = False, cache_path: Path = CACHE) -> dict:
+            category: str | None = None, judge_answers: bool = False, cache_path: Path | None = None) -> dict:
     info = providers.BY_ID.get(model_id)
     if info is None:
         raise ValueError(f"unknown model {model_id!r}; choose one of {list(providers.BY_ID)}")
     if not info.available:
         raise providers.ModelUnavailable(info.reason)
-    cache = Cache(cache_path)
+    cache = Cache(cache_path or CACHE)                  # CACHE read at call time, so tests can point it elsewhere
     original_text = with_context(original_prompt, context)
     out = {v: run_variant(info, text, cache) for v, text in (("original", original_text),
                                                              ("optimized", optimized_prompt))}

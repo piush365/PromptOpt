@@ -29,7 +29,7 @@ A user types a vague prompt such as *"hey can you please summarize this for me"*
 ```mermaid
 %%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#f3f4f6", "primaryBorderColor": "#4b5563", "lineColor": "#374151", "textColor": "#111827"}}}%%
 flowchart LR
-  UI["Web UI (HTML/JS)<br/>prompt · category · attachment · target LLM"]
+  UI["Web UI (React)<br/>prompt · category · attachment · target LLM"]
   subgraph API["FastAPI backend"]
     direction LR
     A["Stage A<br/>feature detection"]

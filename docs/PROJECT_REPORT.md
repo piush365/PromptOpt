@@ -69,7 +69,7 @@ user prompt + target LLM + category (auto / 5) + optional attachment type
         |
   renderers: Claude (XML tags, context first) | GPT (### sections) | Gemini (plain labels, instruction first)
         |
-  web app (FastAPI + HTML/JS): optimized prompt per target, input tokens, history (30 days), Compare
+  web app (FastAPI + React UI): optimized prompt per target, input tokens, history (30 days), Compare
 ```
 
 * **Stage A** (`backend/app/stage_a/`): category with a confidence (embedding classifier trained on the train split,

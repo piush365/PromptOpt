@@ -446,7 +446,7 @@ python -m app.demo "summarize this for me" --target claude
 ### 6. Tests
 
 ```bash
-python -m pytest -q                    # about 700 tests, offline, no API calls (more with the dataset or TEST_POSTGRES_URL)
+python -m pytest -q                    # about 780 tests, offline, no API calls (more with the dataset or TEST_POSTGRES_URL)
 python -m app.freeze_check             # Stage A/B byte-identical to the frozen tag (needs the dataset and the index)
 ```
 

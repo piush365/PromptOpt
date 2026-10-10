@@ -57,6 +57,16 @@ BY_ID = {m.id: m for m in MODELS}
 CLIENTS = {"groq", "cerebras", "gemini"}          # providers with a client; openai/anthropic come with API keys
 
 
+def _daily_quota(body: str) -> bool:
+    """A Gemini 429 for the daily quota. Every quota 429 says "Quota exceeded"; the quota id tells the window
+    ("...PerDayPerProjectPerModel-FreeTier" vs "...PerMinute..."). A per-minute limit is waited out and retried;
+    a 429 that names neither window counts as daily, so the caller stops instead of retrying in vain."""
+    text = body.lower().replace(" ", "")
+    if "perday" in text:
+        return True
+    return "perminute" not in text and "quota" in text
+
+
 class GeminiChat:
     """Gemini generateContent with the same `complete` interface as GroqChat / CerebrasChat."""
 
@@ -93,7 +103,7 @@ class GeminiChat:
                 return self._completion(r.json(), model, ms)
             text = r.text[:300]
             if r.status_code == 429:
-                if "day" in text.lower() or "quota" in text.lower():
+                if _daily_quota(r.text):
                     raise DailyLimitReached(f"gemini {model}: free-tier quota reached")
                 self.sleep(min(60, 10 * 2 ** attempt))
                 last = "429"

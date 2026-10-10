@@ -24,15 +24,18 @@ Endpoints
 
 Everything runs offline. Stage C is used when its adapter is installed (config.STAGE_C_ADAPTER) and
 STAGE_C_ENABLED is not "0"; otherwise the UI says Stage C is unavailable and Stage B's result is shown.
+
+Retention: endpoints that store or read prompts first delete the expired ones (app.retention). Input the database
+layer refuses (e.g. a prompt that is only whitespace) is answered with 422, not a server error.
 """
 import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -41,6 +44,7 @@ from sqlalchemy.orm import Session
 from app.config import RETENTION_DAYS
 from app.db import repository as repo
 from app.db.base import get_db
+from app.db.pii import scrub_pii
 from app.coding import app_tests
 from app.compare import providers
 from app.compare import service as compare_service
@@ -51,6 +55,7 @@ from app.image.v2 import RULE_DOCS_V2, optimize_image_v2, parse_accepted, render
 from app.db.models import Prompt
 from app.pipeline import process_prompt
 from app.rendering import TARGETS
+from app.retention import enforce_retention
 from app.stage_b.ir import Attachment
 from app.stage_b.rules import RULES
 from app.ui_api import router as ui_router
@@ -69,6 +74,11 @@ app = FastAPI(title="PromptOpt", version="0.2.0")
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 app.include_router(ui_router)
+
+
+@app.exception_handler(repo.DataValidationError)
+def data_validation_error(request: Request, exc: repo.DataValidationError):
+    return JSONResponse(status_code=422, content={"detail": str(exc)})
 
 
 @lru_cache(maxsize=1)
@@ -190,7 +200,7 @@ def optimize_image_prompt(req: OptimizeRequest, db: Session) -> dict:
             "ir": ir.model_dump(mode="json"), "renderings": rendered}
 
 
-@app.post("/api/optimize")
+@app.post("/api/optimize", dependencies=[Depends(enforce_retention)])
 def optimize_prompt(req: OptimizeRequest, db: Session = Depends(get_db)):
     if req.category == "image_generation":
         return optimize_image_prompt(req, db)
@@ -244,14 +254,14 @@ def coding_tests(req: CodingTestsRequest):
     return app_tests.generate(req.optimized_prompt)
 
 
-@app.get("/api/history")
+@app.get("/api/history", dependencies=[Depends(enforce_retention)])
 def history(limit: int = 20, db: Session = Depends(get_db)):
     rows = db.scalars(select(Prompt).order_by(Prompt.id.desc()).limit(min(max(limit, 1), 100))).all()
     return [{"prompt_id": p.id, "text": p.original_text[:200], "created_at": p.created_at,
              "expires_at": p.expires_at} for p in rows]
 
 
-@app.get("/api/history/{prompt_id}")
+@app.get("/api/history/{prompt_id}", dependencies=[Depends(enforce_retention)])
 def history_item(prompt_id: int, db: Session = Depends(get_db)):
     item = repo.get_prompt_history(db, prompt_id)
     if item is None:
@@ -272,7 +282,7 @@ def compare_models():
                         "available": m.available, "reason": m.reason} for m in providers.MODELS]}
 
 
-@app.post("/api/compare")
+@app.post("/api/compare", dependencies=[Depends(enforce_retention)])
 def compare(req: CompareRequest, db: Session = Depends(get_db)):
     if req.category == "image_generation":
         raise HTTPException(422, "Compare runs text prompts; image models are not wired up for Compare.")
@@ -282,15 +292,18 @@ def compare(req: CompareRequest, db: Session = Depends(get_db)):
     if not info.available:
         raise HTTPException(503, info.reason)
     optimized = optimize_prompt(OptimizeRequest(**req.model_dump(exclude={"model", "judge"})), db)
+    history = repo.get_prompt_history(db, optimized["prompt_id"])
+    # Both variants go to the provider with PII scrubbed, as stored: the optimized prompt is built from the scrubbed
+    # text, so sending the raw original would compare different inputs and send emails/phone numbers outside.
+    context = scrub_pii(req.context)[0].strip() if req.context and req.context.strip() else None
     try:
-        result = compare_service.compare(req.prompt, optimized["renderings"][req.target], req.model, req.target,
-                                         context=req.context, category=optimized["category"]["used"],
+        result = compare_service.compare(history["original_text"], optimized["renderings"][req.target], req.model,
+                                         req.target, context=context, category=optimized["category"]["used"],
                                          judge_answers=req.judge)
     except DailyLimitReached as e:
         raise HTTPException(429, str(e))
     except ModelUnavailable as e:
         raise HTTPException(503, str(e))
-    history = repo.get_prompt_history(db, optimized["prompt_id"])
     result_id = history["results"][-1]["result_id"]
     repo.save_token_usage(db, result_id, req.target, f"compare:{req.model}", result["original"]["input_tokens"],
                           result["optimized"]["input_tokens"], result["original"]["output_tokens"],

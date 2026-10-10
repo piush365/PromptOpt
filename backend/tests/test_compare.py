@@ -186,3 +186,44 @@ def test_api_compare_end_to_end(client, monkeypatch):
     assert r["tests"]["optimized"]["outcome"] == "pass"
     usage = client.get(f"/api/history/{r['prompt_id']}").json()["results"][0]["token_usage"]
     assert any(u["target_llm"] == "gemini" and u["optimized_input"] == 104 for u in usage)
+
+
+def test_gemini_per_minute_limit_is_retried_per_day_limit_stops():
+    minute = {"error": {"message": "You exceeded your current quota. Quota exceeded for metric: generate_content_free_"
+                                   "tier_requests", "details": [{"quotaId": "GenerateRequestsPerMinutePerProjectPerModel"
+                                                                            "-FreeTier"}]}}
+    calls = []
+
+    def first_minute_then_ok(request):
+        calls.append(1)
+        if len(calls) == 1:
+            return httpx.Response(429, json=minute)
+        return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": "ok"}]}}],
+                                         "usageMetadata": {"promptTokenCount": 3, "candidatesTokenCount": 1}})
+    http = httpx.Client(base_url=providers.GEMINI_URL, transport=httpx.MockTransport(first_minute_then_ok))
+    c = providers.GeminiChat(http=http, sleep=lambda s: None).complete("m", [{"role": "user", "content": "x"}], 10)
+    assert c.content == "ok" and len(calls) == 2                                      # waited out, not "daily"
+    day = {"error": {"message": "Quota exceeded", "details": [{"quotaId": "GenerateRequestsPerDayPerProjectPerModel"
+                                                                          "-FreeTier"}]}}
+    http = httpx.Client(base_url=providers.GEMINI_URL,
+                        transport=httpx.MockTransport(lambda request: httpx.Response(429, json=day)))
+    with pytest.raises(DailyLimitReached):
+        providers.GeminiChat(http=http, sleep=lambda s: None).complete("m", [{"role": "user", "content": "x"}], 10)
+
+
+def test_api_compare_sends_both_prompts_pii_scrubbed(client, monkeypatch):
+    seen = []
+
+    def fake(info, messages, **kw):
+        seen.append(messages[-1]["content"])
+        return completion({"content": "Sure."}, info.id)
+    monkeypatch.setattr(providers, "complete", fake)
+    r = client.post("/api/compare", json={"prompt": "email ravi@example.com the summary of this", "target": "gpt",
+                                          "context": "Call 555-123-4567 about the launch on Friday.",
+                                          "model": "groq/openai/gpt-oss-120b"})
+    assert r.status_code == 200
+    assert len(seen) == 2
+    for sent in seen:                                    # original and optimized: same scrubbed input
+        assert "ravi@example.com" not in sent and "555-123-4567" not in sent
+        assert "[PHONE]" in sent
+    assert "[EMAIL]" in r.json()["original"]["prompt"]

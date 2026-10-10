@@ -199,3 +199,29 @@ def test_image_suggestions_are_added_only_when_accepted(client):
     assert "lighting" not in {s["attribute"] for s in r["suggestions"]}
     assert client.post("/api/optimize", json={**body, "accepted_suggestions": ["lighting:laser show"]}
                        ).status_code == 422
+
+
+def test_blank_prompt_is_rejected_with_422_not_500(client):
+    for body in ({"prompt": "   \n ", "target": "gpt"},
+                 {"prompt": "  ", "target": "dalle", "category": "image_generation"}):
+        r = client.post("/api/optimize", json=body)
+        assert r.status_code == 422 and "empty" in r.json()["detail"]
+
+
+def test_expired_prompts_are_deleted_before_history_is_shown(client):
+    from datetime import timedelta
+
+    from sqlalchemy import func, select
+
+    from app.db import repository as repo
+    from app.db.models import Prompt, utcnow
+    fresh = client.post("/api/optimize", json={"prompt": "summarize this", "target": "gpt"}).json()["prompt_id"]
+    session = next(api.app.dependency_overrides[get_db]())
+    old = repo.create_prompt(session, "an old prompt", now=utcnow() - timedelta(days=31))
+    session.commit()
+    assert old.id != fresh
+    assert client.get(f"/api/history/{old.id}").status_code == 404
+    assert [h["prompt_id"] for h in client.get("/api/history").json()] == [fresh]
+    assert [h["prompt_id"] for h in client.get("/api/ui/history").json()["items"]] == [fresh]
+    session.rollback()
+    assert session.scalar(select(func.count()).where(Prompt.id == old.id)) == 0      # deleted, not just hidden

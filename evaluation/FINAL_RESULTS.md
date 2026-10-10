@@ -215,8 +215,9 @@ Requirement under 3 s per prompt on the laptop GPU: **met**.
 * **Renderers**: the same content for all three targets (Claude XML tags, GPT `###` sections, Gemini plain labels
   with the instruction first); every rendering is parsed back in the tests to check no field is lost. Input tokens per
   target: GPT exact (tiktoken o200k_base), Claude/Gemini approximate (characters / 4, labelled).
-* **App**: FastAPI + plain HTML/JS, fully offline (`uvicorn app.api:app` in `backend/`); Compare is disabled until API
-  keys for the real target LLMs exist.
+* **App** (as of `final-for-test`): FastAPI + plain HTML/JS, fully offline (`uvicorn app.api:app` in `backend/`); Compare
+  is disabled until API keys for the real target LLMs exist. Later: Compare (section 9) and the React UI v2 (the first UI
+  stays at `/classic`).
 
 ## 7. Coding: tests in a sandbox (finish phase 4, after `final-for-test`)
 

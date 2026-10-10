@@ -1,4 +1,4 @@
-"""Tests shown in the app for coding prompts. Running them on a real LLM's answer waits for Compare (API keys).
+"""Tests shown in the app for coding prompts. Compare runs the validated ones on both answers in the sandbox.
 
 * The prompt is a dataset coding item (same degraded prompt as a test/benchmark item): its tests, validated on the
   CodeAlpaca reference (data/coding/items.json, from `python -m app.coding.testgen`). Works offline.
@@ -74,4 +74,5 @@ def generate(optimized_prompt: str, llm=None) -> dict:
     return {"source": "generated", "validated": False, "mode": "function", "function": obj.get("function"),
             "signature": obj.get("signature"), "tests": tests,
             "note": "UNVALIDATED: generated from the optimized prompt; there is no reference solution to check them "
-                    "against. Running them on the LLM's answer needs the Compare feature (API keys)."}
+                    "against, so they are shown for reading only. Compare runs only the validated tests of dataset "
+                    "coding items."}

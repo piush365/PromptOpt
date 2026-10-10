@@ -65,7 +65,8 @@ For a coding prompt the UI shows a "Tests for this coding prompt" panel:
 * the prompt is a dataset item: its validated tests (offline);
 * otherwise: "Generate tests (Cerebras)" writes 3-6 tests for the optimized prompt, marked **UNVALIDATED** (no
   reference to check them against); needs `CEREBRAS_API_KEY`, cached per prompt.
-"Run tests on the LLM's answer" is disabled until the Compare feature has API keys for the target LLMs.
+Compare (finish phase 6) runs a dataset item's validated tests on both answers in the sandbox; generated
+(unvalidated) tests are shown for reading only.
 
 ## Commands (inside `backend/`)
 
