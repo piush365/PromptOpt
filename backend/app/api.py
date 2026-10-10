@@ -33,6 +33,7 @@ Retention: endpoints that store or read prompts first delete the expired ones (a
 layer refuses (e.g. a prompt that is only whitespace) is answered with 422, not a server error.
 """
 import os
+import threading
 from contextlib import asynccontextmanager
 from functools import lru_cache
 from pathlib import Path
@@ -127,15 +128,25 @@ def data_validation_error(request: Request, exc: repo.DataValidationError):
     return JSONResponse(status_code=422, content={"detail": str(exc)})
 
 
+# Endpoints run in a thread pool, and opening the UI sends several requests at once. lru_cache alone does not stop
+# each of them from loading the model on a cold start (several copies of Stage C filled the 4 GB GPU), so the first
+# load happens under a lock and the others wait for it.
+_DETECTOR_LOCK, _STAGE_C_LOCK = threading.Lock(), threading.Lock()
+
+
 @lru_cache(maxsize=1)
-def detector():
+def _load_detector():
     from app.stage_a.detector import default_detector
     return default_detector()
 
 
+def detector():
+    with _DETECTOR_LOCK:
+        return _load_detector()
+
+
 @lru_cache(maxsize=1)
-def stage_c_model():
-    """The Stage C model, or None (not installed, disabled, or failed to load)."""
+def _load_stage_c_model():
     if os.getenv("STAGE_C_ENABLED", "1") == "0":
         return None
     from app.stage_c import runtime
@@ -143,6 +154,13 @@ def stage_c_model():
         return runtime.default_model()
     except Exception:                                   # missing packages, broken adapter, ...: run without it
         return None
+
+
+def stage_c_model():
+    """The Stage C model, or None (not installed, disabled, or failed to load). Loaded once, even under concurrent
+    requests."""
+    with _STAGE_C_LOCK:
+        return _load_stage_c_model()
 
 
 class OptimizeRequest(BaseModel):

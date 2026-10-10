@@ -254,3 +254,26 @@ def test_network_password_only_for_other_machines(client, monkeypatch):
     assert remote.get("/api/options", headers=bad).status_code == 401
     assert remote.get("/", headers={"Authorization": "Basic !!!"}).status_code == 401
     assert local.get("/api/options").status_code == 200                  # this machine never needs it
+
+
+def test_models_load_once_under_concurrent_requests(monkeypatch):
+    import threading
+    import time
+    from app.stage_c import runtime
+    calls = []
+
+    def slow_load():
+        calls.append(1)
+        time.sleep(0.2)
+        return "model"
+    monkeypatch.setattr(runtime, "default_model", slow_load)
+    api._load_stage_c_model.cache_clear()
+    try:
+        threads = [threading.Thread(target=api.stage_c_model) for _ in range(8)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        assert len(calls) == 1 and api.stage_c_model() == "model"
+    finally:
+        api._load_stage_c_model.cache_clear()
