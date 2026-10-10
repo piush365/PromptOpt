@@ -49,6 +49,10 @@ RULES = [
      "Use the attached spreadsheet as the source and refer to sheets, columns and rows by name."),
     ("B15_ATTACHMENT_CODE", "Code file attachment", "B",
      "Use the attached code file as the code to work on and point to functions and line numbers."),
+    # Stage B extension (after the final test run; app only, app.stage_b.extensions)
+    ("B16_LABELS_WIDER", "Wider label detection", "B",
+     "Classification with no label set found by B06: labels named after a request verb ('tell me X or Y'); items "
+     "glued on after them move to the input block."),
 ]
 
 

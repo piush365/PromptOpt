@@ -8,7 +8,9 @@
 
 `FastAPI(title="PromptOpt", version="0.2.0")`, GZip compression for responses ≥ 1,000 bytes, `/static` mounted from
 `app/static`. Start with `uvicorn app.api:app` inside `backend/` (http://127.0.0.1:8000; interactive API docs at
-`/docs`). Endpoints are synchronous functions; FastAPI runs them in its thread pool.
+`/docs`). Endpoints are synchronous functions; FastAPI runs them in its thread pool. At start-up the app inserts
+rule codes added after a database was created (B16) into `rules` (`lifespan`; a database without tables is left for
+`python -m app.init_db`).
 
 **UI routes:** `/` and `/compare`, `/suite`, `/results`, `/how`, `/history`, `/image`, `/status` serve the React app
 (`static/ui/index.html`; client-side routing); `/classic` serves the first UI; `/favicon.ico`; any other single path
@@ -18,8 +20,8 @@ segment → 404.
 
 | method + path | purpose | body / query | response (main fields) | errors |
 |---|---|---|---|---|
-| `GET /api/options` | what the UI can offer | – | targets, image_targets, categories, attachment_types, stage_c {available, model, device}, retention_days, compare_enabled | – |
-| `POST /api/optimize` | optimize a prompt (text or image mode) | `OptimizeRequest` | text: prompt_id, stage_a, category, issues, rules, unresolved_after_b, stage_c, unresolved, ir, optimized_plain, renderings, tokens, target, coding_tests · image: mode, version, stated, avoid_user, auto_added, accepted, suggestions, aspect_ratio, rules, ir, renderings | 422 invalid input / blank prompt / wrong target for the mode / unknown suggestion |
+| `GET /api/options` | what the UI can offer | – | targets, image_targets, categories, attachment_types, stage_c {available, model, device}, retention_days, compare_enabled, spelling_available | – |
+| `POST /api/optimize` | optimize a prompt (text or image mode) | `OptimizeRequest` | text: prompt_id, stage_a, category, issues, rules, unresolved_after_b, stage_c, unresolved, **spelling**, ir, optimized_plain, renderings, tokens, target, coding_tests · image: mode, version, **spelling**, stated, avoid_user, auto_added, accepted, suggestions, aspect_ratio, rules, ir, renderings | 422 invalid input / blank prompt / wrong target for the mode / unknown suggestion |
 | `POST /api/coding-tests` | unvalidated tests for a coding prompt | `{optimized_prompt}` | source, validated=false, function, signature, tests, note | 503 without `CEREBRAS_API_KEY` |
 | `GET /api/history?limit=` | recent prompts (1–100, default 20) | – | prompt_id, text (first 200 chars), created_at, expires_at | – |
 | `GET /api/history/{id}` | everything done to one prompt | – | original_text, pii_redactions, expires_at, features, results [steps, renderings, token_usage] | 404 (also after expiry) |
@@ -68,7 +70,7 @@ relies on it). `python -m app.init_db` creates the tables and seeds the rule cat
 | `users` | id, display_name (≤ 80), created_at | no email or real name stored; optional |
 | `prompts` | id, user_id → users (SET NULL), **original_text** (after PII scrubbing), pii_redactions, created_at, **expires_at** | CHECK `expires_at > created_at`; index on `expires_at` (the purge filters on it) |
 | `prompt_features` | id, prompt_id → prompts (CASCADE, unique), task_type, has_format_spec, has_context, missing_constraints (JSON), redundant_phrases (JSON), ambiguous_refs (JSON), confidence, created_at | CHECK task_type ∈ the 6 categories; CHECK 0 ≤ confidence ≤ 1 |
-| `rules` | id, code (unique, e.g. `B03_ADD_OUTPUT_FORMAT`), name, stage (A/B), description, enabled | seeded with A01–A05 and B01–B15; `enabled` for ablations |
+| `rules` | id, code (unique, e.g. `B03_ADD_OUTPUT_FORMAT`), name, stage (A/B), description, enabled | seeded with A01–A05 and B01–B16; `enabled` for ablations |
 | `lora_models` | id, name (unique), base_model, lora_rank, adapter_path, dataset_version, created_at | metadata of Stage C adapters |
 | `optimization_results` | id, prompt_id → prompts (CASCADE, indexed), **ir** (JSON), optimized_text, confidence, used_lora, lora_model_id → lora_models (SET NULL), pipeline_version, latency_ms, created_at | CHECK 0 ≤ confidence ≤ 1 |
 | `transformations` | id, result_id → optimization_results (CASCADE), step_no, stage (B/C), rule_id → rules (SET NULL), before_text, after_text, note | UNIQUE (result_id, step_no); CHECK stage ∈ {B, C}; CHECK a Stage B step has a rule_id |
@@ -189,3 +191,33 @@ variants). The reserve checked before each call is a worst case (≈ 226 + 2,048
 was $(909 + 406)/2 \approx 658$ tokens per call, i.e. $482 \times (909 + 406) = 633{,}830$ tokens for the two main
 variants. That is below one day's 70% of Cerebras' 1,000,000 (700,000) only if nothing else uses Cerebras that day,
 which is why the script is resumable and "a run can span two days".
+
+## 13.7 Spelling suggestions (`app/spelling.py`)
+
+Added on 2026-10-10. The optimizer keeps the user's words as typed: an automatic correction would damage exactly what
+matters — the items to classify, names, identifiers, abbreviations. Instead every `/api/optimize` response lists
+**likely typos with suggestions** (`spelling`: word, start/end offsets into the prompt as sent, up to 3 suggestions);
+the UI shows them and changes a word only when the user clicks a suggestion (then it optimizes again). Stage A/B/C
+never see this module, so nothing in the evaluated pipeline changes.
+
+**Dictionary and candidates.** `pyspellchecker` 0.9 (pure Python, offline, an English word-frequency list): a word
+not in the list gets every known word within **edit distance 2** as a candidate (Norvig's method).
+
+**Ranking.** Plain frequency would correct "sanke" to "sake". Candidates are sorted by
+(1) **same letters** (a swapped pair: "sanke" → "snake", "teh" → "the") first, (2) the **Damerau–Levenshtein
+distance** (insert, delete, replace, swap adjacent letters; optimal string alignment):
+
+$$d(i,j) = \min\{d(i-1,j)+1,\ d(i,j-1)+1,\ d(i-1,j-1)+[a_i \ne b_j],\ d(i-2,j-2)+1 \text{ if } a_i = b_{j-1} \wedge a_{i-1} = b_j\}$$
+
+then (3) higher word frequency. A capitalized word gets capitalized suggestions.
+
+**Never flagged:** words in code fences, backticks or double quotes; URLs and emails; words of fewer than 3 letters or
+with an apostrophe; technical words (a list of about 120: json, numpy, regex, sql, api, url, gpt, pdf, pptx, …);
+ALL-CAPS words (acronyms); words with inner capitals (identifiers); capitalized words in mid-sentence (names); words
+touching digits, `_ . / \ @ # $ < > = -` (paths, identifiers, numbers); British spellings whose American form is
+known ("summarise", "colour", "analyse", "centre"); and any word that also occurs in the pasted text (a name from the
+passage is not a typo).
+
+Example: *"frm the list tell me prog lang or animal panda pythom java sanke bunny"* → frm → from / form / arm;
+pythom → python; sanke → snake / sake / sane ("prog", "lang", "bunny" are words). Without `pyspellchecker` installed
+the list is empty (`spelling_available: false` in `/api/options`). Tests: `backend/tests/test_spelling.py`.

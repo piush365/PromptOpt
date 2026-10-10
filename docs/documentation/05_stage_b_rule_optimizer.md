@@ -352,7 +352,53 @@ type's rule fired, no other attachment rule fired, its requirements and the atta
 renderings, and no ambiguous reference is left. **30/30 correct**; 2 prompts still go to Stage C, only for the task
 category. These prompts were written by the developers; a blind set by outsiders is future work.
 
-## 5.8 Limitations and known issues
+## 5.8 After the final test run: B16 wider labels (app only)
+
+Added on 2026-10-10 after a user prompt — *"frm the list tell me prog lang or animal panda pythom java sanke bunny"*
+with the category Classify — got no label set: none of B06's three shapes matches "tell me X or Y", and without a colon
+B07 left the items in the task. The fix is a separate rule in `backend/app/stage_b/extensions.py`, run **after** the
+frozen rules and **only when the caller asks** (`optimize(..., extensions=True)`; the app's pipeline does, the
+evaluation scripts and the freeze check do not). The freeze check stays byte-identical, and no reported test number
+changes.
+
+**B16 does two things, only for classification prompts:**
+
+1. **Labels after a request verb** (only when B06 recorded `label set`): after "tell me / say / decide / determine /
+   figure out / check / find out / indicate" (+ optional "if/whether", a subject such as "each/it/these", "is/are",
+   an article), the text `X or Y` gives the labels. The first label is **1–2 words directly after the trigger**; the
+   second runs to the next punctuation (≤ 3 words) or, when items follow without punctuation, is **one word**. The
+   text after the labels becomes the input block.
+2. **Glued items after B06's labels** (when B06 found two labels and there is no input block yet): the text after the
+   second label moves into the input block. If a comma shows that exactly **one** item word was glued onto B06's
+   second label ("city or a country paris, france, berlin" → B06: "country paris"), that word goes back to the items.
+
+Items with commas are split on the commas (a leading "and"/"or" dropped); items without commas are kept **as typed**,
+because where one multi-word item ends and the next begins cannot be known ("lummi stick timple": "Lummi stick" is one
+instrument). When the items move, an ambiguous reference to them ("these", "the list") is resolved, so the prompt is
+not sent to Stage C for it. The change is logged like every rule (`B16_LABELS_WIDER`, seeded in `rules`; the app
+seeds missing rule codes at start-up).
+
+**What it deliberately does not do** (each was a wrong guess in a first version, found on train and removed):
+"classify/sort/label/group … X or Y" with an object noun in between ("classify these teams epl or la liga" → it would
+say "teams epl"), a first label of 3+ words ("tell me if these were originally board or computer games"), and
+un-gluing when several words were glued on ("hockey or baseball teams red wings" — is the label "baseball" or
+"baseball teams"?). Those prompts keep the frozen behaviour.
+
+**Measurement** (`python -m app.stage_b.extensions_eval`; frozen rules vs frozen rules + B16, same Stage A features;
+report `evaluation/stage_b/extensions_val.md`):
+
+| split | B16 fired | label set added | label set corrected | items moved to the input | routed to Stage C: before → after |
+|---|---|---|---|---|---|
+| val (149) | 8 | 0 | 0 | 8 | 10 → 10 |
+| train (4,509; descriptive, nothing tuned on it) | 145 | 0 | 3 | 145 | 132 → 118 |
+
+The three corrections on train are all right (`"palindrome", "not"` instead of `"not kayak"`; `"string",
+"percussion"` instead of `"percussion kendang"`; `"galaxies", "ecosystems"` instead of `"ecosystems forest"`).
+"Label set added" is 0 on the dataset because its degraded prompts use B06's shapes; the "tell me X or Y" shape is
+the user's prompt, covered by the unit tests (`backend/tests/test_stage_b_extensions.py`). The test split was not
+used. Not measured: the effect on a real LLM's answers (it changes only the layout of 8 val prompts).
+
+## 5.9 Limitations and known issues
 
 * **Prompts get longer** (11.2 → 22.0 words; input tokens grow in every category). The saving comes from shorter
   answers; 87 of 482 test prompts individually cost more (chapter 9.3). Future work: a lean mode.
@@ -360,7 +406,8 @@ category. These prompts were written by the developers; a blind set by outsiders
   gate and the user can override the category.
 * **Frozen, reported, not fixed — B06 label glue:** for *"Is a tomato a fruit or a vegetable?"* the third label
   pattern captures `"tomato a fruit", "vegetable"` (the item is glued onto the first label). Fixing it would change
-  Stage B output on the frozen pipeline (chapter 15.5).
+  Stage B output on the frozen pipeline (chapter 15.5). B16 (5.8) repairs the other glue shape — an item glued onto the
+  *second* label — in the app.
 * **B07 moves data only when it is clearly data:** in *"extract the names from the text below: Alice met Bob and
   Carol in Paris"* the tail has fewer than 8 words and no comma, so it stays in the task and "the text" is flagged as
   ambiguous.

@@ -47,6 +47,8 @@
 | B05 default language | Python | `rules.py` | M: the most common language of the coding items (47/98 test) |
 | `UNRESOLVED_PENALTY` | 0.2 | `stage_b/optimizer.py` | D: stored heuristic, not used for routing |
 | `OTHER_CONFIDENCE` | 0.3 | `optimizer.py` | D |
+| B16 first label | 1–2 words right after the trigger | `stage_b/extensions.py` | D: longer spans caught object nouns on train |
+| B16 un-glue | exactly one glued word, shown by a comma | `extensions.py` | D: with more words the boundary is unclear |
 | `STAGE_C_REASONS` | task category, ambiguous reference | `optimizer.py` | D: the only gaps Stage C can fix; replaced a "confidence < 0.7" rule (commit `5b2111c`) |
 
 ## A.3 Stage C
@@ -167,3 +169,12 @@
 | history page size | 1–100 (`/api/history`), 1–200 (`/api/ui/history`) | `api.py`, `ui_api.py` | D |
 | token counter text | ≤ 70,000 characters | `ui_api.py` | D |
 | GZip threshold | 1,000 bytes | `api.py` | D |
+
+## A.11 Spelling suggestions
+
+| constant | value | where | basis |
+|---|---|---|---|
+| candidate distance | edit distance ≤ 2 | `spelling.py` | E: Norvig's method (pyspellchecker default) |
+| suggestions per word | 3 | `spelling.py` | D |
+| minimum word length | 3 letters | `spelling.py` | D: short words are mostly abbreviations |
+| ranking | same letters, then Damerau–Levenshtein distance, then frequency | `spelling.py` | M: frequency alone gave "sanke" → "sake" |

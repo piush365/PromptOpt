@@ -43,6 +43,20 @@ test.describe("Optimize", () => {
     await expect(page.getByRole("radio", { name: "GPT" })).toHaveAttribute("data-state", "on");
   });
 
+  test("possible typos are suggested, and Fix all corrects the prompt and runs again", async ({ page }) => {
+    await page.goto("/");
+    const box = page.locator("#prompt");
+    await box.fill("frm the list tell me prog lang or animal panda pythom java sanke bunny");
+    await box.press("Control+Enter");
+    const typos = page.getByTestId("spelling");
+    await expect(typos).toContainText("pythom");
+    await expect(typos.getByRole("button", { name: "Replace sanke with snake" })).toBeVisible();
+    await page.getByTestId("spelling-fix-all").click();
+    await expect(box).toHaveValue("from the list tell me prog lang or animal panda python java snake bunny");
+    await expect(page.getByTestId("render")).toBeVisible();
+    await expect(typos).toHaveCount(0);
+  });
+
   test("an unsure category asks the user to confirm", async ({ page }) => {
     await page.goto("/");
     await page.locator('[data-example="attachment"]').click();

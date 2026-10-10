@@ -17,6 +17,9 @@ modifier handled by rules B09-B15, not a category. `target_llm` is recorded in t
 A prompt goes to Stage C only when something is still unresolved that Stage C can fix: the task category (after
 the single-category gate and the B08 group fallback) or an ambiguous reference. A missing label set or output
 format is recorded in `ir.unresolved` for the explanation UI but does not send the prompt to Stage C by itself.
+
+`extensions=True` also runs the rules added after the final test run (app.stage_b.extensions, B16), after the frozen
+rules. The app's pipeline uses it; the default (False) is the frozen pipeline the evaluation and the freeze check use.
 """
 import logging
 
@@ -25,6 +28,7 @@ from pydantic import BaseModel, Field
 from app.stage_a import rules as detect
 from app.stage_a.schema import PromptFeatures
 from app.stage_b.ir import Attachment, PromptIR, TargetLLM, context_ref_for, render_plain
+from app.stage_b.extensions import EXTENSION_RULES
 from app.stage_b.rules import CATEGORY_MIN_CONFIDENCE, KNOWN_CATEGORIES, RULES
 
 log = logging.getLogger(__name__)
@@ -36,6 +40,7 @@ STAGE_C_REASONS = ("task category", "ambiguous reference")
 UNRESOLVED_PENALTY = 0.2
 OTHER_CONFIDENCE = 0.3
 RULE_CODES = [code for code, _ in RULES]
+EXTENSION_CODES = [code for code, _ in EXTENSION_RULES]
 
 
 class OptimizationOutput(BaseModel):
@@ -90,10 +95,10 @@ def confidence(ir: PromptIR, f: PromptFeatures) -> float:
 
 def optimize(prompt: str, f: PromptFeatures, disabled: frozenset[str] | set[str] = frozenset(),
              category: str = "auto", attachment: Attachment | None = None, target_llm: TargetLLM | None = None,
-             separate_text: bool = False) -> OptimizationOutput:
+             separate_text: bool = False, extensions: bool = False) -> OptimizationOutput:
     """`separate_text`: text was supplied next to the prompt (a pasted passage), which the renderers place for the
     target LLM. An attachment counts as material to work on, like supplied text."""
-    unknown = set(disabled) - set(RULE_CODES)
+    unknown = set(disabled) - set(RULE_CODES) - set(EXTENSION_CODES)
     if unknown:
         raise ValueError(f"unknown rule codes: {sorted(unknown)}")
     attachment = attachment or Attachment()
@@ -104,7 +109,7 @@ def optimize(prompt: str, f: PromptFeatures, disabled: frozenset[str] | set[str]
         f = f.model_copy(update={"has_context": True})
     ir = initial_ir(prompt, f, attachment, target_llm, source)
     steps = []
-    for code, rule in RULES:
+    for code, rule in [*RULES, *(EXTENSION_RULES if extensions else [])]:
         if code in disabled:
             continue
         new = rule(ir, f)

@@ -76,7 +76,7 @@ def process_prompt(db: Session, text: str, detector: Any, category: str = "auto"
     repo.save_features(db, prompt.id, features.model_dump())
     log.info("Stage A category %s (%.2f); requested %s", features.task_type, features.confidence, category)
     out = optimize(prompt.original_text, features, disabled, category=category, attachment=attachment,
-                   target_llm=target_llm, separate_text=context is not None)
+                   target_llm=target_llm, separate_text=context is not None, extensions=True)
     ir, steps, c = out.ir, list(out.steps), None
     if stage_c is not None:
         c = apply_stage_c(prompt.original_text, features, out, stage_c)

@@ -12,12 +12,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CopyButton, EmptyState, ErrorBox, PageHeader } from "@/components/Feedback";
 import { FIELD_LABEL } from "@/components/Composer";
 import { modKey } from "@/lib/utils";
+import { SpellingCard } from "@/components/Spelling";
 
 const TARGETS: ImageTarget[] = ["dalle", "nano_banana", "stable_diffusion"];
 const EXAMPLES = ["oil painting of a sailboat in a storm", "a cozy reading nook, phone wallpaper, no people", "logo of a fox made of origami"];
 
 export default function ImageMode() {
-  const { imageDraft: d, setImageDraft, imageResult: r, setImageResult, pendingImageRun, clearImageRun } = useStore();
+  const { imageDraft: d, setImageDraft, imageResult: r, setImageResult, pendingImageRun, clearImageRun, requestImageRun } = useStore();
   const [busy, setBusy] = React.useState(false);
   const [err, setErr] = React.useState<string | null>(null);
   const [tab, setTab] = React.useState<ImageTarget>(d.target);
@@ -74,6 +75,8 @@ export default function ImageMode() {
             <EmptyState icon={<ImageIcon />} title="Describe an image to start">Type what you want to see, pick the model, and press Optimize for images.</EmptyState>
           ) : (
             <div className={busy ? "opacity-60 transition-opacity" : ""} data-testid="image-result">
+              <SpellingCard typos={r.spelling ?? []} prompt={d.prompt}
+                onApply={(prompt) => { setImageDraft({ prompt, accepted: [] }); requestImageRun(); }} />
               <div className="grid gap-4 md:grid-cols-2">
                 <section className="rounded-xl border border-rule bg-surface p-4 shadow-card">
                   <h2 className="mb-2 flex items-center font-medium">What you said<InfoTip>Attributes found in your words. They are kept exactly as you wrote them.</InfoTip></h2>

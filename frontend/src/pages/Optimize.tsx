@@ -5,6 +5,7 @@ import { useStore } from "@/lib/store";
 import { Composer, useLiveTokens } from "@/components/Composer";
 import { PipelineSkeleton, RenderCard, StageACard, StageBCard, StageCCard } from "@/components/Pipeline";
 import { ExampleGallery } from "@/components/ExampleGallery";
+import { SpellingCard } from "@/components/Spelling";
 import { ErrorBox, StageMark } from "@/components/Feedback";
 import { STAGE } from "@/lib/labels";
 
@@ -34,7 +35,7 @@ function Intro() {
 }
 
 export default function Optimize() {
-  const { draft, result, setResult, pendingRun, clearRun, optionsError } = useStore();
+  const { draft, setDraft, result, setResult, pendingRun, clearRun, requestRun, optionsError } = useStore();
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [highlight, setHighlight] = React.useState<string[]>([]);
@@ -91,14 +92,16 @@ export default function Optimize() {
 
       <div ref={resultRef} className="min-w-0 scroll-mt-20" data-tour="pipeline">
         {error && <ErrorBox className="mb-4" message={error} onRetry={run} />}
-        {busy ? <PipelineSkeleton /> : result ? (
+        {busy ? <PipelineSkeleton /> : result ? (<>
+          <SpellingCard typos={result.spelling ?? []} prompt={draft.prompt}
+            onApply={(prompt) => { setDraft({ prompt }); requestRun(); }} />
           <ol aria-label="Pipeline result" key={result.prompt_id}>
             <StageACard r={result} onHighlight={setHighlight} index={0} />
             <StageBCard r={result} index={1} />
             <StageCCard r={result} index={2} />
             <RenderCard r={result} index={3} originalTokens={original} />
           </ol>
-        ) : <Intro />}
+        </>) : <Intro />}
       </div>
     </div>
   );

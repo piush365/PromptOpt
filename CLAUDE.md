@@ -12,6 +12,11 @@ into clear, structured, token-efficient prompts for LLMs, and measures whether t
   gives a coding prompt with a data attachment (spreadsheet, PDF, image, ...) the default language instead of "Keep the
   language of the given code"). Any change after the freeze must keep `python -m app.freeze_check` byte-identical
   (Stage A + B on the test split vs `frozen-for-test`, no attachment).
+  B16 (`app/stage_b/extensions.py`, added 2026-10-10 after the final runs): wider label detection ("tell me X or Y")
+  and items glued on without a colon moved to the input; runs only via `optimize(..., extensions=True)` (the app's
+  pipeline), never in the evaluation or the freeze check; measured on val (`python -m app.stage_b.extensions_eval`).
+  Spelling suggestions (`app/spelling.py`, pyspellchecker) are returned with each optimize response and applied only
+  when the user clicks one; Stage A/B/C never see them.
   Category-specific rules (B03-B06) apply only when Stage A's category confidence is >= 0.6. Below that, B08 is the
   group-level fallback: if closed_qa + information_extraction + summarization together reach 0.6 and text is attached,
   it adds "Answer from the provided text in at most three sentences." (only the missing parts) and resolves the

@@ -18,6 +18,9 @@ openpyxl>=3.1
 # Evaluation harness (target LLM and judge on Groq)
 groq>=0.30
 
+# Spelling suggestions in the app (offline English word frequencies); optional: without it no suggestions
+pyspellchecker>=0.8
+
 # Rendering: exact GPT input token counts (o200k_base; downloaded once, then cached)
 tiktoken>=0.8
 

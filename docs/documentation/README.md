@@ -16,7 +16,7 @@ chapter 15.4) and the committed evaluation reports.
 A user types a vague prompt (and picks a target LLM, a category or "auto", and optionally an attachment type).
 **Stage A** detects what is missing — the task category (embedding k-NN + keywords + logistic head, 74.7% on test),
 output format, constraints, filler, dangling references — without changing anything. **Stage B** fixes what fixed
-rules can fix: 15 small rules on a structured intermediate representation (IR), each change logged; category-specific
+rules can fix: 15 small rules (plus B16 in the app) on a structured intermediate representation (IR), each change logged; category-specific
 additions only when Stage A is ≥ 0.6 confident. Only if the category or a reference is still unresolved (6.4% of test
 prompts) does **Stage C**, a LoRA-tuned Qwen2.5-0.5B, fill exactly those fields, validated by the same detectors (98.2%
 of its answers pass). The IR is **rendered** for Claude, GPT or Gemini. On a real model the optimized prompts cut
@@ -27,7 +27,7 @@ benchmark quality from 8.2 to 9.0.
 |---|---|
 | categories | closed_qa, information_extraction, classification, summarization, coding (+ `other`) |
 | dataset | 5,184 degraded → optimized pairs (train 4,509 / val 149 / test 482 / benchmark 44) |
-| code | Python 3.14 + FastAPI + SQLAlchemy (backend), React + TypeScript (frontend); 777 offline tests |
+| code | Python 3.14 + FastAPI + SQLAlchemy (backend), React + TypeScript (frontend); 795 offline tests |
 | models | all-MiniLM-L6-v2 (Stage A), Qwen2.5-0.5B-Instruct + LoRA r = 16 (Stage C); gpt-oss-120b as the target stand-in; qwen3.8-27b as judge |
 | hardware | a laptop with an RTX 3050 (4 GB); everything except Stage C runs on CPU |
 
@@ -53,7 +53,7 @@ benchmark quality from 8.2 to 9.0.
 | 16 | [Operations and reproduction](16_operations_and_reproduction.md) | install, run, verify, reproduce every report (with duration estimates and their basis), troubleshooting |
 | 17 | [Limitations and future work](17_limitations_and_future_work.md) | |
 | A | [Every constant, with its basis](appendix_A_constants.md) | value, file, and whether it was measured, tuned on val, cross-validated, a design choice, an external limit, or derived |
-| B | [Formula index](appendix_B_formulas.md) | 45 formulas with code location and the section that derives them |
+| B | [Formula index](appendix_B_formulas.md) | 46 formulas with code location and the section that derives them |
 | C | [Glossary](appendix_C_glossary.md) | |
 
 ## Conventions

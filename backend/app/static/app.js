@@ -121,6 +121,7 @@ function showImage(t) {
 }
 
 function renderImage(r) {
+  renderSpelling(r.spelling);
   last = r;
   $("result").hidden = true;
   $("coding_panel").hidden = true;
@@ -162,8 +163,43 @@ function renderImage(r) {
   $("image_rules").replaceChildren(...r.rules.map((x) => { const li = el("li"); li.append(el("strong", x.code), " " + x.what); return li; }));
 }
 
+// Possible typos: suggestions only. A click replaces the word in the prompt and optimizes again.
+function fixTypo(text, typo, to) {
+  let start = typo.start, end = typo.end;
+  if (text.slice(start, end) !== typo.word) {
+    const m = new RegExp(`\\b${typo.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).exec(text);
+    if (!m) return text;
+    start = m.index; end = start + typo.word.length;
+  }
+  return text.slice(0, start) + to + text.slice(end);
+}
+
+function renderSpelling(typos) {
+  const box = $("spelling");
+  box.hidden = !(typos && typos.length);
+  if (box.hidden) { box.replaceChildren(); return; }
+  const apply = (fixes) => {
+    let text = $("prompt").value;
+    for (const [t, to] of [...fixes].sort((x, y) => y[0].start - x[0].start)) text = fixTypo(text, t, to);
+    $("prompt").value = text;
+    $("form").requestSubmit();
+  };
+  const items = typos.map((t) => {
+    const span = el("span", "", "typo");
+    span.append(el("s", t.word), " \u2192 ", ...t.suggestions.map((sug) => {
+      const b = el("button", sug); b.type = "button"; b.addEventListener("click", () => apply([[t, sug]])); return b;
+    }));
+    return span;
+  });
+  const all = el("button", "Fix all"); all.type = "button";
+  all.addEventListener("click", () => apply(typos.map((t) => [t, t.suggestions[0]])));
+  box.replaceChildren(el("strong", "Possible typos "), el("span", "(nothing is changed unless you click a word): ", "muted"),
+                      ...items, ...(typos.length > 1 ? [all] : []));
+}
+
 function render(r) {
   last = r;
+  renderSpelling(r.spelling);
   $("image_result").hidden = true;
   $("result").hidden = false;
   $("tabs").replaceChildren(...["gpt", "gemini", "claude"].map((t) => {

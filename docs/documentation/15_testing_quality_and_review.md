@@ -6,7 +6,7 @@
 
 ## 15.1 The backend test suite
 
-`python -m pytest -q` inside `backend/` (with `.venv` active): **777 tests, all passing**, about 25–35 seconds,
+`python -m pytest -q` inside `backend/` (with `.venv` active): **795 tests, all passing**, about 25–35 seconds,
 **offline** (no API calls: providers are faked or replayed from recordings; Stage A uses the keyword classifier unless
 a test needs the index). Tests run on in-memory SQLite; set `TEST_POSTGRES_URL` to also run every database test on
 PostgreSQL (that database's tables are dropped — use a dedicated test database).
@@ -15,6 +15,8 @@ PostgreSQL (that database's tables are dropped — use a dedicated test database
 |---|---|---|
 | `test_stage_a.py` | 27 | detectors A02–A05 on positive and negative examples, context detection, classifiers, the backstop |
 | `test_stage_b.py` | 56 | every rule B01–B15 separately, rule order, the gate, B08 combinations, labels, single-item format, routing, confidence, ablation switches |
+| `test_stage_b_extensions.py` | 7 | B16: the reported prompt, labels after a request verb, glued items and one glued word, reference resolved, cases it must not guess, off by default |
+| `test_spelling.py` | 5 | typos and offsets, swapped-letter ranking, everything never flagged, capitalization, missing dictionary |
 | `test_stage_c_contract.py` | 11 | requested fields, validation (each failure mode), patching, locked fields, category policy |
 | `test_stage_c_parse.py` | 5 | the optimized-prompt parser |
 | `test_rendering.py` | 15 | round-trip of every rendering, metadata never rendered, order, fences, token counting, pipeline storage incl. Stage C steps |
@@ -31,7 +33,7 @@ PostgreSQL (that database's tables are dropped — use a dedicated test database
 | `test_dataset_expand.py`, `test_dataset_repair.py`, `test_validation.py`, `test_reference_check.py` | 27, 14, 28, 4 | dataset tooling, agreement statistics |
 | `test_rule_accuracy.py`, `test_attachment_eval.py`, `test_demo.py` | 7, 2, 5 | evaluation scripts and the demo |
 
-(Parametrized tests run several cases per function, hence 777 tests from 340 functions.)
+(Parametrized tests run several cases per function, hence 795 tests from about 355 functions.)
 
 **Frontend:** `npx tsc -b` (strict type check) and the Playwright end-to-end suite (chapter 14.5).
 
@@ -86,3 +88,11 @@ this review.
 
 The B06 label issue and the tone-detection gap were already reported in `docs/HOW_IT_WORKS.md` under the freeze
 rule; the others were found in this review.
+
+## 15.6 Added after the review (2026-10-10)
+
+| change | why | checked by |
+|---|---|---|
+| spelling suggestions (`app/spelling.py`, both UIs) | a user's prompt with typos was passed on unchanged; suggestions instead of silent correction (chapter 13.7) | `test_spelling.py`, an API test, the Playwright test "possible typos …", a classic-UI run |
+| B16 wider labels (`app/stage_b/extensions.py`, app only) | the same prompt got no label set and kept its items in the task (chapter 5.8) | `test_stage_b_extensions.py`, val and train measurement, freeze check byte-identical |
+| correctness suite: team review imported | 50 of 50 gold answers confirmed; the importer now accepts sheets renamed to reviewer names | `test_correctness.py` |

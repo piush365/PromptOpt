@@ -11,7 +11,7 @@ You type a prompt, pick the target LLM (GPT, Gemini or Claude), a category (auto
 | Stage | What it does | How |
 |---|---|---|
 | **A: feature detection** | Task category, missing output format, missing constraints (length/tone/audience/language), filler, ambiguous references | spaCy + regex + Sentence-Transformers → `PromptFeatures` |
-| **B: rule-based optimization** | Deterministic, individually testable rules B01–B15 (B09–B15: attachments). Every change is logged | Category rules only at ≥ 0.6 confidence, with a group-level fallback (B08) |
+| **B: rule-based optimization** | Deterministic, individually testable rules B01–B15 (B09–B15: attachments), plus B16 (wider label detection) in the app only. Every change is logged | Category rules only at ≥ 0.6 confidence, with a group-level fallback (B08) |
 | **C: LoRA fallback** | Fills only what Stage B could not resolve (an ambiguous reference, or format/constraints when the category is unclear); the category itself is only suggested to the user | Qwen2.5-0.5B-Instruct + LoRA, validated output, falls back to Stage B |
 | **IR + rendering** | One intermediate representation, rendered per target, same content everywhere | Claude XML tags · GPT `###` sections · Gemini labelled sections; tests round-trip every rendering |
 | **Image mode** | Separate, explicitly chosen "Image generation" category for DALL-E, Nano Banana (Gemini image) and Stable Diffusion | Keeps the user's words; missing attributes become clickable suggestions |
@@ -446,7 +446,7 @@ python -m app.demo "summarize this for me" --target claude
 ### 6. Tests
 
 ```bash
-python -m pytest -q                    # about 780 tests, offline, no API calls (more with the dataset or TEST_POSTGRES_URL)
+python -m pytest -q                    # about 795 tests, offline, no API calls (more with the dataset or TEST_POSTGRES_URL)
 python -m app.freeze_check             # Stage A/B byte-identical to the frozen tag (needs the dataset and the index)
 ```
 

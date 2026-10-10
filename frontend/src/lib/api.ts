@@ -19,6 +19,9 @@ export interface OptimizeRequest {
 
 export interface TokenCount { tokens: number; method: string; exact: boolean }
 
+/** A likely typo: offsets into the prompt as it was sent; suggestions best first. Nothing is changed by the server. */
+export interface Typo { word: string; start: number; end: number; suggestions: string[] }
+
 export interface Rule { code: string; what: string; before: string; after: string }
 
 export interface CodingTests {
@@ -44,6 +47,7 @@ export interface OptimizeResult {
     errors: string[]; seconds: number | null; category_status: string | null; raw: string | null;
   };
   unresolved: string[];
+  spelling?: Typo[];
   ir: Record<string, unknown>;
   optimized_plain: string;
   renderings: Record<Target, string>;
@@ -55,7 +59,7 @@ export interface OptimizeResult {
 export interface ImageSuggestion { attribute: string; options: string[]; hint?: string | null }
 export interface ImageRendering { prompt: string; negative_prompt?: string | null; params: Record<string, string> }
 export interface ImageResult {
-  mode: "image"; version: string; prompt_id: number; target: ImageTarget; pii_redactions: number;
+  mode: "image"; version: string; prompt_id: number; target: ImageTarget; pii_redactions: number; spelling?: Typo[];
   stated: Record<string, string[]>; avoid_user: string[]; auto_added: { what: string; value: string }[];
   accepted: string[]; suggestions: ImageSuggestion[]; aspect_ratio: string | null;
   rules: Rule[]; ir: Record<string, unknown>; renderings: Record<ImageTarget, ImageRendering>;
@@ -64,7 +68,7 @@ export interface ImageResult {
 export interface Options {
   targets: Target[]; image_targets: ImageTarget[]; categories: Category[]; attachment_types: Attachment[];
   stage_c: { available: boolean; model: string | null; device: string | null };
-  retention_days: number; compare_enabled: boolean;
+  retention_days: number; compare_enabled: boolean; spelling_available?: boolean;
 }
 
 export interface CompareModel {

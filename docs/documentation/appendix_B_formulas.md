@@ -51,3 +51,4 @@ Every formula used in the project, where it is implemented, and where it is deri
 | 43 | style adherence | softmax over $\lambda\cos$ with "a ⟨style⟩" vs "a photograph"; kept if > 0.5 | same | 11.4 |
 | 44 | Stable Diffusion size | $s = \sqrt{512^2/(wh)}$, round $ws$ and $hs$ to multiples of 8 | `render.sd_size`, `v2.render_v2` | 11.3 |
 | 45 | rate-limit pacing | $60/2.2 = 27.3$ req/min; $3600/24.5 = 146.9$ req/h | clients | 13.6.1 |
+| 46 | Damerau–Levenshtein distance (OSA) | recurrence with the adjacent-swap case | `spelling._distance` | 13.7 |

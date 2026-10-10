@@ -10,7 +10,8 @@ Endpoints
     GET  /classic               the first UI
     /api/ui/...                 read-only data for the v2 UI (app.ui_api)
     GET  /api/options           targets, categories, attachment types, whether Stage C is loaded
-    POST /api/optimize          prompt -> Stage A result, issues, rules fired, Stage C, renderings + input tokens;
+    POST /api/optimize          prompt -> Stage A result, issues, rules fired, Stage C, renderings + input tokens,
+                                spelling suggestions (offsets into the prompt as sent; nothing is changed);
                                 category "image_generation" -> the separate image mode (app.image), image targets
     GET  /api/history           recent prompts (kept RETENTION_DAYS, then purged)
     GET  /api/history/{id}      one prompt with everything the system did to it
@@ -29,6 +30,7 @@ Retention: endpoints that store or read prompts first delete the expired ones (a
 layer refuses (e.g. a prompt that is only whitespace) is answered with 422, not a server error.
 """
 import os
+from contextlib import asynccontextmanager
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -45,6 +47,7 @@ from app.config import RETENTION_DAYS
 from app.db import repository as repo
 from app.db.base import get_db
 from app.db.pii import scrub_pii
+from app import spelling
 from app.coding import app_tests
 from app.compare import providers
 from app.compare import service as compare_service
@@ -57,6 +60,7 @@ from app.pipeline import process_prompt
 from app.rendering import TARGETS
 from app.retention import enforce_retention
 from app.stage_b.ir import Attachment
+from app.stage_b.extensions import EXTENSION_RULES
 from app.stage_b.rules import RULES
 from app.ui_api import router as ui_router
 
@@ -67,10 +71,24 @@ CATEGORIES = ("auto", "closed_qa", "information_extraction", "classification", "
               "image_generation")
 TEXT_TARGETS = ("gpt", "gemini", "claude")
 ATTACHMENTS = ("none", "image", "pdf", "pptx", "docx", "spreadsheet", "code", "other")
-RULE_DOCS = {code: (fn.__doc__ or "").strip().split("\n")[0] for code, fn in [*RULES, *IMAGE_RULES]}
+RULE_DOCS = {code: (fn.__doc__ or "").strip().split("\n")[0] for code, fn in [*RULES, *EXTENSION_RULES, *IMAGE_RULES]}
 RULE_DOCS.update({code: doc.strip().split("\n")[0] for code, doc in RULE_DOCS_V2.items()})
 
-app = FastAPI(title="PromptOpt", version="0.2.0")
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """Seed rule codes added after the database was created (B16), so storing a step that uses them cannot fail."""
+    from sqlalchemy.exc import SQLAlchemyError
+    from app.db.base import SessionLocal
+    from app.db.seed import seed_rules
+    try:
+        with SessionLocal() as db:
+            seed_rules(db)
+    except SQLAlchemyError:                 # no tables yet: `python -m app.init_db` creates and seeds them
+        pass
+    yield
+
+
+app = FastAPI(title="PromptOpt", version="0.2.0", lifespan=lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 app.include_router(ui_router)
@@ -142,7 +160,8 @@ def options():
             "attachment_types": ATTACHMENTS,
             "stage_c": {"available": model is not None, "model": model.name if model else None,
                         "device": model.device if model else None},
-            "retention_days": RETENTION_DAYS, "compare_enabled": any(m.available for m in providers.MODELS)}
+            "retention_days": RETENTION_DAYS, "compare_enabled": any(m.available for m in providers.MODELS),
+            "spelling_available": spelling.available()}
 
 
 def issues(f) -> list[dict]:
@@ -189,7 +208,7 @@ def optimize_image_prompt(req: OptimizeRequest, db: Session) -> dict:
     if ir.style_first:
         auto.append({"what": "style moved to the front (Stable Diffusion)", "value": ", ".join(ir.style_first)})
     return {"mode": "image", "version": "v2", "prompt_id": prompt.id, "target": req.target,
-            "pii_redactions": prompt.pii_redactions,
+            "pii_redactions": prompt.pii_redactions, "spelling": spelling.suggest(req.prompt),
             "stated": {a: out.detected[a] for a in IMAGE_ATTRIBUTES if out.detected[a]},
             "avoid_user": list(ir.avoid_user), "auto_added": auto,
             "accepted": [f"{a}:{v}" for a, v in accepted],
@@ -233,6 +252,7 @@ def optimize_prompt(req: OptimizeRequest, db: Session = Depends(get_db)):
                     "category_status": c.category_status if c else None,
                     "raw": c.raw if c else None},
         "unresolved": list(res.ir.unresolved),
+        "spelling": spelling.suggest(req.prompt, req.context),
         "ir": res.ir.model_dump(mode="json"),
         "optimized_plain": (c.optimized_text if c else out.optimized_text),
         "renderings": res.renderings,

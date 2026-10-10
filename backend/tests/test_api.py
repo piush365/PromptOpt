@@ -225,3 +225,16 @@ def test_expired_prompts_are_deleted_before_history_is_shown(client):
     assert [h["prompt_id"] for h in client.get("/api/ui/history").json()["items"]] == [fresh]
     session.rollback()
     assert session.scalar(select(func.count()).where(Prompt.id == old.id)) == 0      # deleted, not just hidden
+
+
+def test_spelling_suggestions_and_b16_in_the_app(client):
+    from app import spelling
+    r = client.post("/api/optimize", json={"prompt": "frm the list tell me prog lang or animal panda pythom java sanke bunny",
+                                           "target": "gpt", "category": "classification"}).json()
+    if spelling.available():
+        assert [t["word"] for t in r["spelling"]] == ["frm", "pythom", "sanke"]
+    assert any(x["code"] == "B16_LABELS_WIDER" and x["what"] for x in r["rules"])     # app path runs the extensions
+    assert '"prog lang", "animal"' in r["renderings"]["gpt"]
+    steps = client.get(f"/api/history/{r['prompt_id']}").json()["results"][0]["steps"]
+    assert any(s["rule"] == "B16_LABELS_WIDER" for s in steps)                         # stored with its seeded rule
+    assert "spelling_available" in client.get("/api/options").json()

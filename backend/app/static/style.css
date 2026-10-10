@@ -69,3 +69,6 @@ label.inline { display: inline; font-weight: normal; margin: 0 4px 0 8px; }
 .verdict.ok { color: #1a7f37; }
 .verdict.bad { color: #c62828; }
 @media (prefers-color-scheme: dark) { .verdict.ok { color: #56d364; } .verdict.bad { color: #ff7b72; } }
+#spelling { margin-top: 10px; }
+#spelling .typo { margin-right: 14px; white-space: nowrap; }
+#spelling .typo button { margin-left: 4px; }

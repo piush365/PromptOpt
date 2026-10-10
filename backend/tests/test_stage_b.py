@@ -338,7 +338,8 @@ def test_running_twice_adds_nothing_new():
 
 def test_rule_codes_match_the_seeded_catalogue():
     seeded_b = {code for code, _, stage, _ in SEEDED if stage == "B"}
-    assert set(RULE_CODES) == seeded_b
+    from app.stage_b.optimizer import EXTENSION_CODES
+    assert set(RULE_CODES) | set(EXTENSION_CODES) == seeded_b       # frozen rules + app-only extensions (B16)
 
 
 def test_result_is_saved_through_the_repository(db):

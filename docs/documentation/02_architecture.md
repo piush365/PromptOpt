@@ -76,8 +76,8 @@ The request is `POST /api/optimize` with JSON
 2. An attachment counts as context.
 3. Initial IR: `task` = the prompt; `unresolved` gets `task category` (confidence < 0.6 or `other`) and
    `ambiguous reference: ...` (A05 evidence).
-4. Rules run in fixed order B07 → B01 → B02 → B09…B15 → B08 → B06 → B05 → B04 → B03. After each rule the IR is
-   rendered to plain text before and after; if the text changed, a change-log step is recorded.
+4. Rules run in fixed order B07 → B01 → B02 → B09…B15 → B08 → B06 → B05 → B04 → B03, then (app only) B16. After
+   each rule the IR is rendered to plain text before and after; if the text changed, a change-log step is recorded.
 5. `context_ref` is set (none / inline / separate / attachment), the stored confidence computed, and
    `needs_stage_c` is true if `unresolved` still contains a task-category or ambiguous-reference item.
 
@@ -101,7 +101,8 @@ The request is `POST /api/optimize` with JSON
    original prompt (+ pasted text) is counted the same way; both saved to `token_usage`.
 4. The endpoint commits **once**; if anything failed earlier, nothing is stored.
 
-**Step 7: response** — JSON with Stage A's findings (`stage_a`), the category decision (`category`: used, source,
+**Step 7: response** — JSON with spelling suggestions for the prompt as typed (`spelling`, chapter 13.7; nothing is
+changed), Stage A's findings (`stage_a`), the category decision (`category`: used, source,
 requested, Stage A's own, disagreement, uncertain, Stage C's guess), plain-language issues, the rules that fired with
 before/after, Stage C's status (available, routed, reasons, used, accepted, fields, errors, seconds, raw output), the
 final IR, the plain optimized text, the three renderings, the token counts, and (for coding prompts) validated or
@@ -131,6 +132,7 @@ read or delete stored prompts; expired prompts are deleted first.
 | `app/api.py` | FastAPI app: UI pages, `/api/optimize`, `/api/compare`, history, coding tests, suite |
 | `app/ui_api.py` | read-only endpoints for the React UI (status, examples, live token counter, results, suite grid, history search, compare history) |
 | `app/retention.py` | the retention dependency (delete expired prompts before a request) |
+| `app/spelling.py` | spelling suggestions for the typed prompt (chapter 13.7); never changes it |
 | `app/pipeline.py` | `process_prompt`: store → Stage A → B → (C) → render → token counts |
 | `app/rendering.py` | renderers per target, fencing, token counting |
 | `app/stage_a/schema.py` | `PromptFeatures` (Stage A output) |
@@ -141,6 +143,7 @@ read or delete stored prompts; expired prompts are deleted first.
 | `app/stage_a/evaluate.py` | Stage A report on a split |
 | `app/stage_b/ir.py` | `PromptIR`, `Attachment`, `render_plain` |
 | `app/stage_b/rules.py` | rules B01–B15, `RULES` order, constants |
+| `app/stage_b/extensions.py`, `extensions_eval.py` | B16 (app only, after the frozen rules) and its measurement (chapter 5.8) |
 | `app/stage_b/optimizer.py` | `optimize`, category choice, initial IR, confidence, routing |
 | `app/stage_b/evaluate.py` | Stage B report on a split |
 | `app/stage_b/rule_accuracy.py` | per-rule precision/recall/F1 (B01–B08) |
