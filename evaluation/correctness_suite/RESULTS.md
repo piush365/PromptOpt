@@ -6,9 +6,9 @@ Are optimized prompts not just shorter but **correct**? 50 new, hand-written cas
 - Settings: one user message, temperature 0, max 2048 tokens (gpt-oss's reasoning included), reasoning "low" for gpt-oss; both prompts get the same material (vague: pasted below the prompt; optimized: the GPT rendering's Document). Tokens are the provider's counts (input + output, reasoning included in output).
 - Scoring (`app/correctness/checks.py`): closed_qa normalized match; extraction exact set (P/R/F1 shown); classification all items right (per-item accuracy shown); summarization all key facts + no forbidden statement + within the word limit (blind checklist judge); coding all hidden asserts pass in the bubblewrap sandbox. Extractor/judge: Groq `qwen/qwen3.8-27b`, blind (never sees the gold answer or which prompt was used), used only where a deterministic check cannot decide (see the method column).
 - McNemar: exact two-sided test on the discordant cases (only optimized right vs only vague right).
-- Code: `v1.0-12-g6abde02`; generated 2026-10-09T22:46.
-- Gold answers: **auto-validated; human review pending**.
-- Human review: **pending**. `team_input/correctness_review/cases_review.xlsx` (3 sheets, one per team member) asks each reviewer to tick "gold correct Y/N"; import it with `python -m app.correctness.review --import <file>`. Until then the gold answers are checked automatically only (`validation.md`).
+- Code: `pre-ui-v2-4-g37fc461`; generated 2026-10-10T10:42.
+- Gold answers: **auto-validated and human-reviewed** (50 of 50 confirmed correct).
+- Human review (cases_review_filled.xlsx, imported 2026-10-10T10:42): 50 Y, 0 N, 0 not answered, of 50 cases; results per sheet in `human_review.md`.
 
 Not run: `gemini/gemini-2.5-flash` (future work: no API key, same as GPT and Claude).
 
