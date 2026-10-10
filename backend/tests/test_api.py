@@ -238,3 +238,19 @@ def test_spelling_suggestions_and_b16_in_the_app(client):
     steps = client.get(f"/api/history/{r['prompt_id']}").json()["results"][0]["steps"]
     assert any(s["rule"] == "B16_LABELS_WIDER" for s in steps)                         # stored with its seeded rule
     assert "spelling_available" in client.get("/api/options").json()
+
+
+def test_network_password_only_for_other_machines(client, monkeypatch):
+    import base64
+    remote = TestClient(api.app, client=("192.168.1.50", 50000))
+    local = TestClient(api.app, client=("127.0.0.1", 50000))
+    assert remote.get("/api/options").status_code == 200                 # no password configured: open
+    monkeypatch.setenv("PROMPTOPT_PASSWORD", "s3cret")
+    r = remote.get("/api/options")
+    assert r.status_code == 401 and r.headers["www-authenticate"].startswith("Basic")
+    good = {"Authorization": "Basic " + base64.b64encode(b"anyone:s3cret").decode()}
+    bad = {"Authorization": "Basic " + base64.b64encode(b"anyone:wrong").decode()}
+    assert remote.get("/api/options", headers=good).status_code == 200
+    assert remote.get("/api/options", headers=bad).status_code == 401
+    assert remote.get("/", headers={"Authorization": "Basic !!!"}).status_code == 401
+    assert local.get("/api/options").status_code == 200                  # this machine never needs it

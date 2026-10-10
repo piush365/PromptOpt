@@ -140,6 +140,7 @@ overriding variables already set in the shell.
 | `STAGE_C_ADAPTER` | `backend/artifacts/stage_c_adapter` | Stage C |
 | `STAGE_C_DEVICE` | auto (CUDA if available) | Stage C |
 | `SANDBOX_REQUIRE_BWRAP` | 1 | refuse to run code without bubblewrap |
+| `PROMPTOPT_PASSWORD` | unset | if set, visitors from other machines must give it (HTTP Basic auth); this machine never needs it |
 | `TEST_POSTGRES_URL` | unset | also run the tests on PostgreSQL (**drops all tables**: must point at a test database) |
 
 Secrets are never committed and never hard-coded.

@@ -59,6 +59,40 @@ python -m app.init_db --purge             # delete expired prompts (the app also
 
 UI development: `cd frontend && npm ci && npm run dev` (proxies `/api` to port 8765); rebuild with `npm run build`.
 
+## 16.2a Deployment on the laptop, reachable on the local network
+
+The app runs as a **systemd user service** from the GPU venv (Stage A + B + C), on port 8080 on all interfaces, and
+starts at boot (`loginctl enable-linger` is on, so no login is needed):
+
+```ini
+# ~/.config/systemd/user/promptopt.service
+[Unit]
+Description=PromptOpt web app (Stage A+B+C, port 8080, reachable on the local network)
+RequiresMountsFor=/mnt/SharedDrive
+After=network-online.target
+
+[Service]
+WorkingDirectory=/mnt/SharedDrive/Projects/PromptOpt/backend
+ExecStart=/mnt/SharedDrive/Projects/PromptOpt/backend/.venv-gpu/bin/uvicorn app.api:app --host 0.0.0.0 --port 8080
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+```
+
+* Open it on this laptop at `http://127.0.0.1:8080`, from another device on the same network at
+  `http://<laptop IP>:8080` (`ip -4 addr` shows the IP; it changes with the network).
+* **Password:** `PROMPTOPT_PASSWORD` in `backend/.env`. Other devices get a browser login box (any user name, this
+  password); the laptop itself never needs it. The app has no user accounts, so without it anyone on the network
+  could read every prompt in History and spend the Compare quota.
+* Fedora's default `FedoraWorkstation` firewall zone already allows ports 1025–65535; on other zones run
+  `sudo firewall-cmd --add-port=8080/tcp --permanent && sudo firewall-cmd --reload`.
+* Manage it: `systemctl --user status|restart|stop promptopt`, logs `journalctl --user -u promptopt -f`, remove
+  `systemctl --user disable --now promptopt`. Restart after editing `.env` or pulling new code.
+* PostgreSQL (the `DATABASE_URL` in `.env`) must be running; the service retries every 5 s if it is not.
+
 ## 16.3 Verify
 
 ```bash

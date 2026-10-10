@@ -26,6 +26,9 @@ Endpoints
 Everything runs offline. Stage C is used when its adapter is installed (config.STAGE_C_ADAPTER) and
 STAGE_C_ENABLED is not "0"; otherwise the UI says Stage C is unavailable and Stage B's result is shown.
 
+Access: with PROMPTOPT_PASSWORD set, visitors from other machines must give that password (HTTP Basic auth); this
+machine never needs it (`network_password`).
+
 Retention: endpoints that store or read prompts first delete the expired ones (app.retention). Input the database
 layer refuses (e.g. a prompt that is only whitespace) is answered with 422, not a server error.
 """
@@ -90,6 +93,31 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="PromptOpt", version="0.2.0", lifespan=lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+LOOPBACK = {"127.0.0.1", "::1", "localhost"}
+
+
+@app.middleware("http")
+async def network_password(request: Request, call_next):
+    """Optional access password for visitors from other machines (`PROMPTOPT_PASSWORD` in backend/.env, read per
+    request). The app has no user accounts: anyone who can reach it sees every prompt in History and can spend the
+    Compare quota, so a server reachable on a network should set one. Requests from this machine never need it.
+    HTTP Basic auth: any user name, the password must match (compared in constant time)."""
+    password = os.getenv("PROMPTOPT_PASSWORD")
+    client = request.client.host if request.client else ""
+    if password and client not in LOOPBACK:
+        import base64
+        import secrets
+        given = ""
+        auth = request.headers.get("authorization", "")
+        if auth.lower().startswith("basic "):
+            try:
+                given = base64.b64decode(auth[6:]).decode("utf-8").partition(":")[2]
+            except (ValueError, UnicodeDecodeError):
+                given = ""
+        if not secrets.compare_digest(given.encode(), password.encode()):
+            return JSONResponse({"detail": "PromptOpt: password required"}, status_code=401,
+                                headers={"WWW-Authenticate": 'Basic realm="PromptOpt", charset="UTF-8"'})
+    return await call_next(request)
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 app.include_router(ui_router)
 
