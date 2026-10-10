@@ -104,9 +104,8 @@ def import_review(path: Path, cases: list[dict]) -> dict:
     wb = load_workbook(path, read_only=True)
     ids = {c["id"] for c in cases}
     per_sheet, flagged, seen = {}, [], {}
-    for name in SHEETS:
-        if name not in wb.sheetnames:
-            continue
+    # every sheet except the instructions: reviewers may rename "Reviewer 1" to their own name
+    for name in [n for n in wb.sheetnames if n != "Instructions"]:
         counts = {"Y": 0, "N": 0, "blank": 0}
         for row in wb[name].iter_rows(min_row=2, values_only=True):
             if not row or row[0] not in ids:

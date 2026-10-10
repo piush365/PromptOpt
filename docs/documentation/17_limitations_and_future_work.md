@@ -47,7 +47,7 @@
 * Coding tests: Python only; the test writer is the same model as the target (validated on independent references).
 * Image mode: Stable Diffusion 1.5 + CLIP only; DALL-E and Nano Banana untested; CLIP ignores negation.
 * Attachment and image results are on **developer-written prompts only**.
-* Correctness suite: gold answers auto-validated, human review pending; no significant correctness difference
+* Correctness suite: gold answers reviewed by the team, not by outsiders; no significant correctness difference
   (Groq 37 → 42, p = 0.267; Cerebras 43 → 41, p = 0.688).
 
 ## 17.2 Future work (in the order the project recorded it)

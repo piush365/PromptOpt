@@ -195,7 +195,8 @@ def human_status(cases: list[dict]) -> list[str]:
                 "to tick \"gold correct Y/N\"; import it with `python -m app.correctness.review --import <file>`. "
                 "Until then the gold answers are checked automatically only (`validation.md`)."]
     h = json.loads(HUMAN.read_text())
-    lines = [f"Human review ({h['file']}, imported {h['imported']}): {h['yes']} Y, {h['no']} N, {h['blank']} not "
+    lines = [f"Gold answers: **auto-validated and human-reviewed** ({h['yes']} of {h['total']} confirmed correct).",
+             f"Human review ({h['file']}, imported {h['imported']}): {h['yes']} Y, {h['no']} N, {h['blank']} not "
              f"answered, of {h['total']} cases; results per sheet in `human_review.md`."]
     if h["flagged"]:
         lines.append("**Flagged (a reviewer ticked N; their results below should be read with care):** "

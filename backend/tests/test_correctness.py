@@ -174,6 +174,22 @@ def test_review_workbook_round_trip(tmp_path):
     assert h["flagged"] == [{"id": ws.cell(2, 1).value, "sheet": "Reviewer 2", "comment": "two answers possible"}]
 
 
+
+def test_review_import_accepts_sheets_renamed_to_reviewer_names(tmp_path):
+    from openpyxl import load_workbook
+    from app.correctness import review
+    path = review.export(CASES, tmp_path / "r.xlsx")
+    wb = load_workbook(path)
+    for old, name in zip(review.SHEETS, ("Siddhi", "Nirzara", "Piush")):
+        ws = wb[old]
+        ws.title = name
+        for row in range(2, ws.max_row + 1):
+            ws.cell(row, 8, "Y")
+    wb.save(path)
+    h = review.import_review(path, CASES)
+    assert h["yes"] == 50 and h["no"] == h["blank"] == 0 and not h["missing"]
+    assert set(h["per_sheet"]) == {"Siddhi", "Nirzara", "Piush"}
+
 # ---------------------------------------------------------------- Test suite endpoints
 def test_suite_endpoints():
     from app import api

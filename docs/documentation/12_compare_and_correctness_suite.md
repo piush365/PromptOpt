@@ -121,7 +121,9 @@ Mean tokens per case (Groq): input 229 → 257, output 435 → 211, total 664 �
 * `cod-10`: routed to Stage C; the spec was identical in both prompts and the model's code rounded fractions wrongly —
   a model error under a near-identical request.
 
-**Status:** gold answers are auto-validated; the human review of the gold answers is pending
-(`team_input/correctness_review/cases_review.xlsx`; import with `python -m app.correctness.review --import <file>`).
+**Status:** gold answers are auto-validated **and human-reviewed**: the three team members each checked their
+share (17 / 17 / 16 cases) and confirmed all **50 of 50** gold answers, flagging none
+(`team_input/correctness_review/cases_review_filled.xlsx`, imported with
+`python -m app.correctness.review --import <file>` → `evaluation/correctness_suite/human_review.md`).
 Gemini: not run (no key). The UI's "Test suite" page shows every case, both prompts, both answers, the verdicts and
 tokens, and can re-run a case live (cached).

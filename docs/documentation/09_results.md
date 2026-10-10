@@ -148,7 +148,7 @@ The second is shown on purpose: the original answer was already one line, so the
 | gpt-oss-120b on Cerebras (replication) | 43/50 | 41/50 | 2 | 4 | 0.688 | −28.2% |
 
 Neither difference in correctness is statistically significant; tokens fall clearly on both. Gold answers are
-auto-validated; human review is pending (`team_input/correctness_review/`).
+auto-validated and human-reviewed (all 50 confirmed by the team, `correctness_suite/human_review.md`).
 
 ## 9.8 Dataset validation (chapter 3.8–3.10)
 
