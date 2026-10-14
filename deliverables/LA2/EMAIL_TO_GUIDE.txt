@@ -1,0 +1,24 @@
+To: [PLACEHOLDER: guide's e-mail address]
+Subject: Mini Project-I (7CS345) LA-2 report for approval - PromptOpt
+
+Respected Prof. Pawar,
+
+Please find attached our Mini Project-I report, "PromptOpt: Token-Efficient Prompt Optimization for LLMs", prepared
+in the department's report format for the LA-2 evaluation on Thursday, 15 October.
+
+The report covers the core modules (Stage A/B/C, renderers, image mode, Compare and the web application), the
+transaction flow and database design, unit, integration and system testing with a test-case table, the working
+prototype, our use of Git/GitHub, the challenges we faced, and our plans for the next phase.
+
+We would be grateful if you could review it and let us know of any corrections before we print it. We will
+make the changes the same day.
+
+Thank you for your guidance.
+
+Regards,
+Piush U. Gogi (255200005)
+Nirzara A. Manade (255200006)
+Siddhi S. Bolaikar (255200008)
+TY CSE, Walchand College of Engineering, Sangli
+
+Attachment: MP1_Report_PromptOpt.pdf
