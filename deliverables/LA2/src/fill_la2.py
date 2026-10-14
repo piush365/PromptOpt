@@ -131,6 +131,7 @@ def style_chart(ch, colors, size=16, legend=True):
     pl = ch.plots[0]; pl.has_data_labels = True
     dl = pl.data_labels; dl.font.size = Pt(size - 2); dl.font.name = BODY; dl.font.color.rgb = rgb(DARK)
     dl.position = XL_LABEL_POSITION.OUTSIDE_END
+    dl.number_format = '0'; dl.number_format_is_linked = False
     va = ch.value_axis; va.visible = False; va.has_major_gridlines = False
     ca = ch.category_axis; ca.tick_labels.font.size = Pt(size); ca.format.line.color.rgb = rgb(PALE)
     ch.has_legend = legend
@@ -181,8 +182,9 @@ for sh in s.shapes:
                     r.text = r.text.replace("LA-1", "LA-2")
                 if "Sciecne" in r.text:
                     r.text = r.text.replace("Sciecne", "Science")
-    if sh.name in ("TextBox 19", "TextBox 20"):  # widen, same centre, so each line stays on one line
-        c = sh.left + sh.width // 2; sh.width = Inches(11.0); sh.left = c - sh.width // 2
+    widths = {"TextBox 18": 13.5, "TextBox 19": 11.5, "TextBox 20": 11.0, "TextBox 21": 3.0, "TextBox 11": 9.0, "TextBox 12": 6.0}
+    if sh.name in widths:  # widen, same centre, so each line stays on one line in PowerPoint and in Canva
+        c = sh.left + sh.width // 2; sh.width = Inches(widths[sh.name]); sh.left = c - sh.width // 2
 notes(s, P + "Piush. Greet the panel, introduce the team and our guide Prof. A. S. Pawar. One line: PromptOpt rewrites a "
       "vague prompt into a clear, model-specific one, shows every change, and we measured that it saves tokens. This is Release 2 "
       "for LA-2: what we built since LA-1, how we tested it, and a live demo.")
