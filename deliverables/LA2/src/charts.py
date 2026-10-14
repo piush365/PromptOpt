@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 import sys
 out=sys.argv[1]
-BEFORE="#C8553D"; AFTER="#1F6F8B"; GREY="#8A8F98"; INK="#1D2433"
+BEFORE="#B85450"; AFTER="#1F3864"; GREY="#8A8F98"; INK="#1D2433"
 plt.rcParams.update({"font.family":"DejaVu Sans","font.size":12,"axes.spines.top":False,"axes.spines.right":False,"axes.edgecolor":"#9AA0A6","axes.labelcolor":INK,"xtick.color":INK,"ytick.color":INK})
 def save(fig,name): fig.tight_layout(); fig.savefig(f"{out}/{name}.png",dpi=200); plt.close(fig)
 

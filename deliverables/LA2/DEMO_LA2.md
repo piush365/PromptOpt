@@ -41,10 +41,10 @@ If time is left: Status page (providers' 24-hour usage, Stage C on CUDA, sandbox
 
 | Problem | What to do |
 |---|---|
-| **No network / Groq down / quota used** | Steps 1, 2, 4, 5 are fully offline. For Compare, switch the model to *gpt-oss-120b on Cerebras*; if both fail, do not run a new comparison: show the **Past comparisons** table on the Compare page and the Compare screenshot on slide 7 (live run from 14 Oct: 768 -> 248 tokens). The permutations prompt was compared before and may be answered from the local Compare cache: test this in the checklist with Wi-Fi off. |
+| **No network / Groq down / quota used** | Steps 1, 2, 4, 5 are fully offline. For Compare, switch the model to *gpt-oss-120b on Cerebras*; if both fail, do not run a new comparison: show the **Past comparisons** table on the Compare page and the Compare screenshot on slide 13 (live run from 14 Oct: 768 -> 248 tokens). The permutations prompt was compared before and may be answered from the local Compare cache: test this in the checklist with Wi-Fi off. |
 | **GPU / CUDA fails** (Stage C pill says unavailable) | `systemctl --user stop promptopt`, then `cd backend && STAGE_C_DEVICE=cpu .venv-gpu/bin/uvicorn app.api:app --port 8080` (Stage C on CPU, about 5 s per routed prompt). If that also fails: `.venv/bin/uvicorn app.api:app --port 8080` (Stage A + B only; the app says Stage C is not installed, step 2 then shows Stage B's result). |
 | **Port 8080 busy** | `--port 8081` and open that port. |
-| **App will not start at all** | Present slides 7 and 14 (screenshots) and open `deliverables/LA2/MP1_Report_PromptOpt.pdf`, chapter 7e (all screens). |
+| **App will not start at all** | Present slide 13 (screenshots) and open `deliverables/LA2/MP1_Report_PromptOpt.pdf`, chapter 7e (all screens). |
 | **Browser shows an old page** | Hard reload (Ctrl+Shift+R). |
 
 ## 4. Ten-minute pre-demo checklist
@@ -57,7 +57,7 @@ If time is left: Status page (providers' 24-hour usage, Stage C on CUDA, sandbox
 6. Run prompt 2 once (warms up Stage C).
 7. Compare page: model list shows Groq available; run prompt 1 once to check the network and quota.
 8. Wi-Fi test (optional, 1 minute): turn Wi-Fi off, re-run Compare for prompt 1, note whether it is served from the cache; turn Wi-Fi back on.
-9. Zoom the browser to 110-125% so the panel can read it; close other tabs; open the deck on slide 18 in a second window.
+9. Zoom the browser to 110-125% so the panel can read it; close other tabs; open the deck on slide 17 (Live demo) in a second window.
 10. Keep `deliverables/LA2/MP1_Report_PromptOpt.pdf` and this file open as backup; test the projector/HDMI mirror mode.
 
 ## 5. Numbers to have ready (sources: `evaluation/FINAL_RESULTS.md`, `evaluation/correctness_suite/RESULTS.md`)

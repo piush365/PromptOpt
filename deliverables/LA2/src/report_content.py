@@ -137,7 +137,7 @@ CH.append(("Methodology", [
           "made on the validation split only; the code used for the final numbers was tagged frozen-for-test before "
           "the test split was run once (tag final-for-test)."),
     ("h2", "4.1 Dataset"),
-    ("p", "PromptOpt Dataset v1.2 final contains 5,184 degraded -> optimized prompt pairs in five categories, built "
+    ("p", "PromptOpt Dataset v1.2 final contains 5,184 degraded → optimized prompt pairs in five categories, built "
           "from Dolly-15k [8] (closed_qa, information_extraction, classification, summarization) and CodeAlpaca-20k "
           "[9] (coding). Splits share no instruction: train 4,509, validation 149, test 482, benchmark 44. Three team "
           "members rated 170 rows each (90 shared rows, five yes/no questions): 330 rows validated, 295 accepted, "
@@ -376,13 +376,13 @@ CH.append(("Results", [
     ("tbl", "Headline results (test split, run once on 2 October 2026; correctness suite 10 October 2026)", ["What", "Result"],
      [["Total tokens, optimized vs vague (482 test prompts, gpt-oss-120b)", "-39.2% (95% CI 35.9-42.5%)"],
       ["Stage A category accuracy (degraded prompts)", "74.7% (macro-F1 0.746)"],
-      ["Output format stated: vague -> Stage B", "3.1% -> 95.0%"],
+      ["Output format stated: vague → Stage B", "3.1% → 95.0%"],
       ["Prompts routed to Stage C", "6.4% (31 of 482)"],
-      ["Benchmark (44 prompts, real LLM + blind judge): quality / task success", "8.2 -> 9.0 / 67% -> 85%"],
+      ["Benchmark (44 prompts, real LLM + blind judge): quality / task success", "8.2 → 9.0 / 67% → 85%"],
       ["Stage C answers passing validation: zero-shot base vs LoRA", "5.0% vs 98.2%"],
-      ["Stage C on routed prompts: output format stated", "22.6% -> 90.3%"],
+      ["Stage C on routed prompts: output format stated", "22.6% → 90.3%"],
       ["Stage C latency, median (laptop RTX 3050 / CPU)", "0.74 s / 4.55 s"],
-      ["Coding tests pass@1 strict (29 Python items)", "20.7% -> 34.5%"],
+      ["Coding tests pass@1 strict (29 Python items)", "20.7% → 34.5%"],
       ["Correctness suite (50 cases): vague vs optimized correct", "37/50 vs 42/50, total tokens -29.6%"],
       ["Attachment rules, hand-made set", "30/30 correct"]],
      [4.4, 2.1]),
@@ -390,23 +390,23 @@ CH.append(("Results", [
           "detects the coding category with confidence 1.00 and two missing pieces (no output format, no language); "
           "Stage B fires three rules (B07, B05, B03) and shows each change; Stage C is skipped because nothing is "
           "unresolved; the rendered GPT prompt grows from 9 to 35 input tokens, together with validated tests."),
-    ("fig", "ui_optimize.png", "Optimize screen: Stage A, Stage B rules with before/after, Stage C, rendered prompt", 5.3),
+    ("fig", "ui_optimize.png", "Optimize screen: Stage A, Stage B rules with before/after, Stage C, rendered prompt", 4.7),
     ("p", "The next figure shows the same prompt in Compare on gpt-oss-120b (Groq): total tokens fall from 768 to 248 "
           "(-67.7%), output tokens by 79.4%, latency by 78.9%, and both answers pass 6 of 6 sandbox tests."),
-    ("fig", "ui_compare-result.png", "Compare: original vs optimized prompt on the same real model", 5.6),
+    ("fig", "ui_compare-result.png", "Compare: original vs optimized prompt on the same real model", 5.0),
     ("h2", "b. Comparative analysis"),
-    ("p", "The optimized prompt is slightly longer (input 226 -> 241 tokens per prompt), but answers are much shorter "
-          "(output 682 -> 165), so the total falls in every category. 87 of 482 prompts (18.0%) individually cost more, "
+    ("p", "The optimized prompt is slightly longer (input 226 → 241 tokens per prompt), but answers are much shorter "
+          "(output 682 → 165), so the total falls in every category. 87 of 482 prompts (18.0%) individually cost more, "
           "mostly short-answer information_extraction prompts (35 of 93)."),
     ("fig", "chart_tokens.png", "Mean total tokens per prompt by category, vague vs optimized (test split)", 6.2),
     ("tbl", "Token evaluation on the full test split (gpt-oss-120b on Cerebras, temperature 0)",
      ["Category", "n", "Input", "Output", "Total", "Change per prompt [95% CI]"],
-     [["closed_qa", "99", "279 -> 290", "835 -> 127", "1115 -> 417", "-44.5% [-51.3, -37.6]"],
-      ["information_extraction", "93", "338 -> 351", "538 -> 115", "875 -> 466", "-24.2% [-32.4, -16.2]"],
-      ["classification", "98", "98 -> 122", "390 -> 156", "488 -> 278", "-28.5% [-35.8, -21.1]"],
-      ["summarization", "94", "338 -> 348", "831 -> 204", "1169 -> 552", "-43.3% [-49.4, -37.0]"],
-      ["coding", "98", "89 -> 102", "813 -> 222", "903 -> 324", "-54.7% [-60.8, -48.0]"],
-      ["all", "482", "226 -> 241", "682 -> 165", "909 -> 406", "-39.2% [-42.5, -35.9]"]],
+     [["closed_qa", "99", "279 → 290", "835 → 127", "1115 → 417", "-44.5% [-51.3, -37.6]"],
+      ["information_extraction", "93", "338 → 351", "538 → 115", "875 → 466", "-24.2% [-32.4, -16.2]"],
+      ["classification", "98", "98 → 122", "390 → 156", "488 → 278", "-28.5% [-35.8, -21.1]"],
+      ["summarization", "94", "338 → 348", "831 → 204", "1169 → 552", "-43.3% [-49.4, -37.0]"],
+      ["coding", "98", "89 → 102", "813 → 222", "903 → 324", "-54.7% [-60.8, -48.0]"],
+      ["all", "482", "226 → 241", "682 → 165", "909 → 406", "-39.2% [-42.5, -35.9]"]],
      [1.7, 0.45, 0.95, 0.95, 1.0, 1.45]),
     ("fig", "chart_benchmark.png", "Benchmark split: quality, task success and total tokens", 6.2),
     ("h2", "c. Performance measures in tabular form and graphs"),
@@ -427,7 +427,7 @@ CH.append(("Results", [
       ["forced (all)", "A+B+C", "482", "0.769", "90.2%", "2.1%"], ["forced (all)", "C only", "482", "0.765", "88.6%", "1.9%"]],
      [1.2, 1.0, 0.6, 1.1, 1.2, 1.0]),
     ("p", "Where Stage B routes a prompt, Stage C states a format in 90% instead of 23% at a small loss in task intent; "
-          "routing everything through Stage C hurts (0.886 -> 0.769), so Stage C stays a fallback for routed prompts "
+          "routing everything through Stage C hurts (0.886 → 0.769), so Stage C stays a fallback for routed prompts "
           "only; C-only is the weakest, so the rules are worth keeping in front of the model."),
     ("fig", "chart_correctness.png", "Correctness suite: correct answers per category, vague vs optimized", 6.2),
     ("tbl", "Correctness suite, primary model gpt-oss-120b on Groq (50 cases)", ["Category", "Vague", "Optimized", "Only opt.", "Only vague", "Tokens (aggregate)"],
@@ -444,7 +444,7 @@ CH.append(("Results", [
         "while the token saving is (-28.2%).",
         "Honest failures: cls-09 (Stage A misread an attendance table as code, so the model returned a script instead "
         "of labels), sum-06 and sum-10 (length limits exceeded by 2-3 words), cod-10 (a Stage C-routed coding prompt "
-        "where the model's fraction handling was wrong). Summarization is the weak category (7/10 -> 5/10).",
+        "where the model's fraction handling was wrong). Summarization is the weak category (7/10 → 5/10).",
         "Stage A is the main weak spot: closed_qa, information_extraction and summarization are hard to tell apart on "
         "degraded prompts (F1 0.51-0.65); B08 and asking the user mitigate this.",
         "Image mode v1 (default keywords) made Stable Diffusion images match the request worse (held-out CLIP 30.78 vs "
@@ -457,20 +457,20 @@ CH.append(("Results", [
           "rules with before/after text and the GPT/Gemini/Claude renderings; (2) a prompt with an ambiguous reference "
           "that is routed to Stage C; (3) Compare on gpt-oss-120b; (4) Image mode with suggestions; (5) History, the Test "
           "suite and the Results page. All screens are shown below."),
-    ("fig", "ui_optimize-stagec.png", "Stage C routed: ambiguous reference sent to Stage C; its answer failed validation, so Stage B's result is kept", 5.4),
-    ("fig", "ui_suite.png", "Test suite page: correctness suite summary and case grid", 5.6),
-    ("fig", "ui_suite-case.png", "Test suite: one case with gold answer, both prompts and both answers", 5.6),
-    ("fig", "ui_results.png", "Results page: headline numbers parsed from FINAL_RESULTS.md", 5.6),
-    ("fig", "ui_history.png", "History: search, view and delete past prompts (30-day retention)", 5.6),
-    ("fig", "ui_image.png", "Image mode: user's words kept, missing attributes as clickable suggestions", 5.6),
-    ("fig", "ui_how.png", "How it works page", 5.6),
-    ("fig", "ui_status.png", "Status page: providers, 24-hour usage, Stage C device, sandbox", 5.6),
+    ("pair", "ui_optimize-stagec.png", "Stage C routed: its answer failed validation, so Stage B's result is kept",
+             "ui_how.png", "How it works: the pipeline explained in the app"),
+    ("pair", "ui_suite.png", "Test suite: correctness summary and case grid",
+             "ui_suite-case.png", "Test suite: one case with gold answer and both answers"),
+    ("pair", "ui_results.png", "Results: headline numbers from FINAL_RESULTS.md",
+             "ui_history.png", "History: search, view and delete (30-day retention)"),
+    ("pair", "ui_image.png", "Image mode: user's words kept, attributes as suggestions",
+             "ui_status.png", "Status: providers, 24-hour usage, Stage C device, sandbox"),
     ("h2", "f. Screenshot of GitHub project upload"),
     ("p", "The code is public at https://github.com/piush365/PromptOpt. The screenshots below were captured on "
           "14 October 2026."),
-    ("fig", "gh_repo.png", "GitHub repository piush365/PromptOpt", 5.8),
-    ("fig", "gh_release.png", "GitHub release v1.0 with the Stage C adapter and Stage A index as assets", 5.8),
-    ("fig", "gh_branches.png", "Branches: main (default), ui-v2, correctness-suite", 5.8),
+    ("fig", "gh_repo.png", "GitHub repository piush365/PromptOpt: branches, tags and top-level folders", 5.4),
+    ("pair", "gh_release.png", "Release v1.0 with the Stage C adapter and Stage A index",
+             "gh_branches.png", "Branches: main (default), ui-v2, correctness-suite"),
     ("h2", "g. Use of Git and GitHub"),
     ("tbl", "Git and GitHub usage (from git and the GitHub repository, 14 October 2026)", ["Item", "Value"],
      [["Repository", "github.com/piush365/PromptOpt (public)"],
@@ -482,7 +482,7 @@ CH.append(("Results", [
       ["Commit authors in git", "piush365 (89), Piush Gogi (2), siddhibolaikar (1)"],
       ["Work tracking", "GitHub Issues, Pull Requests and Projects were not used; work was tracked with the roadmap and phase tables in CLAUDE.md, tags for the frozen/final runs, and a release"]],
      [1.8, 4.7]),
-    ("fig", "chart_commits.png", "Commit timeline per ISO week (all branches)", 6.0),
+    ("fig", "chart_commits.png", "Commit timeline per ISO week (all branches)", 4.6),
     ("p", "Tags were used as evaluation checkpoints: frozen-for-test marks the code that produced the final test "
           "numbers; after it, no Stage A/B rule, threshold or judge was changed, and the freeze check proves it."),
     ("h2", "h. Challenges faced and how we solved them"),
@@ -502,7 +502,7 @@ CH.append(("Conclusion", [
           "on 482 held-out test prompts optimized prompts reduce total tokens by 39.2% (95% CI 35.9-42.5%), state an "
           "output format in 95.0% of cases instead of 3.1%, and on the benchmark raise quality from 8.2 to 9.0 and "
           "task success from 67% to 85%. A small LoRA model helps exactly where the rules stop (format stated on "
-          "routed prompts 22.6% -> 90.3%) and is kept out of everything else. The working prototype (FastAPI + React, "
+          "routed prompts 22.6% → 90.3%) and is kept out of everything else. The working prototype (FastAPI + React, "
           "ten-table database with one commit per request, Compare, History, image mode) is covered by 798 automated "
           "tests and 13 browser tests, and the frozen pipeline is verified byte-identical."),
     ("h2", "Limitations of proposed solution"),

@@ -23,4 +23,4 @@ Not part of the report text. All numbers in the report, deck and demo plan were 
 | Customer survey percentages, guide name, PRNs, gap table | LA-1 deck `PromptOpt_PPT.pdf` |
 
 Regenerate: `src/charts.py` (charts/diagrams), `src/build_report.py` (report on top of the college template, two-pass TOC),
-`src/build_deck.js` (deck, needs pptxgenjs). Screenshots: `frontend/scripts/screenshots.mjs` against the running app.
+`src/fill_la2.py` (deck: built on the LA-1 Canva deck exported as PPTX, slides duplicated with the pptx skill's `add_slide.py`, then filled with python-pptx; same backgrounds, logo and embedded fonts as LA-1). Screenshots: `frontend/scripts/screenshots.mjs` against the running app.
