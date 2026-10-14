@@ -479,7 +479,7 @@ CH.append(("Results", [
       ["Branches", "main (default), ui-v2 (React UI v2), correctness-suite"],
       ["Tags", "frozen-for-test (27 Sep), final-for-test (2 Oct), v1.0 (8 Oct), pre-ui-v2 (9 Oct)"],
       ["Release", "PromptOpt v1.0 (7 Oct 2026): Stage C adapter, Stage A category index, Stage C data manifest"],
-      ["Commit authors in git", "piush365 (89), Piush Gogi (2), siddhibolaikar (1); many commits are co-authored with an AI coding assistant (shown as contributor \"claude\" on GitHub)"],
+      ["Commit authors in git", "piush365 (89), Piush Gogi (2), siddhibolaikar (1)"],
       ["Work tracking", "GitHub Issues, Pull Requests and Projects were not used; work was tracked with the roadmap and phase tables in CLAUDE.md, tags for the frozen/final runs, and a release"]],
      [1.8, 4.7]),
     ("fig", "chart_commits.png", "Commit timeline per ISO week (all branches)", 6.0),

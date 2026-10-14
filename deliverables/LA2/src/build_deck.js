@@ -283,7 +283,7 @@ pres.addSection({ title: "Results" });
 pres.addSection({ title: "Process" });
 {
   const s = content("Git and GitHub", "Process",
-    P + "Nirzara. All numbers are from git. 92 commits between 13 August and 10 October, on three branches: main, ui-v2 and correctness-suite. Tags were our evaluation checkpoints: frozen-for-test marks the code for the final numbers, final-for-test the one-time test run, v1.0 the release with the Stage C adapter attached. We did not use GitHub Issues or Projects; we tracked work with the roadmap and phase tables in the repository and with tags. Many commits were written with an AI coding assistant credited as co-author.");
+    P + "Nirzara. All numbers are from git. 92 commits between 13 August and 10 October, on three branches: main, ui-v2 and correctness-suite. Tags were our evaluation checkpoints: frozen-for-test marks the code for the final numbers, final-for-test the one-time test run, v1.0 the release with the Stage C adapter attached. We did not use GitHub Issues or Projects; we tracked work with the roadmap and phase tables in the repository and with tags.");
   s.addImage({ path: path.join(FIG, "gh_repo.png"), x: 0.5, y: 1.3, w: 6.2, h: 6.2 * 900 / 1280 });
   stat(s, 7.0, 1.4, 1.85, "92", "commits");
   stat(s, 8.98, 1.4, 1.85, "3", "branches");
