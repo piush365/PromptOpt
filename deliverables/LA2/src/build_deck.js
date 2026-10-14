@@ -284,14 +284,14 @@ pres.addSection({ title: "Process" });
 {
   const s = content("Git and GitHub", "Process",
     P + "Nirzara. All numbers are from git. 92 commits between 13 August and 10 October, on three branches: main, ui-v2 and correctness-suite. Tags were our evaluation checkpoints: frozen-for-test marks the code for the final numbers, final-for-test the one-time test run, v1.0 the release with the Stage C adapter attached. We did not use GitHub Issues or Projects; we tracked work with the roadmap and phase tables in the repository and with tags.");
-  s.addImage({ path: path.join(FIG, "gh_repo.png"), x: 0.5, y: 1.3, w: 6.2, h: 6.2 * 900 / 1280 });
+  s.addImage({ path: path.join(FIG, "gh_repo.png"), x: 0.5, y: 1.5, w: 6.2, h: 6.2 * 511 / 922 });
   stat(s, 7.0, 1.4, 1.85, "92", "commits");
   stat(s, 8.98, 1.4, 1.85, "3", "branches");
   stat(s, 10.95, 1.4, 1.8, "4", "tags · 1 release");
   card(s, 7.0, 3.35, 5.75, 3.45);
   bullets(s, ["frozen-for-test (27 Sep): code for the final numbers", "final-for-test (2 Oct): test split run once", "v1.0 (8 Oct): release + Stage C adapter", "Commits/month: Aug 7 · Sep 38 · Oct 47", "Tracking: roadmap + phase tables in CLAUDE.md, tags, release (no Issues/Projects used)"],
     { x: 7.15, y: 3.45, w: 5.5, h: 3.3, fontSize: 15 });
-  txt(s, "github.com/piush365/PromptOpt", { x: 0.5, y: 5.8, w: 6.2, h: 0.4, fontSize: 14, bold: true, color: C.text2 });
+  txt(s, "github.com/piush365/PromptOpt", { x: 0.5, y: 5.1, w: 6.2, h: 0.4, fontSize: 14, bold: true, color: C.text2 });
 }
 
 // 16 Challenges ------------------------------------------------------------------------------------
