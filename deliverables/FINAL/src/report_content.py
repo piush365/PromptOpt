@@ -46,7 +46,8 @@ ABSTRACT = [
     "PromptOpt works in three stages. Stage A detects what a prompt is missing, Stage B fixes it with fifteen small, "
     "individually tested rules, and Stage C, a 0.5-billion-parameter model fine-tuned with LoRA, fills in only what "
     "the rules cannot resolve (6.4% of test prompts). The result is written in the layout each target LLM prefers and "
-    "is served through a web application with a side-by-side Compare and a 30-day history.",
+    "is served through a web application: a simple app for everyday users (improve a prompt, analyse its token "
+    "usage on a real model, a 30-day history) and a developer view that shows every stage.",
     "On 482 held-out test prompts, measured on OpenAI's GPT model gpt-oss-120b, optimized prompts reduce total "
     "tokens (input + output) by 39.2% (95% CI 35.9-42.5%): input grows slightly (226 to 241 tokens) while output "
     "falls from 682 to 165 tokens. An output format is stated in 95.0% of prompts instead of 3.1%; on the benchmark "
@@ -128,7 +129,7 @@ CH.append(("Introduction and Related work", [
         "and summarization) and CodeAlpaca-20k [9] (coding).",
     ]),
     ("h2", "1.4 Research gap"),
-    ("p", "Table 1.4 compares PromptOpt with four existing prompt tools that we examined in the requirement phase. "
+    ("p", "Table 1.3 compares PromptOpt with four existing prompt tools that we examined in the requirement phase. "
           "All of them rewrite prompts, but none evaluates the rewritten prompt on a real model, none reports the token "
           "effect of input and output together, and none combines deterministic rules with a fine-tuned fallback."),
     ("tbl", "Gap analysis: existing prompt tools vs PromptOpt", ["Feature", "PO.tools", "Aiven", "SiteGPT", "BenchLM", "PromptOpt"],
@@ -193,7 +194,7 @@ CH.append(("Problem statement", [
       ["Optimizer", "Stage A detection, Stage B rules, Stage C LoRA fallback, offline (no API needed)"],
       ["Evaluation", "input, output and total tokens, quality, task success, correctness, ablation; answers from "
                      "OpenAI's GPT model gpt-oss-120b on free tiers"],
-      ["Application", "FastAPI + React web app: Optimize, Compare, History (30 days), Test suite, Results, Image mode"]],
+      ["Application", "FastAPI + React web app: a simple app (Improve prompt, Token usage analysis, History of 30 days) and a developer view (Optimize, Compare, Test suite, Results, Image mode)"]],
      [1.8, 4.7]),
     ("h2", "2.4 Alignment with the Sustainable Development Goals"),
     ("tbl", "Sustainable Development Goals addressed by PromptOpt", ["Goal", "How PromptOpt contributes"],
@@ -223,9 +224,10 @@ CH.append(("Objectives", [
         "To support an optional attachment type (image, PDF, PPTX, DOCX, spreadsheet, code file) as a modifier.",
         "To measure input, output and total tokens, quality, task success and correctness on held-out data with a "
         "real model, together with an ablation study of the three stages.",
-        "To provide a working web application with Optimize, Compare (original vs optimized on the same model), "
-        "a history with 30-day retention, removal of e-mail addresses and phone numbers before storage, and one "
-        "database transaction per request.",
+        "To provide a working web application: a simple app (improve a prompt, compare the token usage of the "
+        "original and the optimized prompt on the same model, a history with 30-day retention) and a developer view "
+        "that shows every stage, with removal of e-mail addresses and phone numbers before storage and one database "
+        "transaction per request.",
     ]),
 ]))
 
@@ -260,5 +262,5 @@ REFS = [
 
 SCHOLARLY = [
     ("Research paper", "A research paper based on this project (the three-stage optimizer and its evaluation of input "
-     "and output tokens on held-out data) is in preparation. [PLACEHOLDER: target conference or journal and status]"),
+     "and output tokens on held-out data) is in preparation."),
 ]

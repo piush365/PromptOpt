@@ -191,8 +191,9 @@ CORR = {
         ("cod-09", "fix a second-highest-marks function", "wrong", "correct"),
         ("cod-10", "recipe quantity scaler with fractions (Stage C)", "correct", "wrong")],
 }
-CORR_SUM = {"closed_qa": "8/10 → 10/10", "information_extraction": "7/10 → 10/10",
-            "classification": "7/10 → 8/10", "summarization": "7/10 → 5/10", "coding": "8/10 → 9/10"}
+CORR_SUM = {"closed_qa": "vague 8/10, optimized 10/10", "information_extraction": "vague 7/10, optimized 10/10",
+            "classification": "vague 7/10, optimized 8/10", "summarization": "vague 7/10, optimized 5/10",
+            "coding": "vague 8/10, optimized 9/10"}
 
 tp = [
     ("p", "Testing is automated and has three levels. Unit tests check every detector, rule and module on its own; "
@@ -269,17 +270,17 @@ tp = [
           "routed to Stage C."),
 ]
 for cat, rows in CORR.items():
-    tp.append(("tbl", f"Correctness suite: {cat} (vague → optimized correct: {CORR_SUM[cat]})",
+    tp.append(("tbl", f"Correctness suite: {cat} (correct answers: {CORR_SUM[cat]})",
                ["Case", "Scenario", "Vague prompt", "Optimized prompt", "Status"], cat_rows(rows), [0.7, 3.0, 0.95, 1.1, 0.75]))
 tp += [
     ("tbl", "Correctness suite: accuracy and tokens per category (" + GPT + ")",
-     ["Category", "Vague correct", "Optimized correct", "Input tokens", "Output tokens", "Input + output"],
-     [["closed_qa", "8/10", "10/10", "217 → 244", "308 → 166", "525 → 410"],
-      ["information_extraction", "7/10", "10/10", "244 → 274", "289 → 110", "532 → 384"],
-      ["classification", "7/10", "8/10", "251 → 282", "320 → 254", "571 → 535"],
-      ["summarization", "7/10", "5/10", "257 → 274", "155 → 170", "412 → 444"],
-      ["coding", "8/10", "9/10", "176 → 210", "1104 → 354", "1279 → 563"],
-      ["all (50)", "37/50 (74%)", "42/50 (84%)", "229 → 257", "435 → 211", "664 → 467"]],
+     ["Category", "Vague correct", "Optimized correct", "Input tokens (vague / optimized)", "Output tokens (vague / optimized)", "Input + output (vague / optimized)"],
+     [["closed_qa", "8/10", "10/10", "217 / 244", "308 / 166", "525 / 410"],
+      ["information_extraction", "7/10", "10/10", "244 / 274", "289 / 110", "532 / 384"],
+      ["classification", "7/10", "8/10", "251 / 282", "320 / 254", "571 / 535"],
+      ["summarization", "7/10", "5/10", "257 / 274", "155 / 170", "412 / 444"],
+      ["coding", "8/10", "9/10", "176 / 210", "1104 / 354", "1279 / 563"],
+      ["all (50)", "37/50 (74%)", "42/50 (84%)", "229 / 257", "435 / 211", "664 / 467"]],
      [1.8, 0.9, 1.0, 0.95, 1.0, 1.0]),
     ("fig", "chart_correctness.png", "Correctness suite: correct answers per category, vague vs optimized", 6.0),
     ("p", "Optimization made 9 wrong answers right and 4 right answers wrong; the exact McNemar test gives p = 0.267, so "
@@ -333,7 +334,7 @@ RESULTS = ("Results", [
     ("p", "The improved prompt comes back in ChatGPT's layout, with a task, the review as the document and the output "
           "format “Provide only the label.”, ready to copy. Because the system was not sure which kind of task this "
           "is, it asks the user to pick one instead of guessing; the button below leads to the token usage analysis."),
-    ("fig", "user_usage.png", "Token usage analysis: both prompts on the same AI, 270 → 162 tokens (40% fewer)", 5.0),
+    ("fig", "user_usage.png", "Token usage analysis: both prompts on the same AI, 162 tokens instead of 270 (40% fewer)", 5.0),
     ("p", "Token usage analysis sends both prompts to the same model, " + GPT + " on Groq, labelled as a stand-in for "
           "ChatGPT. The improved prompt is a little longer to send (121 instead of 104 tokens) but the answer shrinks "
           "from 166 tokens to 41, the single word “good”, so the total falls from 270 to 162 tokens, 40% fewer, and the "
@@ -345,7 +346,7 @@ RESULTS = ("Results", [
           "before anything is stored."),
     ("h3", "7.1.2 Every stage in the developer view"),
     ("fig", "story_input.png", "Developer view, Optimize: the vague prompt and the pasted review, target GPT, category auto-detect", 6.0),
-    ("p", "The user types the prompt as they normally would and pastes the review under “Pasted text”. The "
+    ("p", "The developer view shows the same request with every stage. The review is pasted under “Pasted text”; the "
           "live counter shows 33 input tokens for GPT (counted exactly with OpenAI's tokenizer)."),
     ("fig", "story_stage-a.png", "Stage A on the review example: summarization 0.52, below the 0.6 gate, so marked unsure", 5.0),
     ("p", "Stage A shows its best guess, Summarise, with a confidence of 0.52, and the score of every category "
@@ -372,15 +373,15 @@ RESULTS = ("Results", [
     ("fig", "chart_story_tokens.png", "Review example: input, output and total tokens on the same model", 5.0),
     ("tbl", "Headline results on held-out data (output tokens measured on " + GPT + ")", ["What", "Result"],
      [["Total tokens, optimized vs vague (482 test prompts)", "−39.2% per prompt (95% CI 35.9-42.5%)"],
-      ["Output tokens per prompt", "682 → 165"],
-      ["Input tokens per prompt", "226 → 241"],
-      ["Output format stated: vague → after Stage B", "3.1% → 95.0%"],
+      ["Output tokens per prompt", "165 (vague prompt: 682)"],
+      ["Input tokens per prompt", "241 (vague prompt: 226)"],
+      ["Output format stated after Stage B", "95.0% (vague prompt: 3.1%)"],
       ["Stage A category accuracy (vague prompts)", "74.7% (macro-F1 0.746)"],
       ["Prompts routed to Stage C", "6.4% (31 of 482)"],
-      ["Benchmark (44 prompts, blind judge): quality / task success", "8.2 → 9.0 / 67% → 85%"],
+      ["Benchmark (44 prompts, blind judge): quality / task success", "9.0 / 85% (vague prompt: 8.2 / 67%)"],
       ["Stage C answers passing the checker: base model vs LoRA", "5.0% vs 98.2%"],
-      ["Stage C on routed prompts: output format stated", "22.6% → 90.3%"],
-      ["Coding tests pass@1, strict (29 Python items)", "20.7% → 34.5%"],
+      ["Stage C on routed prompts: output format stated", "90.3% (without Stage C: 22.6%)"],
+      ["Coding tests pass@1, strict (29 Python items)", "34.5% (vague prompt: 20.7%)"],
       ["Correctness suite (50 cases): vague vs optimized correct", "37/50 vs 42/50, total tokens −29.6%"],
       ["Attachment rules, hand-made set", "30/30 correct"]],
      [4.2, 2.3]),
@@ -389,13 +390,13 @@ RESULTS = ("Results", [
           "separately for input tokens, output tokens and their sum. All counts are the provider's own counts for "
           + GPT + "; output includes the model's hidden reasoning tokens. Claude and Gemini were not run."),
     ("tbl", "Mean tokens per prompt: input, output and input + output (482 test prompts, " + GPT + ")",
-     ["Category", "n", "Input", "Output", "Input + output", "Change of input + output per prompt [95% CI]"],
-     [["closed_qa", "99", "279 → 290", "835 → 127", "1115 → 417", "−44.5% [−51.3, −37.6]"],
-      ["information_extraction", "93", "338 → 351", "538 → 115", "875 → 466", "−24.2% [−32.4, −16.2]"],
-      ["classification", "98", "98 → 122", "390 → 156", "488 → 278", "−28.5% [−35.8, −21.1]"],
-      ["summarization", "94", "338 → 348", "831 → 204", "1169 → 552", "−43.3% [−49.4, −37.0]"],
-      ["coding", "98", "89 → 102", "813 → 222", "903 → 324", "−54.7% [−60.8, −48.0]"],
-      ["all", "482", "226 → 241", "682 → 165", "909 → 406", "−39.2% [−42.5, −35.9]"]],
+     ["Category", "n", "Input (vague / optimized)", "Output (vague / optimized)", "Input + output (vague / optimized)", "Change of input + output per prompt [95% CI]"],
+     [["closed_qa", "99", "279 / 290", "835 / 127", "1115 / 417", "−44.5% [−51.3, −37.6]"],
+      ["information_extraction", "93", "338 / 351", "538 / 115", "875 / 466", "−24.2% [−32.4, −16.2]"],
+      ["classification", "98", "98 / 122", "390 / 156", "488 / 278", "−28.5% [−35.8, −21.1]"],
+      ["summarization", "94", "338 / 348", "831 / 204", "1169 / 552", "−43.3% [−49.4, −37.0]"],
+      ["coding", "98", "89 / 102", "813 / 222", "903 / 324", "−54.7% [−60.8, −48.0]"],
+      ["all", "482", "226 / 241", "682 / 165", "909 / 406", "−39.2% [−42.5, −35.9]"]],
      [1.6, 0.4, 0.95, 0.95, 1.1, 1.5]),
     ("fig", "chart_io_tokens.png", "Input, output and input + output tokens per category, vague vs optimized", 6.5),
     ("tbl", "Change per prompt by token type (482 test prompts, " + GPT + ")", ["Token type", "Vague (mean)", "Optimized (mean)", "Mean change per prompt [95% CI]", "Wilcoxon p"],
@@ -409,6 +410,10 @@ RESULTS = ("Results", [
           "vague prompts produced several versions of the code with explanations. 87 of the 482 prompts (18.0%) "
           "individually cost more, mostly short-answer information_extraction prompts (35 of 93) whose answer was "
           "already short."),
+    ("p", "The −39.2% is the mean of the per-prompt changes, so every prompt counts equally. The mean totals in the "
+          "table (909 and 406 tokens) correspond to the aggregate reduction of 55.4% (Section 4.10), which is larger "
+          "because a few very long vague answers dominate the totals. This report always quotes the smaller, "
+          "per-prompt figure."),
     ("fig", "chart_tokens.png", "Mean input + output tokens per prompt by category, vague vs optimized", 6.2),
     ("tbl", "Stage C ablation on the test split", ["Prompt set", "System", "n", "Task intent", "Format stated", "Fallback"],
      [["routed", "A + B", "31", "0.869", "22.6%", "–"], ["routed", "A + B + C", "31", "0.843", "90.3%", "3.2%"],
@@ -417,7 +422,7 @@ RESULTS = ("Results", [
      [1.2, 1.1, 0.6, 1.1, 1.2, 1.0]),
     ("p", "Where Stage B routes a prompt, Stage C states a format in 90% of cases instead of 23%, at a small loss in "
           "task intent (the similarity of the final task to the original instruction). Sending every prompt through "
-          "Stage C hurts (0.886 → 0.769), and Stage C alone without the rules is the weakest, so the rules are "
+          "Stage C hurts (task intent falls from 0.886 to 0.769), and Stage C alone without the rules is the weakest, so the rules are "
           "worth keeping in front of the model and Stage C stays a fallback for routed prompts only. On the 31 routed "
           "prompts, adding Stage C to A + B reduced input + output tokens by a further 26.7% per prompt."),
     ("fig", "chart_benchmark.png", "Benchmark split: quality, task success and input + output tokens", 6.2),
@@ -428,10 +433,10 @@ RESULTS = ("Results", [
       ["coding", "98", "99.0%", "98.0%", "0.98"], ["accuracy (all)", "482", "", "", "74.7%"]],
      [2.2, 0.7, 1.2, 1.2, 1.2]),
     ("fig", "chart_stage_a.png", "Stage A F1 per category (test split)", 5.4),
-    ("tbl", "Stage B per category (482 test prompts)", ["Category", "n", "Format stated: vague → Stage B", "Words: vague → Stage B", "Sent to Stage C"],
-     [["closed_qa", "99", "0.0% → 96.0%", "9.1 → 18.8", "4.0%"], ["information_extraction", "93", "4.3% → 94.6%", "9.1 → 20.9", "5.4%"],
-      ["classification", "98", "0.0% → 90.8%", "18.7 → 32.5", "15.3%"], ["summarization", "94", "2.1% → 94.7%", "8.0 → 16.6", "5.3%"],
-      ["coding", "98", "9.2% → 99.0%", "10.6 → 20.8", "2.0%"], ["all", "482", "3.1% → 95.0%", "11.2 → 22.0", "6.4%"]],
+    ("tbl", "Stage B per category (482 test prompts)", ["Category", "n", "Format stated (vague / Stage B)", "Words (vague / Stage B)", "Sent to Stage C"],
+     [["closed_qa", "99", "0.0% / 96.0%", "9.1 / 18.8", "4.0%"], ["information_extraction", "93", "4.3% / 94.6%", "9.1 / 20.9", "5.4%"],
+      ["classification", "98", "0.0% / 90.8%", "18.7 / 32.5", "15.3%"], ["summarization", "94", "2.1% / 94.7%", "8.0 / 16.6", "5.3%"],
+      ["coding", "98", "9.2% / 99.0%", "10.6 / 20.8", "2.0%"], ["all", "482", "3.1% / 95.0%", "11.2 / 22.0", "6.4%"]],
      [1.8, 0.5, 1.6, 1.4, 1.2]),
     ("tbl", "Per-rule agreement with the dataset's optimized prompts (test)", ["Rule", "Precision", "Recall", "F1"],
      [["B01 remove filler", "1.000", "1.000", "1.000"], ["B03 output format", "0.824", "0.662", "0.734"],
@@ -446,14 +451,14 @@ RESULTS = ("Results", [
      [["Qwen2.5-0.5B, zero-shot", "93.5%", "51.2%", "5.0%", "0.668"], ["Qwen2.5-0.5B + LoRA", "100%", "100%", "98.2%", "0.801"]],
      [2.2, 1.0, 1.0, 1.3, 1.1]),
     ("tbl", "Other components", ["Component", "Measure", "Result"],
-     [["Coding (29 Python test items)", "pass@1 strict / lenient", "20.7% → 34.5% / 37.9% → 41.4%"],
+     [["Coding (29 Python test items)", "pass@1 strict / lenient", "strict 34.5% (vague 20.7%); lenient 41.4% (vague 37.9%)"],
       ["Attachment rules (30 hand-made prompts)", "right rule only, in every rendering", "30/30"],
       ["Image mode (30 held-out prompts, Stable Diffusion 1.5)", "CLIP similarity to the request", "original 33.08, v1 30.78 (worse, p = 0.043), v2 32.77"]],
      [2.4, 1.9, 2.2]),
     ("h2", "7.4 Result analysis"),
     ("p", "Where the saving comes from. The optimized prompt is slightly longer, but the answer is much shorter. The "
-          "review example shows the mechanism on one prompt (output 166 → 41 tokens), and the test split shows it "
-          "on 482 prompts (output 682 → 165). A stated format and length stop the model from writing long, "
+          "review example shows the mechanism on one prompt (166 output tokens fall to 41), and the test split shows it "
+          "on 482 prompts (682 output tokens fall to 165). A stated format and length stop the model from writing long, "
           "unrequested answers. For a model that prices output higher than input, the money saving is larger than the "
           "token saving."),
     ("p", "When it costs more. Prompts whose answer is already short can cost more: the added format line costs input "
@@ -494,7 +499,7 @@ RESULTS = ("Results", [
     ("p", "Optimize with the coding example “write code to get all permutations of a string”: Stage A is sure "
           "(coding, 1.00), Stage B adds “Use Python.” and “Return only the code, in a single code block.”, "
           "and Stage C is skipped because nothing is unresolved."),
-    ("fig", "ui_compare-result.png", "Compare on the coding example: 768 → 248 tokens (−67.7%), both answers pass 6 of 6 tests", 5.0),
+    ("fig", "ui_compare-result.png", "Compare on the coding example: 248 tokens instead of 768 (−67.7%), both answers pass 6 of 6 tests", 5.0),
     ("pair", "ui_how.png", "How it works: the pipeline explained inside the application",
              "ui_history.png", "History: search, view and delete; prompts expire after 30 days"),
     ("pair", "ui_image.png", "Image mode: the user's words are kept, missing attributes are suggestions",
@@ -507,7 +512,7 @@ RESULTS = ("Results", [
     ("h2", "7.7 Use of Git and GitHub"),
     ("tbl", "Git and GitHub usage", ["Item", "Value"],
      [["Repository", "github.com/piush365/PromptOpt (public)"],
-      ["Commits (all branches)", "92 (main 73; ui-v2 19 ahead of main; correctness-suite 10 ahead of main)"],
+      ["Commits (all branches)", "102 (main 99; ui-v2 3 ahead of main with the final report and deck updates; correctness-suite merged into main)"],
       ["Branches", "main (default), ui-v2 (React user interface), correctness-suite"],
       ["Tags", "frozen-for-test (code for the final numbers), final-for-test (test split run once), v1.0 (release), pre-ui-v2"],
       ["Release", "PromptOpt v1.0: Stage C adapter, Stage A category index, Stage C data manifest"],
@@ -538,9 +543,9 @@ CONCLUSION = ("Conclusion", [
           "39.2% per prompt (95% CI 35.9-42.5%): input grows from 226 to 241 tokens, while output falls from 682 to "
           "165. The output format is stated in 95.0% of prompts instead of 3.1%, and on the benchmark quality rises "
           "from 8.2 to 9.0 and task success from 67% to 85%. A small LoRA model, trained on a 4 GB laptop GPU, helps "
-          "exactly where the rules stop (format stated on routed prompts 22.6% → 90.3%) and is kept out of "
-          "everything else. The working application (FastAPI + React, ten-table database with one commit per request, "
-          "Compare, History, image mode) is covered by 720 unit test cases (60 for each of 12 modules) and 16 browser "
+          "exactly where the rules stop (format stated on 90.3% of routed prompts instead of 22.6%) and is kept out of "
+          "everything else. The working application (FastAPI + React: a simple app with token usage analysis and history, "
+          "a developer view with every stage, and a ten-table database with one commit per request) is covered by 720 unit test cases (60 for each of 12 modules) and 16 browser "
           "tests, all passing."),
     ("h2", "Limitations of the proposed solution"),
     ("bul", [

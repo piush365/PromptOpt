@@ -39,10 +39,10 @@ save(fig,"chart_stage_a")
 
 
 # 5 commit timeline
-weeks=["W33\n10-16 Aug","W34\n17-23 Aug","W35-38\n24 Aug-20 Sep","W39\n21-27 Sep","W40\n28 Sep-4 Oct","W41\n5-11 Oct"]; cnt=[4,3,0,33,22,30]
-fig,ax=plt.subplots(figsize=(10,4.2)); ax.bar(weeks,cnt,color=AFTER)
+weeks=["W33\n10-16 Aug","W34\n17-23 Aug","W35-38\n24 Aug-20 Sep","W39\n21-27 Sep","W40\n28 Sep-4 Oct","W41\n5-11 Oct","W42\n12-18 Oct","W43\n19-25 Oct","W44\n26 Oct-1 Nov"]; cnt=[4,3,0,33,22,30,6,0,4]
+fig,ax=plt.subplots(figsize=(11.5,4.2)); ax.bar(weeks,cnt,color=AFTER)
 for i,c in enumerate(cnt): ax.text(i,c+0.6,str(c),ha="center")
-ax.set_ylabel("Commits (all branches)"); ax.set_title("92 commits on three branches",fontsize=12,color=INK)
+ax.set_ylabel("Commits (all branches)"); ax.set_title("102 commits on three branches",fontsize=12,color=INK)
 for lab,xi in [("frozen-for-test\n27 Sep",3),("final-for-test 2 Oct",4),("v1.0 8 Oct",5)]: pass
 save(fig,"chart_commits")
 
