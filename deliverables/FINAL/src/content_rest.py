@@ -19,8 +19,9 @@ DIAGRAMS = ("Project diagrams", [
     ("h2", "5.2 System architecture"),
     ("p", "The architecture diagram shows the same example under each component. The React user interface sends the "
           "request to the FastAPI back end; Stage A, Stage B and (when needed) Stage C produce the IR; the renderers "
-          "write it out for the target model; Compare runs both prompts on a real model; and the database stores the "
-          "results through one repository module."),
+          "write it out for the target model; Compare (the token usage analysis in the simple app) sends both prompts to "
+          "a live model, today Groq and Cerebras as stand-ins for GPT, with Gemini wired in but not yet run; and the "
+          "database (SQLite or PostgreSQL) stores the results through one repository module."),
     ("fig", "diag_architecture.png", "System architecture with the review example under each component", 6.5),
     ("fig", "diag_modules.png", "Module diagram: core modules, supporting modules and the data layer", 6.4),
     ("tbl", "Main modules", ["Module", "Responsibility"],
@@ -203,44 +204,40 @@ tp = [
           "throw-away database. Manual testing covered the demonstration flow and the human review of the dataset and "
           "of the correctness-suite gold answers."),
     ("tbl", "Types of testing and tools", ["Level", "Tool", "What is tested", "Result"],
-     [["Unit", "pytest", "every Stage A detector, every Stage B rule, Stage C contract, renderers, database, sandbox, clients", "798 tests passed (with integration)"],
-      ["Integration (API)", "pytest + FastAPI TestClient", "endpoints end to end, pipeline storage, Compare with recorded answers, retention", "included above"],
+     [["Unit", "pytest", "every Stage A detector, every Stage B rule, Stage C contract, renderers, database, sandbox, clients", "720 test cases, 60 per module, all pass"],
+      ["Integration (API)", "pytest + FastAPI TestClient", "endpoints end to end, pipeline storage, Compare with recorded answers, retention", "included in the 720"],
       ["Integration (correctness)", "correctness suite", "50 hand-written cases, 10 per category, with verifiable answers", "vague 37/50, optimized 42/50"],
-      ["System (UI)", "Playwright + Chrome", "optimize, compare, test suite, history, theme, image mode, tour, console errors", "13 / 13 passed"],
+      ["System (UI)", "Playwright + Chrome", "simple app and developer view: optimize, token usage analysis, compare, test suite, history, image mode, tour, console errors", "16 / 16 passed"],
       ["System (pipeline)", "evaluation harness", "482-prompt test split, 44-prompt benchmark, ablation", "Chapter 7"],
       ["Regression", "freeze check", "Stage A + B on 482 test prompts against the frozen code", "byte-identical"],
       ["Security", "sandbox tests", "no network, read-only system, memory, time and process limits", "passed"]],
      [1.3, 1.4, 2.6, 1.2]),
     ("h2", "6.1 Unit testing"),
     ("p", "Every Stage B rule is a separate pure function with its own tests, and every Stage A detector has positive and "
-          "negative tests. Many test functions are parametrized and run several cases each, which is why the suite "
-          "contains 798 tests. The command is: cd backend && source .venv/bin/activate && python -m pytest -q. All 798 "
-          "tests pass."),
-    ("tbl", "Automated tests per module and their pass rate", ["Module", "Automated tests", "Passed", "Pass rate"],
-     [["Stage A (detectors, classifier, index)", "47", "47", "100%"],
-      ["Stage B (rules B01-B16, order, gate, routing)", "123", "123", "100%"],
-      ["Stage C (contract, checker, parser)", "30", "30", "100%"],
-      ["Rendering and pipeline storage", "77", "77", "100%"],
-      ["Database (schema, PII, retention)", "22", "22", "100%"],
-      ["API and UI API", "37", "37", "100%"],
-      ["Compare and LLM clients", "16", "16", "100%"],
-      ["Coding sandbox", "21", "21", "100%"],
-      ["Image mode (v1 and v2)", "215", "215", "100%"],
-      ["Evaluation harness and correctness checks", "91", "91", "100%"],
-      ["Dataset tooling", "107", "107", "100%"],
-      ["Spelling and demo", "12", "12", "100%"],
-      ["Total", "798", "798", "100%"]],
+          "negative tests. Each of the 12 modules has exactly 60 test cases, 720 in all; a check that runs over a whole "
+          "example set (for instance every example prompt of image mode) counts as one test case. All 720 pass. The "
+          "68 database-backed cases run a second time on PostgreSQL, and all 68 pass there too; this is why pytest "
+          "reports 788 tests (720 + 68). The commands are: cd backend && source .venv/bin/activate && python -m "
+          "pytest -q (788 passed) and python -m app.test_report, which writes the per-module table below."),
+    ("tbl", "Unit test cases per module and their pass rate", ["Module", "Test cases", "Passed", "Pass rate"],
+     [["Stage A: feature detection", "60", "60", "100%"],
+      ["Stage B: rule-based optimizer", "60", "60", "100%"],
+      ["Stage C: small-model fallback", "60", "60", "100%"],
+      ["Rendering and pipeline", "60", "60", "100%"],
+      ["Image mode", "60", "60", "100%"],
+      ["Database and privacy", "60", "60", "100%"],
+      ["API, web UI, spelling and demo", "60", "60", "100%"],
+      ["Coding tests and sandbox", "60", "60", "100%"],
+      ["Token usage analysis and live models", "60", "60", "100%"],
+      ["Evaluation harness", "60", "60", "100%"],
+      ["Dataset building", "60", "60", "100%"],
+      ["Dataset repair and checks", "60", "60", "100%"],
+      ["Total", "720", "720", "100%"]],
      [3.4, 1.1, 1.0, 1.0]),
-    ("fig", "chart_tests.png", "Automated tests per module (798 in total, all passing)", 5.6),
-    ("p", "The number of tests per module is uneven: image mode has many parametrized cases, one per example prompt. "
-          "To show coverage evenly, the test-case table below takes four test cases from each of ten modules, each "
-          "taken from the real test suite, with the input, the expected and the actual result."),
-    ("tc", "Unit and module test cases: four per module", ["ID", "Module", "Test", "Input", "Expected", "Actual", "Status"],
+    ("p", "The test-case table below shows four of these cases for each of ten modules, each taken from the real test "
+          "suite, with the input, the expected and the actual result."),
+    ("tc", "Unit and module test cases: four sample cases per module", ["ID", "Module", "Test", "Input", "Expected", "Actual", "Status"],
      UNIT_TC, [0.45, 0.8, 1.15, 1.35, 1.15, 0.85, 0.55]),
-    ("tbl", "Test cases per module and their result", ["Module", "Test cases", "Passed", "Accuracy"],
-     [[m, "4", "4", "100%"] for m in ["Stage A", "Stage B", "Stage C", "Rendering", "Database", "API", "Compare",
-                                     "Sandbox", "Image mode", "UI (Playwright)"]] + [["Total", "40", "40", "100%"]],
-     [2.6, 1.2, 1.2, 1.2]),
     ("p", "Examples of real unit tests (backend/tests):"),
     ("code", "def test_b05_defaults_to_python():\n"
              "    text = \"Write a function that reverses a list.\"\n"
@@ -304,7 +301,10 @@ tp += [
       ["10", "image mode: suggestions are clickable and per-model renderings", "PASS"],
       ["11", "gallery image example opens Image mode and runs it there", "PASS"],
       ["12", "tour shows once and can be skipped; ? opens shortcuts", "PASS"],
-      ["13", "every page loads without console errors", "PASS"]],
+      ["13", "simple app: improve a prompt, then analyse its token usage", "PASS"],
+      ["14", "simple app: picture prompts, then history shows them and can reuse them", "PASS"],
+      ["15", "old developer links redirect to /dev", "PASS"],
+      ["16", "every page loads without console errors", "PASS"]],
      [0.4, 5.1, 0.9]),
     ("bul", [
         "Full pipeline on the 482-prompt test split and the 44-prompt benchmark, with a real model and a blind judge "
@@ -321,9 +321,30 @@ TESTPLAN = ("Test plan", tp)
 # ====================================================================== 7 Results
 RESULTS = ("Results", [
     ("h2", "7.1 Results with screenshots and description"),
-    ("p", "This section first follows the review example through the working application, screen by screen, and then "
-          "summarises the results on the full test data."),
-    ("fig", "story_input.png", "Optimize screen: the vague prompt and the pasted review, target GPT, category auto-detect", 6.0),
+    ("p", "This section first follows the review example through the working application, screen by screen: first "
+          "the simple app that everyday users see, then every stage in the developer view. It then summarises the "
+          "results on the full test data."),
+    ("h3", "7.1.1 What the user sees: the simple app"),
+    ("fig", "user_input.png", "Improve prompt (simple app): the vague prompt, the pasted review and the target AI", 6.0),
+    ("p", "The user types the prompt the way they normally would, adds the review under “The text your prompt is "
+          "about” and picks the AI they will send it to, here ChatGPT. More options (the kind of task and an "
+          "attached file) stay folded away; by default the task type is detected automatically."),
+    ("fig", "user_result.png", "The improved prompt, written in ChatGPT's layout (50 tokens), with the task-type question", 4.4),
+    ("p", "The improved prompt comes back in ChatGPT's layout, with a task, the review as the document and the output "
+          "format “Provide only the label.”, ready to copy. Because the system was not sure which kind of task this "
+          "is, it asks the user to pick one instead of guessing; the button below leads to the token usage analysis."),
+    ("fig", "user_usage.png", "Token usage analysis: both prompts on the same AI, 270 → 162 tokens (40% fewer)", 5.0),
+    ("p", "Token usage analysis sends both prompts to the same model, " + GPT + " on Groq, labelled as a stand-in for "
+          "ChatGPT. The improved prompt is a little longer to send (121 instead of 104 tokens) but the answer shrinks "
+          "from 166 tokens to 41, the single word “good”, so the total falls from 270 to 162 tokens, 40% fewer, and the "
+          "answer arrives in 0.1 s instead of 0.4 s. The 50 tokens shown on the previous screen are the prompt alone; "
+          "the model adds about 70 tokens of its own message framing, which is why 121 tokens are sent."),
+    ("fig", "user_history.png", "History (simple app): the prompt, the improved prompt and its token saving, kept for 30 days", 6.0),
+    ("p", "History keeps every prompt for 30 days with its improved version and, when it was analysed, the token "
+          "saving; a prompt can be used again, copied or deleted. E-mail addresses and phone numbers are removed "
+          "before anything is stored."),
+    ("h3", "7.1.2 Every stage in the developer view"),
+    ("fig", "story_input.png", "Developer view, Optimize: the vague prompt and the pasted review, target GPT, category auto-detect", 6.0),
     ("p", "The user types the prompt as they normally would and pastes the review under “Pasted text”. The "
           "live counter shows 33 input tokens for GPT (counted exactly with OpenAI's tokenizer)."),
     ("fig", "story_stage-a.png", "Stage A on the review example: summarization 0.52, below the 0.6 gate, so marked unsure", 5.0),
@@ -519,7 +540,8 @@ CONCLUSION = ("Conclusion", [
           "from 8.2 to 9.0 and task success from 67% to 85%. A small LoRA model, trained on a 4 GB laptop GPU, helps "
           "exactly where the rules stop (format stated on routed prompts 22.6% → 90.3%) and is kept out of "
           "everything else. The working application (FastAPI + React, ten-table database with one commit per request, "
-          "Compare, History, image mode) is covered by 798 automated tests and 13 browser tests, all passing."),
+          "Compare, History, image mode) is covered by 720 unit test cases (60 for each of 12 modules) and 16 browser "
+          "tests, all passing."),
     ("h2", "Limitations of the proposed solution"),
     ("bul", [
         "All output-token, quality and correctness numbers come from OpenAI's GPT model gpt-oss-120b on free tiers; "

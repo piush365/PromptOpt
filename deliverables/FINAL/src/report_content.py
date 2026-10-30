@@ -52,7 +52,7 @@ ABSTRACT = [
     "falls from 682 to 165 tokens. An output format is stated in 95.0% of prompts instead of 3.1%; on the benchmark "
     "split, quality rises from 8.2 to 9.0 and task success from 67% to 85%. On 50 new hand-written cases with "
     "verifiable answers, optimized prompts were correct in 42 cases versus 37 for the vague prompts. The system is "
-    "covered by 798 automated unit and integration tests and 13 browser tests, all passing.",
+    "covered by 720 unit test cases (60 for each of 12 modules) and 16 browser tests, all passing.",
 ]
 
 KEYWORDS = "prompt optimization, large language models, token efficiency, rule-based NLP, LoRA, FastAPI."
@@ -195,6 +195,13 @@ CH.append(("Problem statement", [
                      "OpenAI's GPT model gpt-oss-120b on free tiers"],
       ["Application", "FastAPI + React web app: Optimize, Compare, History (30 days), Test suite, Results, Image mode"]],
      [1.8, 4.7]),
+    ("h2", "2.4 Alignment with the Sustainable Development Goals"),
+    ("tbl", "Sustainable Development Goals addressed by PromptOpt", ["Goal", "How PromptOpt contributes"],
+     [["SDG 9: Industry, innovation and infrastructure", "an open, self-hosted tool that makes everyday use of LLMs "
+       "clearer and cheaper, built only on free and open components"],
+      ["SDG 12: Responsible consumption and production", "fewer tokens per answer (39.2% fewer on the test split) "
+       "means less computing, and so less energy, for every request"]],
+     [2.2, 4.3]),
 ]))
 
 # ====================================================================== 3 Objectives

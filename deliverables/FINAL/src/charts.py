@@ -37,14 +37,6 @@ for i,val in enumerate(f1[::-1]): ax.text(val+0.01,i,f"{val:.2f}",va="center")
 ax.set_xlim(0,1.1); ax.set_xlabel("F1 score (test, 482 prompts); accuracy 74.7%")
 save(fig,"chart_stage_a")
 
-# 4 tests per module
-mods=[("Image mode (v1+v2)",215),("Stage B rules",113+10),("Rendering + pipeline",77),("Evaluation harness",62+7+3+2),("Dataset tooling",32+29+27+19),("Stage A",47),("API + UI API",29+8),("Stage C contract/parse",18+12),("Database layer",22),("Coding sandbox",21),("Correctness suite",17),("Compare + providers",9+7),("Spelling + demo",5+7)]
-mods.sort(key=lambda t:t[1])
-fig,ax=plt.subplots(figsize=(9,5.2))
-ax.barh([m for m,_ in mods],[c for _,c in mods],color=AFTER)
-for i,(_,c) in enumerate(mods): ax.text(c+2,i,str(c),va="center",fontsize=10)
-ax.set_xlabel("pytest tests (798 total, all passing)")
-save(fig,"chart_tests")
 
 # 5 commit timeline
 weeks=["W33\n10-16 Aug","W34\n17-23 Aug","W35-38\n24 Aug-20 Sep","W39\n21-27 Sep","W40\n28 Sep-4 Oct","W41\n5-11 Oct"]; cnt=[4,3,0,33,22,30]

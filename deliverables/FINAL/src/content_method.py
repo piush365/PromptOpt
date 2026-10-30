@@ -28,6 +28,11 @@ METHODOLOGY = ("Methodology", [
       ["6. Testing", "unit, integration and system tests; evaluation on the test split (once) and the benchmark", "test reports, final numbers"],
       ["7. Deployment", "service on the laptop reachable on the local network; release v1.0 with the trained artefacts", "running application"]],
      [1.6, 3.4, 1.5]),
+    ("p", "The work was planned as ten tasks over four months, from problem identification and customer connect in "
+          "July to the final demo and documentation in October. Requirement and design tasks overlap in July and "
+          "August; prototype development, model development (rules and LoRA) and evaluation follow from September. "
+          "All ten tasks are done."),
+    ("fig", "gantt.png", "Project schedule (Gantt chart): all ten tasks done", 6.3),
 
     # ------------------------------------------------------------------ 4.2
     ("h2", "4.2 Phase 1: Requirement analysis"),
@@ -225,7 +230,7 @@ METHODOLOGY = ("Methodology", [
     # ------------------------------------------------------------------ 4.4 design
     ("h2", "4.4 Phase 3: System design"),
     ("p", "The design starts from the user's request and follows it through three stages that each do one job. "
-          "Figure 4.3 shows the running example as it passes through the whole system; the rest of this chapter "
+          "Figure 4.4 shows the running example as it passes through the whole system; the rest of this chapter "
           "explains each block."),
     ("fig", "diag_story.png", "The review example through every stage of PromptOpt", 6.5),
     ("p", "Stage A reads the prompt and writes down what is missing; it never changes the prompt. Stage B turns the "
@@ -316,7 +321,7 @@ METHODOLOGY = ("Methodology", [
           "threshold were tuned on the validation split. In 5-fold cross-validation on the training split the blend "
           "reached 72.9% accuracy, against 69.3% for the k-NN vote alone and 70.4% for the head alone."),
     ("p", "Worked example. For the review prompt no keyword cue fires (\u201cgood or bad\u201d is not followed by a "
-          "colon or question mark), so blend(c) = knn(c). The table shows the calculation; Figure 4.6 shows it as a "
+          "colon or question mark), so blend(c) = knn(c). The table shows the calculation; Figure 4.7 shows it as a "
           "chart."),
     ("tbl", "Confidence calculation for the review example", ["Category", "k-NN vote", "Head", "0.5 \u00b7 k-NN + 0.5 \u00b7 head"],
      [["closed_qa", "0.000", "0.001", "0.001"], ["information_extraction", "0.050", "0.003", "0.026"],
@@ -516,10 +521,13 @@ METHODOLOGY = ("Methodology", [
           "tokenizers are not available offline, they are estimated as characters divided by 4 and labelled as "
           "approximate (on the test renderings this estimate is within about 5-8% of the GPT count on average). For "
           "the review example the GPT rendering has 50 input tokens against 33 for the user's prompt alone."),
-    ("p", "The web application is a FastAPI back end serving a React and TypeScript front end. Optimize shows each "
-          "stage in turn (Section 7.1); Compare sends the original and the optimized prompt to the same real model; "
-          "History, Test suite, Results, How it works, Image mode and Status complete the interface. All database "
-          "access goes through one repository module (Chapter 5)."),
+    ("p", "The web application is a FastAPI back end serving a React and TypeScript front end with two views. The "
+          "simple app at / is for everyday users and uses no pipeline terms: Improve prompt (type the prompt, "
+          "optionally paste the text it is about, pick ChatGPT, Gemini or Claude, copy the improved prompt), Token "
+          "usage analysis (both prompts sent to the same real model) and History (30 days); Section 7.1.1 shows it. "
+          "The developer view at /dev is for monitoring: Optimize shows each stage in turn (Section 7.1.2); Compare, "
+          "History, Test suite, Results, How it works, Image mode and Status complete it. All database access goes "
+          "through one repository module (Chapter 5)."),
 
     # ------------------------------------------------------------------ validation
     ("h2", "4.9 Phase 5: Validation"),
@@ -594,7 +602,9 @@ METHODOLOGY = ("Methodology", [
       ["NLP / features", "spaCy, regular expressions, Sentence-Transformers (all-MiniLM-L6-v2), pyspellchecker"],
       ["Model / fine-tuning", "Hugging Face Transformers, PEFT (LoRA), PyTorch (CUDA), Qwen2.5-0.5B-Instruct"],
       ["Tokenization", "tiktoken (o200k_base)"],
-      ["LLM providers (evaluation)", "Groq and Cerebras free tiers: OpenAI's gpt-oss-120b; qwen3.8-27b as judge"],
+      ["LLM providers (live models)", "Groq and Cerebras free tiers: OpenAI's gpt-oss-120b as the stand-in for GPT; "
+                                      "qwen3.8-27b as judge; Gemini wired in (needs a key, not yet run)"],
+      ["Data", "Dolly-15k and CodeAlpaca-20k, rewritten into prompt pairs with the Groq API"],
       ["Testing / tooling", "pytest, Playwright, bubblewrap sandbox, Git and GitHub"]],
      [1.8, 4.7]),
 ])
