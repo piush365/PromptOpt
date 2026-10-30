@@ -12,3 +12,6 @@ frontend/test-results/
 frontend/playwright-report/
 frontend/.lighthouse/
 frontend/.e2e/
+
+# report build: page numbers kept between the two passes (deliverables/FINAL/src/build_report.py)
+*.docx.pages.json
